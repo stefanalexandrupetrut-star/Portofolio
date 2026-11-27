@@ -1,0 +1,920 @@
+{
+ "keys": {
+  "SC1": {
+   "name": "Schlage SC1",
+   "cases": {},
+   "path": {
+    "blade_points_mean": 290.0,
+    "d_chars_mean": 4151.0,
+    "invalid_blade_polygons": 36,
+    "of": 36,
+    "zero_length_edges_total": 0,
+    "tip_top_below_bottom_cases": 36
+   },
+   "tip_at_end": {
+    "top": 2,
+    "bottom": 2.032
+   },
+   "stl": [
+    {
+     "case": "preset",
+     "watertight": false,
+     "winding_consistent": true,
+     "volume_mm3": -533.0289750000003,
+     "faces": 1180,
+     "front_cover_vs_truth_symdiff_mm2": 34.22830065756377,
+     "truth_area_mm2": 676.2833004464285,
+     "bytes": 217848
+    },
+    {
+     "case": "all-min",
+     "watertight": false,
+     "winding_consistent": true,
+     "volume_mm3": -502.9230750000003,
+     "faces": 1180,
+     "front_cover_vs_truth_symdiff_mm2": 30.132915850199712,
+     "truth_area_mm2": 688.3403004464286,
+     "bytes": 217782
+    },
+    {
+     "case": "all-max",
+     "watertight": false,
+     "winding_consistent": true,
+     "volume_mm3": -593.2371750000003,
+     "faces": 1180,
+     "front_cover_vs_truth_symdiff_mm2": 54.141186673208,
+     "truth_area_mm2": 652.2143004464284,
+     "bytes": 217848
+    },
+    {
+     "case": "alt-min-max",
+     "watertight": false,
+     "winding_consistent": true,
+     "volume_mm3": -539.0484750000004,
+     "faces": 1180,
+     "front_cover_vs_truth_symdiff_mm2": 39.93727670266857,
+     "truth_area_mm2": 673.8923004464284,
+     "bytes": 217812
+    }
+   ],
+   "stl_edges": {
+    "boundary_edges(used_once)": 0,
+    "nonmanifold_edges(used>2)": 7,
+    "total_edges": 1761
+   },
+   "bow": {
+    "rings_in_path": 2,
+    "x_range": [
+     -24.0,
+     0.0
+    ],
+    "y_range_svg": [
+     -19.35,
+     0.372
+    ],
+    "blade_bottom_y_svg": 0.0,
+    "bow_bottom_above_blade_bottom_mm": -0.372
+   },
+   "shallowest_cut_depth_mm": 0,
+   "deepest_cut_depth_mm": 3.5,
+   "dxf": {
+    "entities": {
+     "LINE": 144
+    },
+    "insunits": null,
+    "bbox_x": [
+     0.0,
+     43.0
+    ],
+    "bbox_y": [
+     0.0,
+     6.35
+    ],
+    "expected_total_length_mm": 67
+   },
+   "px_per_mm_at_1x": {
+    "390x844": 5.200000364388993,
+    "1280x800": 5.305000419047341
+   },
+   "viewbox_use": {
+    "viewBox_mm": [
+     75,
+     37.70000076293945
+    ],
+    "key_bbox_mm": [
+     67,
+     19.73599624633789
+    ],
+    "height_used": 0.5235012160991555,
+    "width_used": 0.8933333333333333,
+    "svg_px": [
+     390,
+     200
+    ]
+   },
+   "visible_fraction_at_3x_phone": 0.373134302210895
+  },
+  "SC4": {
+   "name": "Schlage SC4",
+   "cases": {},
+   "path": {
+    "blade_points_mean": 290.0,
+    "d_chars_mean": 4151.0,
+    "invalid_blade_polygons": 36,
+    "of": 36,
+    "zero_length_edges_total": 0,
+    "tip_top_below_bottom_cases": 36
+   },
+   "tip_at_end": {
+    "top": 2,
+    "bottom": 2.032
+   },
+   "stl": [
+    {
+     "case": "preset",
+     "watertight": false,
+     "winding_consistent": true,
+     "volume_mm3": -549.0819750000003,
+     "faces": 1180,
+     "front_cover_vs_truth_symdiff_mm2": 38.57734910174218,
+     "truth_area_mm2": 669.8783004464285,
+     "bytes": 217866
+    },
+    {
+     "case": "all-min",
+     "watertight": false,
+     "winding_consistent": true,
+     "volume_mm3": -502.9230750000003,
+     "faces": 1180,
+     "front_cover_vs_truth_symdiff_mm2": 30.132915850199712,
+     "truth_area_mm2": 688.3403004464286,
+     "bytes": 217784
+    },
+    {
+     "case": "all-max",
+     "watertight": false,
+     "winding_consistent": true,
+     "volume_mm3": -611.3016750000003,
+     "faces": 1180,
+     "front_cover_vs_truth_symdiff_mm2": 59.768517169918205,
+     "truth_area_mm2": 644.9903004464285,
+     "bytes": 217862
+    },
+    {
+     "case": "alt-min-max",
+     "watertight": false,
+     "winding_consistent": true,
+     "volume_mm3": -557.1129750000003,
+     "faces": 1180,
+     "front_cover_vs_truth_symdiff_mm2": 45.71563077827403,
+     "truth_area_mm2": 666.6683004464286,
+     "bytes": 217828
+    }
+   ],
+   "stl_edges": {
+    "boundary_edges(used_once)": 0,
+    "nonmanifold_edges(used>2)": 7,
+    "total_edges": 1761
+   },
+   "bow": {
+    "rings_in_path": 2,
+    "x_range": [
+     -24.0,
+     0.0
+    ],
+    "y_range_svg": [
+     -19.35,
+     0.372
+    ],
+    "blade_bottom_y_svg": 0.0,
+    "bow_bottom_above_blade_bottom_mm": -0.372
+   },
+   "shallowest_cut_depth_mm": 0,
+   "deepest_cut_depth_mm": 3.5,
+   "dxf": {
+    "entities": {
+     "LINE": 144
+    },
+    "insunits": null,
+    "bbox_x": [
+     0.0,
+     43.0
+    ],
+    "bbox_y": [
+     0.0,
+     6.35
+    ],
+    "expected_total_length_mm": 67
+   },
+   "px_per_mm_at_1x": {
+    "390x844": 5.200000364388993,
+    "1280x800": 5.305000419047341
+   },
+   "viewbox_use": {
+    "viewBox_mm": [
+     75,
+     37.70000076293945
+    ],
+    "key_bbox_mm": [
+     67,
+     19.73599624633789
+    ],
+    "height_used": 0.5235012160991555,
+    "width_used": 0.8933333333333333,
+    "svg_px": [
+     390,
+     200
+    ]
+   },
+   "visible_fraction_at_3x_phone": 0.373134302210895
+  },
+  "KW1": {
+   "name": "Kwikset KW1",
+   "cases": {},
+   "path": {
+    "blade_points_mean": 256.0,
+    "d_chars_mean": 3637.0,
+    "invalid_blade_polygons": 0,
+    "of": 36,
+    "zero_length_edges_total": 0,
+    "tip_top_below_bottom_cases": 0
+   },
+   "tip_at_end": {
+    "top": 2.03,
+    "bottom": 0
+   },
+   "stl": [
+    {
+     "case": "preset",
+     "watertight": false,
+     "winding_consistent": true,
+     "volume_mm3": -432.37030700000014,
+     "faces": 1044,
+     "front_cover_vs_truth_symdiff_mm2": 28.144396144190797,
+     "truth_area_mm2": 561.679284375,
+     "bytes": 192636
+    },
+    {
+     "case": "all-min",
+     "watertight": false,
+     "winding_consistent": true,
+     "volume_mm3": -414.1425770000001,
+     "faces": 1044,
+     "front_cover_vs_truth_symdiff_mm2": 25.95734341766867,
+     "truth_area_mm2": 569.5962843750001,
+     "bytes": 192582
+    },
+    {
+     "case": "all-max",
+     "watertight": false,
+     "winding_consistent": true,
+     "volume_mm3": -471.09938600000015,
+     "faces": 1044,
+     "front_cover_vs_truth_symdiff_mm2": 40.298514461559975,
+     "truth_area_mm2": 544.8372843749995,
+     "bytes": 192646
+    },
+    {
+     "case": "alt-min-max",
+     "watertight": false,
+     "winding_consistent": true,
+     "volume_mm3": -436.9258250000001,
+     "faces": 1044,
+     "front_cover_vs_truth_symdiff_mm2": 31.897228986858444,
+     "truth_area_mm2": 559.6962843749999,
+     "bytes": 192610
+    }
+   ],
+   "stl_edges": {
+    "boundary_edges(used_once)": 0,
+    "nonmanifold_edges(used>2)": 7,
+    "total_edges": 1557
+   },
+   "bow": {
+    "rings_in_path": 2,
+    "x_range": [
+     -22.0,
+     0.0
+    ],
+    "y_range_svg": [
+     -17.8,
+     0.38568749999999996
+    ],
+    "blade_bottom_y_svg": 0.0,
+    "bow_bottom_above_blade_bottom_mm": -0.38568749999999996
+   },
+   "shallowest_cut_depth_mm": 0,
+   "deepest_cut_depth_mm": 2.5,
+   "dxf": {
+    "entities": {
+     "LINE": 127
+    },
+    "insunits": null,
+    "bbox_x": [
+     0.0,
+     38.0
+    ],
+    "bbox_y": [
+     0.0,
+     5.8
+    ],
+    "expected_total_length_mm": 60
+   },
+   "px_per_mm_at_1x": {
+    "390x844": 5.617877197265625,
+    "1280x800": 5.617877197265625
+   },
+   "viewbox_use": {
+    "viewBox_mm": [
+     68,
+     35.599998474121094
+    ],
+    "key_bbox_mm": [
+     60,
+     18.198192596435547
+    ],
+    "height_used": 0.5111852072034346,
+    "width_used": 0.8823529411764706,
+    "svg_px": [
+     382.015625,
+     200
+    ]
+   },
+   "visible_fraction_at_3x_phone": 0.38567360092400965
+  },
+  "WR3": {
+   "name": "Weiser WR3",
+   "cases": {},
+   "path": {
+    "blade_points_mean": 242.0,
+    "d_chars_mean": 3431.0,
+    "invalid_blade_polygons": 0,
+    "of": 36,
+    "zero_length_edges_total": 0,
+    "tip_top_below_bottom_cases": 0
+   },
+   "tip_at_end": {
+    "top": 2.75,
+    "bottom": 0
+   },
+   "stl": [
+    {
+     "case": "preset",
+     "watertight": false,
+     "winding_consistent": true,
+     "volume_mm3": -347.23266600000005,
+     "faces": 988,
+     "front_cover_vs_truth_symdiff_mm2": 24.781916662321137,
+     "truth_area_mm2": 505.09696875000003,
+     "bytes": 182262
+    },
+    {
+     "case": "all-min",
+     "watertight": false,
+     "winding_consistent": true,
+     "volume_mm3": -333.19769999999994,
+     "faces": 988,
+     "front_cover_vs_truth_symdiff_mm2": 23.26895717595668,
+     "truth_area_mm2": 511.4749687500001,
+     "bytes": 182208
+    },
+    {
+     "case": "all-max",
+     "watertight": false,
+     "winding_consistent": true,
+     "volume_mm3": -383.32001400000007,
+     "faces": 988,
+     "front_cover_vs_truth_symdiff_mm2": 35.98688102499821,
+     "truth_area_mm2": 488.69296875000003,
+     "bytes": 182272
+    },
+    {
+     "case": "alt-min-max",
+     "watertight": false,
+     "winding_consistent": true,
+     "volume_mm3": -353.2471799999999,
+     "faces": 988,
+     "front_cover_vs_truth_symdiff_mm2": 28.556968332807564,
+     "truth_area_mm2": 502.3639687500001,
+     "bytes": 182236
+    }
+   ],
+   "stl_edges": {
+    "boundary_edges(used_once)": 0,
+    "nonmanifold_edges(used>2)": 7,
+    "total_edges": 1473
+   },
+   "bow": {
+    "rings_in_path": 2,
+    "x_range": [
+     -21.0,
+     0.0
+    ],
+    "y_range_svg": [
+     -16.5,
+     0.40031249999999996
+    ],
+    "blade_bottom_y_svg": 0.0,
+    "bow_bottom_above_blade_bottom_mm": -0.40031249999999996
+   },
+   "shallowest_cut_depth_mm": 0,
+   "deepest_cut_depth_mm": 2.3,
+   "dxf": {
+    "entities": {
+     "LINE": 120
+    },
+    "insunits": null,
+    "bbox_x": [
+     0.0,
+     36.0
+    ],
+    "bbox_y": [
+     0.0,
+     5.5
+    ],
+    "expected_total_length_mm": 57
+   },
+   "px_per_mm_at_1x": {
+    "390x844": 5.882211785567434,
+    "1280x800": 5.882212320963542
+   },
+   "viewbox_use": {
+    "viewBox_mm": [
+     65,
+     34
+    ],
+    "key_bbox_mm": [
+     57,
+     16.909032821655273
+    ],
+    "height_used": 0.49732449475456686,
+    "width_used": 0.8769230769230769,
+    "svg_px": [
+     382.34375,
+     200
+    ]
+   },
+   "visible_fraction_at_3x_phone": 0.3877286258842547
+  },
+  "Y1": {
+   "name": "Yale Y1",
+   "cases": {},
+   "path": {
+    "blade_points_mean": 270.0,
+    "d_chars_mean": 3890.0,
+    "invalid_blade_polygons": 0,
+    "of": 36,
+    "zero_length_edges_total": 36,
+    "tip_top_below_bottom_cases": 0
+   },
+   "tip_at_end": {
+    "top": 1.8200000000000003,
+    "bottom": 1.8200000000000003
+   },
+   "stl": [
+    {
+     "case": "preset",
+     "watertight": false,
+     "winding_consistent": true,
+     "volume_mm3": -587.758488,
+     "faces": 1100,
+     "front_cover_vs_truth_symdiff_mm2": 35.423508365297444,
+     "truth_area_mm2": 658.2952499999997,
+     "bytes": 203070
+    },
+    {
+     "case": "all-min",
+     "watertight": false,
+     "winding_consistent": true,
+     "volume_mm3": -556.1460240000001,
+     "faces": 1100,
+     "front_cover_vs_truth_symdiff_mm2": 30.70588230198946,
+     "truth_area_mm2": 671.46525,
+     "bytes": 203002
+    },
+    {
+     "case": "all-max",
+     "watertight": false,
+     "winding_consistent": true,
+     "volume_mm3": -650.9730480000002,
+     "faces": 1100,
+     "front_cover_vs_truth_symdiff_mm2": 57.10538589912244,
+     "truth_area_mm2": 631.9792499999994,
+     "bytes": 203070
+    },
+    {
+     "case": "alt-min-max",
+     "watertight": false,
+     "winding_consistent": true,
+     "volume_mm3": -594.0834000000001,
+     "faces": 1100,
+     "front_cover_vs_truth_symdiff_mm2": 41.596979016167815,
+     "truth_area_mm2": 655.6732499999998,
+     "bytes": 203032
+    }
+   ],
+   "stl_edges": {
+    "boundary_edges(used_once)": 0,
+    "nonmanifold_edges(used>2)": 10,
+    "total_edges": 1637
+   },
+   "bow": {
+    "rings_in_path": 2,
+    "x_range": [
+     -23.0,
+     0.0
+    ],
+    "y_range_svg": [
+     -20.5,
+     0.36624999999999996
+    ],
+    "blade_bottom_y_svg": 0.0,
+    "bow_bottom_above_blade_bottom_mm": -0.36624999999999996
+   },
+   "shallowest_cut_depth_mm": 0,
+   "deepest_cut_depth_mm": 3.8,
+   "dxf": {
+    "entities": {
+     "LINE": 134
+    },
+    "insunits": null,
+    "bbox_x": [
+     0.0,
+     40.0
+    ],
+    "bbox_y": [
+     0.0,
+     6.5
+    ],
+    "expected_total_length_mm": 63
+   },
+   "px_per_mm_at_1x": {
+    "390x844": 5.128080822172619,
+    "1280x800": 5.128080822172619
+   },
+   "viewbox_use": {
+    "viewBox_mm": [
+     71,
+     39
+    ],
+    "key_bbox_mm": [
+     63,
+     20.877416610717773
+    ],
+    "height_used": 0.5353183746337891,
+    "width_used": 0.8873239436619719,
+    "svg_px": [
+     364.09375,
+     200
+    ]
+   },
+   "visible_fraction_at_3x_phone": 0.40239070620143264
+  },
+  "M3": {
+   "name": "Master No.3",
+   "cases": {},
+   "path": {
+    "blade_points_mean": 230.0,
+    "d_chars_mean": 3241.0,
+    "invalid_blade_polygons": 0,
+    "of": 36,
+    "zero_length_edges_total": 0,
+    "tip_top_below_bottom_cases": 0
+   },
+   "tip_at_end": {
+    "top": 2.6,
+    "bottom": 0
+   },
+   "stl": [
+    {
+     "case": "preset",
+     "watertight": false,
+     "winding_consistent": true,
+     "volume_mm3": -335.736513,
+     "faces": 940,
+     "front_cover_vs_truth_symdiff_mm2": 25.22370134854583,
+     "truth_area_mm2": 459.93151562499963,
+     "bytes": 173378
+    },
+    {
+     "case": "all-min",
+     "watertight": false,
+     "winding_consistent": true,
+     "volume_mm3": -315.35532000000006,
+     "faces": 940,
+     "front_cover_vs_truth_symdiff_mm2": 22.09367543090156,
+     "truth_area_mm2": 469.6365156249998,
+     "bytes": 173324
+    },
+    {
+     "case": "all-max",
+     "watertight": false,
+     "winding_consistent": true,
+     "volume_mm3": -364.269906,
+     "faces": 940,
+     "front_cover_vs_truth_symdiff_mm2": 35.73285102300137,
+     "truth_area_mm2": 446.3655156249997,
+     "bytes": 173378
+    },
+    {
+     "case": "alt-min-max",
+     "watertight": false,
+     "winding_consistent": true,
+     "volume_mm3": -339.814692,
+     "faces": 940,
+     "front_cover_vs_truth_symdiff_mm2": 29.581458929449603,
+     "truth_area_mm2": 457.9965156249997,
+     "bytes": 173354
+    }
+   ],
+   "stl_edges": {
+    "boundary_edges(used_once)": 0,
+    "nonmanifold_edges(used>2)": 7,
+    "total_edges": 1401
+   },
+   "bow": {
+    "rings_in_path": 2,
+    "x_range": [
+     -20.0,
+     0.0
+    ],
+    "y_range_svg": [
+     -16.2,
+     0.4036875
+    ],
+    "blade_bottom_y_svg": 0.0,
+    "bow_bottom_above_blade_bottom_mm": -0.4036875
+   },
+   "shallowest_cut_depth_mm": 0,
+   "deepest_cut_depth_mm": 2.8,
+   "dxf": {
+    "entities": {
+     "LINE": 114
+    },
+    "insunits": null,
+    "bbox_x": [
+     0.0,
+     34.0
+    ],
+    "bbox_y": [
+     0.0,
+     5.2
+    ],
+    "expected_total_length_mm": 54
+   },
+   "px_per_mm_at_1x": {
+    "390x844": 5.987903736255787,
+    "1280x800": 5.987903736255787
+   },
+   "viewbox_use": {
+    "viewBox_mm": [
+     62,
+     33.400001525878906
+    ],
+    "key_bbox_mm": [
+     54,
+     16.61161994934082
+    ],
+    "height_used": 0.49735386797721687,
+    "width_used": 0.8709677419354839,
+    "svg_px": [
+     371.25,
+     200
+    ]
+   },
+   "visible_fraction_at_3x_phone": 0.4020451085128416
+  },
+  "BEST": {
+   "name": "Best A",
+   "cases": {},
+   "path": {
+    "blade_points_mean": 304.0,
+    "d_chars_mean": 4256.0,
+    "invalid_blade_polygons": 0,
+    "of": 36,
+    "zero_length_edges_total": 72,
+    "tip_top_below_bottom_cases": 0
+   },
+   "tip_at_end": {
+    "top": 2.72,
+    "bottom": 0
+   },
+   "stl": [
+    {
+     "case": "preset",
+     "watertight": false,
+     "winding_consistent": true,
+     "volume_mm3": -717.1483480000002,
+     "faces": 1236,
+     "front_cover_vs_truth_symdiff_mm2": 38.85634460432807,
+     "truth_area_mm2": 780.1765718750005,
+     "bytes": 228158
+    },
+    {
+     "case": "all-min",
+     "watertight": false,
+     "winding_consistent": true,
+     "volume_mm3": -686.3189200000002,
+     "faces": 1236,
+     "front_cover_vs_truth_symdiff_mm2": 34.55897986647001,
+     "truth_area_mm2": 791.1865718750001,
+     "bytes": 228102
+    },
+    {
+     "case": "all-max",
+     "watertight": false,
+     "winding_consistent": true,
+     "volume_mm3": -797.2987120000001,
+     "faces": 1236,
+     "front_cover_vs_truth_symdiff_mm2": 60.372973789344194,
+     "truth_area_mm2": 751.5505718750001,
+     "bytes": 228180
+    },
+    {
+     "case": "alt-min-max",
+     "watertight": false,
+     "winding_consistent": true,
+     "volume_mm3": -741.8095720000001,
+     "faces": 1236,
+     "front_cover_vs_truth_symdiff_mm2": 48.17876278699894,
+     "truth_area_mm2": 771.3655718750002,
+     "bytes": 228146
+    }
+   ],
+   "stl_edges": {
+    "boundary_edges(used_once)": 0,
+    "nonmanifold_edges(used>2)": 10,
+    "total_edges": 1837
+   },
+   "bow": {
+    "rings_in_path": 2,
+    "x_range": [
+     -26.0,
+     0.0
+    ],
+    "y_range_svg": [
+     -20.8,
+     0.36475
+    ],
+    "blade_bottom_y_svg": 0.0,
+    "bow_bottom_above_blade_bottom_mm": -0.36475
+   },
+   "shallowest_cut_depth_mm": 0,
+   "deepest_cut_depth_mm": 3.2,
+   "dxf": {
+    "entities": {
+     "LINE": 151
+    },
+    "insunits": null,
+    "bbox_x": [
+     0.0,
+     45.0
+    ],
+    "bbox_y": [
+     0.0,
+     6.8
+    ],
+    "expected_total_length_mm": 71
+   },
+   "px_per_mm_at_1x": {
+    "390x844": 4.936709121919014,
+    "1280x800": 5.050434381189481
+   },
+   "viewbox_use": {
+    "viewBox_mm": [
+     79,
+     39.599998474121094
+    ],
+    "key_bbox_mm": [
+     71,
+     21.175241470336914
+    ],
+    "height_used": 0.5347283405623133,
+    "width_used": 0.8987341772151899,
+    "svg_px": [
+     390,
+     200
+    ]
+   },
+   "visible_fraction_at_3x_phone": 0.37089199915858334
+  },
+  "AR1": {
+   "name": "Arrow AR1",
+   "cases": {},
+   "path": {
+    "blade_points_mean": 270.0,
+    "d_chars_mean": 3789.0,
+    "invalid_blade_polygons": 0,
+    "of": 36,
+    "zero_length_edges_total": 0,
+    "tip_top_below_bottom_cases": 0
+   },
+   "tip_at_end": {
+    "top": 2,
+    "bottom": 1.92
+   },
+   "stl": [
+    {
+     "case": "preset",
+     "watertight": false,
+     "winding_consistent": true,
+     "volume_mm3": -418.73892,
+     "faces": 1100,
+     "front_cover_vs_truth_symdiff_mm2": 28.435028869317414,
+     "truth_area_mm2": 583.5229843749997,
+     "bytes": 203052
+    },
+    {
+     "case": "all-min",
+     "watertight": false,
+     "winding_consistent": true,
+     "volume_mm3": -396.94005599999997,
+     "faces": 1100,
+     "front_cover_vs_truth_symdiff_mm2": 26.112967387239966,
+     "truth_area_mm2": 592.6009843749998,
+     "bytes": 202984
+    },
+    {
+     "case": "all-max",
+     "watertight": false,
+     "winding_consistent": true,
+     "volume_mm3": -478.68295199999994,
+     "faces": 1100,
+     "front_cover_vs_truth_symdiff_mm2": 48.346334991692615,
+     "truth_area_mm2": 558.541984375,
+     "bytes": 203052
+    },
+    {
+     "case": "alt-min-max",
+     "watertight": false,
+     "winding_consistent": true,
+     "volume_mm3": -429.64115999999996,
+     "faces": 1100,
+     "front_cover_vs_truth_symdiff_mm2": 35.2931892400439,
+     "truth_area_mm2": 578.9689843749999,
+     "bytes": 203014
+    }
+   ],
+   "stl_edges": {
+    "boundary_edges(used_once)": 0,
+    "nonmanifold_edges(used>2)": 7,
+    "total_edges": 1641
+   },
+   "bow": {
+    "rings_in_path": 2,
+    "x_range": [
+     -22.0,
+     0.0
+    ],
+    "y_range_svg": [
+     -18.0,
+     0.3834375
+    ],
+    "blade_bottom_y_svg": 0.0,
+    "bow_bottom_above_blade_bottom_mm": -0.3834375
+   },
+   "shallowest_cut_depth_mm": 0,
+   "deepest_cut_depth_mm": 3.3,
+   "dxf": {
+    "entities": {
+     "LINE": 134
+    },
+    "insunits": null,
+    "bbox_x": [
+     0.0,
+     40.0
+    ],
+    "bbox_y": [
+     0.0,
+     6.0
+    ],
+    "expected_total_length_mm": 62
+   },
+   "px_per_mm_at_1x": {
+    "390x844": 5.555356917842742,
+    "1280x800": 5.555356917842742
+   },
+   "viewbox_use": {
+    "viewBox_mm": [
+     70,
+     36
+    ],
+    "key_bbox_mm": [
+     62,
+     18.396575927734375
+    ],
+    "height_used": 0.5110159979926215,
+    "width_used": 0.8857142857142857,
+    "svg_px": [
+     388.875,
+     200
+    ]
+   },
+   "visible_fraction_at_3x_phone": 0.3774328498703567
+  }
+ },
+ "errors": [],
+ "render_ms_per_input": 0.6476666666668219,
+ "buildPath_ms": 0.1284000000001397,
+ "file_bytes": 39842
+}

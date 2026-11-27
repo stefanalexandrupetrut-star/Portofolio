@@ -1,0 +1,319 @@
+[
+  {
+    "slug": "watch-dogs-legion",
+    "title": "Watch Dogs: Legion",
+    "subtitle": "Ubisoft Bucharest",
+    "icon": "🎮",
+    "category": "ui-ux",
+    "description": "UI/UX design work on Watch Dogs: Legion at Ubisoft Bucharest — covering the Spiderbot Arena game mode end to end, the in-game photography suite, and the activity icon system used across London's map.",
+    "textSections": [],
+    "tags": [
+      "AAA",
+      "Ubisoft",
+      "UI/UX Design",
+      "Console & PC"
+    ],
+    "link": "https://www.behance.net/gallery/148449545/WATCH-DOGS",
+    "linkLabel": "View on Behance",
+    "videos": [],
+    "images": [
+      "/images/projects/watch-dogs-legion/overview/header.jpg",
+      "/images/projects/watch-dogs-legion/overview/logo-styleguide.png",
+      "/images/projects/watch-dogs-legion/overview/fonts.jpg",
+      "/images/projects/watch-dogs-legion/overview/ingame-context.jpg"
+    ],
+    "modules": [
+      {
+        "title": "Spiderbot Arena",
+        "description": "A competitive mode where players pilot a mechanical spider drone. I designed the flow end to end: finding and entering a match through the Online menu's Game Modes tab, the in-match HUD (a position/timer module that pulses in the final 15 seconds, plus a weapon/power-up module), the post-match flow (a 5-second “You Placed 1st” celebration into an 8-player scoreboard, then a reward screen for currency, items, and skins), and the loading screens shown between stages. For the full breakdown — research, iteration, and outcome — see the full case study below.",
+        "images": [
+          "/images/projects/watch-dogs-legion/spiderbot-cover.jpg"
+        ],
+        "videos": [
+          "https://youtu.be/aJf7G3olqSI",
+          "https://youtu.be/99DhGUDBAko",
+          "https://youtu.be/YkjBbW5A-io"
+        ],
+        "link": "/case-studies/spiderbot-arena.html",
+        "linkLabel": "View Full Case Study",
+        "loadingScreenVideos": [
+          "https://youtu.be/Bsf4DjED1ns",
+          "https://youtu.be/oaerrDxn-tE",
+          "https://youtu.be/iPUKUIgQRbY",
+          "https://youtu.be/neQ4IDNJC34",
+          "https://youtu.be/qKyDmS8G464",
+          "https://youtu.be/F-kJCn3zlmY",
+          "https://youtu.be/N4vcrPpZ_Rs",
+          "https://youtu.be/j_f7NA7IMzg"
+        ]
+      },
+      {
+        "title": "Photography System — Mode, Camera & Booth",
+        "description": "Watch Dogs: Legion's photography tools share one underlying toolkit — colour filters, contrast/saturation/exposure adjustments, depth of field, and stickers — deployed across three contexts. Photo Mode is a full pause-menu mode with a free camera (orbit, tilt, pan, focus) for framing shots of the open world. The Photo Camera is a real-time camera opened with a quick DPAD shortcut, switchable between street photography and a selfie mode that detects nearby landmarks. The Photo Booth is a group-photo cabin hidden inside a Hackerspace location, with its own pan/tilt/randomize controls so a full squad can pose together, masks on or off.",
+        "images": [
+          "/images/projects/watch-dogs-legion/photography/camera-access.jpg",
+          "/images/projects/watch-dogs-legion/photography/booth-hackerspace.jpg",
+          "/images/projects/watch-dogs-legion/photography/booth-main.jpg",
+          "/images/projects/watch-dogs-legion/photography/mode-access.jpg"
+        ],
+        "videos": []
+      },
+      {
+        "title": "Activity Icon System",
+        "description": "An icon system for the online activities shown on the map and HUD — Tactical Ops, Spider Arena, Scavenger Hunt, Co-op Mode, and Dynamic Events — each designed across five states (normal, locked, unavailable, lobby, load screen) so players can read activity status at a glance. Includes the Spider Arena map icon and its variations, explored through several concepts before landing on a silhouette that reflects a real spider's attack stance.",
+        "images": [
+          "/images/projects/watch-dogs-legion/icons/activity-icons-sheet.jpg",
+          "/images/projects/watch-dogs-legion/icons/spider-icon-variations.jpg",
+          "/images/projects/watch-dogs-legion/icons/spider-icon-in-location.jpg",
+          "/images/projects/watch-dogs-legion/icons/spider-arena-icon.png",
+          "/images/projects/watch-dogs-legion/icons/dedsec-logo.png",
+          "/images/projects/watch-dogs-legion/icons/icons-on-map.jpg"
+        ],
+        "videos": []
+      }
+    ],
+    "hubUrl": "/case-studies/watch-dogs-legion-hub.html"
+  },
+  {
+    "slug": "military-ops",
+    "title": "Military Ops",
+    "subtitle": "Unlaunched Ghost Recon Project",
+    "icon": "🎖️",
+    "category": "ui-ux",
+    "description": "UI/UX design for an unlaunched, Ghost Recon–branded military live-service shooter — home & landing, player identity, post-match debrief, weekly progression, a full player-reporting and moderation system, the UI kit, and the animated TAC-OS tactical tablet.",
+    "textSections": [],
+    "tags": [
+      "UI/UX Design",
+      "HUD",
+      "Moderation UX",
+      "Motion",
+      "Unlaunched"
+    ],
+    "link": "/case-studies/military-ops.html",
+    "linkLabel": "View Full Case Study",
+    "videos": [
+      "https://youtu.be/Mz2lsN-kyKA",
+      "https://youtu.be/hLrcLpuTlr0",
+      "https://youtu.be/DtS5FaCVM48",
+      "https://youtu.be/2vCRcH3tsLE",
+      "https://youtu.be/j2gm-GKt9ok",
+      "https://youtu.be/C5woLpF1Glo"
+    ],
+    "images": [
+      "/images/projects/military-ops/landing.jpg",
+      "/images/projects/military-ops/player-cards.jpg",
+      "/images/projects/military-ops/finish-categories.jpg",
+      "/images/projects/military-ops/week-detail.jpg"
+    ],
+    "hubUrl": "/case-studies/military-ops-detail.html"
+  },
+  {
+    "slug": "urbanstrife",
+    "title": "Urban Strife",
+    "subtitle": "MicroProse × White Pond Games",
+    "icon": "🏙️",
+    "category": "ui-ux",
+    "description": "Full UI redesign of an isometric, Jagged Alliance-style tactical survival RPG — a diegetic, hardware-inspired interface of CRT readouts, ballistic calculators and field journals, from the combat HUD to inventory, shelter, crafting, trade and map. Done remotely, reworking every HUD, menu and widget while keeping the retro, old-school turn-based, post-apocalyptic identity at the heart of the game.",
+    "textSections": [],
+    "tags": [
+      "UI/UX Design",
+      "HUD",
+      "Diegetic UI",
+      "Icon Design",
+      "PC / Steam"
+    ],
+    "link": "/case-studies/urbanstrife.html",
+    "linkLabel": "View Full Case Study",
+    "videos": [
+      "https://www.youtube.com/watch?v=RpPt2ijSDLc"
+    ],
+    "images": [
+      "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/710230/header.jpg",
+      "/images/projects/urbanstrife/hero-journal.jpg",
+      "/images/projects/urbanstrife/base-supplies.jpg",
+      "/images/projects/urbanstrife/clipboard.jpg",
+      "/images/projects/urbanstrife/icon-sheet.jpg",
+      "/images/projects/urbanstrife/combat-hud.jpg",
+      "/images/projects/urbanstrife/ballistic-shell.jpg",
+      "/images/projects/urbanstrife/turn-widgets.jpg",
+      "/images/projects/urbanstrife/tutorial-controls.jpg",
+      "/images/projects/urbanstrife/container-loot.jpg",
+      "/images/projects/urbanstrife/weapon-attachments.jpg",
+      "/images/projects/urbanstrife/trader.jpg",
+      "/images/projects/urbanstrife/recycling-order.jpg",
+      "/images/projects/urbanstrife/sheriff-stash.jpg",
+      "/images/projects/urbanstrife/shelter-plan.jpg",
+      "/images/projects/urbanstrife/shelter-dump.jpg",
+      "/images/projects/urbanstrife/industry-order.jpg",
+      "/images/projects/urbanstrife/craft-disassembly.jpg",
+      "/images/projects/urbanstrife/map-notebook.jpg",
+      "/images/projects/urbanstrife/map-county.jpg",
+      "/images/projects/urbanstrife/map-encounter.jpg",
+      "/images/projects/urbanstrife/main-menu.jpg",
+      "/images/projects/urbanstrife/intro-comic.jpg",
+      "/images/projects/urbanstrife/loading-adams-villa.jpg",
+      "/images/projects/urbanstrife/loading-california-motel.jpg",
+      "/images/projects/urbanstrife/tutorial-popup.jpg"
+    ],
+    "hubUrl": "/case-studies/urbanstrife-detail.html"
+  },
+  {
+    "slug": "isometric-islands-project",
+    "title": "Isometric Islands Project",
+    "subtitle": "UI/UX Design Concept",
+    "icon": "🏝️",
+    "category": "ui-ux",
+    "description": "A UI/UX exploration built around an isometric island setting. See the full case study on Behance for the complete visual breakdown.",
+    "textSections": [],
+    "tags": [
+      "UI/UX Design",
+      "Isometric",
+      "Behance"
+    ],
+    "link": "https://www.behance.net/gallery/243391263/Isometric_Islands-Project",
+    "linkLabel": "View on Behance",
+    "videos": [],
+    "images": [
+      "/images/projects/isometric-islands-project/wip.webp"
+    ],
+    "wip": true
+  },
+  {
+    "slug": "space-adventure",
+    "title": "Space Adventure",
+    "subtitle": "UI/UX Design Concept",
+    "icon": "🚀",
+    "category": "ui-ux",
+    "description": "A UI/UX design concept for a space-themed game. See the full case study on Behance for the complete visual breakdown.",
+    "textSections": [],
+    "tags": [
+      "UI/UX Design",
+      "Sci-Fi",
+      "Behance"
+    ],
+    "link": "https://www.behance.net/gallery/190019131/Space",
+    "linkLabel": "View on Behance",
+    "videos": [],
+    "images": [
+      "/images/projects/space-adventure/wip.webp"
+    ],
+    "wip": true
+  },
+  {
+    "slug": "bucharest-landmarks-paper-cup",
+    "title": "The Bucharest Landmarks Paper Cup",
+    "subtitle": "Packaging / Concept Design",
+    "icon": "☕",
+    "category": "personal",
+    "description": "A paper cup printed with four ink drawings of Bucharest landmarks, plus a kraft sleeve you turn to reveal each one.",
+    "textSections": [],
+    "tags": [
+      "Packaging",
+      "Illustration",
+      "Concept",
+      "Bucharest"
+    ],
+    "link": "/case-studies/bucharest-landmarks-paper-cup.html",
+    "linkLabel": "View Concept Page",
+    "videos": [],
+    "images": [
+      "/images/projects/bucharest-landmarks-paper-cup/cover.jpg"
+    ],
+    "hubUrl": "/case-studies/bucharest-landmarks-paper-cup.html"
+  },
+  {
+    "slug": "1keyforge-pro",
+    "title": "1KeyForge Pro",
+    "subtitle": "Independent Tool",
+    "icon": "🔑",
+    "category": "personal",
+    "description": "A single-file mobile web app that turns a bitting code into a true-scale key and exports it as SVG, STL or DXF. Eight key profiles, one slider per pin, factory presets and saved cuts, and a geometry engine that derives the preview and every export from one closed outline. The app itself is private to its developer: this project shows its four tabs, the full case study and the geometry audit behind it.",
+    "textSections": [],
+    "tags": [
+      "Web App",
+      "SVG",
+      "Geometry",
+      "3D Print & CNC Export",
+      "Product Design"
+    ],
+    "link": "/case-studies/1keyforge-pro.html",
+    "linkLabel": "View Full Case Study",
+    "videos": [],
+    "images": [
+      "/images/projects/1keyforge-pro/cover.jpg",
+      "/images/projects/1keyforge-pro/screen-bitting.jpg",
+      "/images/projects/1keyforge-pro/screen-keytype.jpg",
+      "/images/projects/1keyforge-pro/screen-presets.jpg",
+      "/images/projects/1keyforge-pro/screen-export.jpg",
+      "/images/projects/1keyforge-pro/key-profiles.jpg",
+      "/images/projects/1keyforge-pro/export-3d-dxf.jpg",
+      "/images/projects/1keyforge-pro/before-after.jpg",
+      "/images/projects/1keyforge-pro/detail-crops.jpg",
+      "/images/projects/1keyforge-pro/stl-triangulation.jpg",
+      "/images/projects/1keyforge-pro/metrics.jpg"
+    ],
+    "hubUrl": "/case-studies/1keyforge-pro-detail.html"
+  },
+  {
+    "slug": "beekeepers-journey",
+    "title": "The Beekeeper's Journey",
+    "subtitle": "Independent Game",
+    "icon": "🐝",
+    "category": "personal",
+    "description": "A cozy simulation game built as a single self-contained HTML5/Canvas file — vanilla JS, no frameworks. Features a living economy, NPCs, a full day/night weather cycle, foraging with procedural trees and flowers, four hive-maintenance minigames, fishing, a gear shop, and van paint customization.",
+    "textSections": [
+      {
+        "heading": "Behind the Build",
+        "body": "Every system — economy, weather, NPC behavior, minigames — runs in one dependency-free HTML file, built and tuned incrementally over many passes."
+      }
+    ],
+    "tags": [
+      "Game Design",
+      "HTML5 / Canvas",
+      "Simulation",
+      "Cozy Aesthetic"
+    ],
+    "link": "",
+    "linkLabel": "",
+    "videos": [],
+    "images": [
+      "/images/projects/beekeepers-journey/wip.webp"
+    ],
+    "wip": true
+  },
+  {
+    "slug": "chibichum",
+    "title": "ChibiChum",
+    "subtitle": "Independent Game",
+    "icon": "🐾",
+    "category": "personal",
+    "description": "A retro, cozy virtual pet that lives on your Windows desktop taskbar, web browser, or mobile device. ChibiChum is an 8-bit, Tamagotchi-style care game built to sit beside everyday work: a pet that roams its room, asks for care through gentle nudges, and rewards a few seconds of attention at a time. The case study covers the product vision, the game systems, the shared core engine behind the Windows, web and mobile builds, and the lessons learned along the way. ChibiChum is already available on itch.io, where it can be downloaded and played.",
+    "textSections": [],
+    "tags": [
+      "Pixel Art",
+      "Game Design",
+      "Desktop Companion",
+      "TypeScript",
+      "HTML5 Canvas",
+      "Tauri / Electron",
+      "Cross-Platform"
+    ],
+    "link": "/case-studies/chibichum.html",
+    "linkLabel": "View Full Case Study",
+    "videos": [],
+    "images": [
+      "/images/projects/chibichum/main_room.png",
+      "/images/projects/chibichum/minigames.png",
+      "/images/projects/chibichum/shop_customization.png",
+      "/images/projects/chibichum/desktop_widget.png"
+    ],
+    "badge": "On itch.io",
+    "extraLinks": [
+      {
+        "label": "Download & Play on itch.io",
+        "url": "https://itch.io/search?q=CHIBICHUM"
+      }
+    ],
+    "hubUrl": "/case-studies/chibichum-detail.html"
+  }
+]

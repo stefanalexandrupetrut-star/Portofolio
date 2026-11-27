@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Urban Strife — Alex Stefan</title>
+<meta name="description" content="Urban Strife: a full UI redesign of an isometric, Jagged Alliance-style tactical survival RPG, for MicroProse and White Pond Games. Watch the video, browse the screens, read the case study.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://shared.fastly.steamstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&family=Special+Elite&display=swap" rel="stylesheet">
+<script>
+/* The hero image lists backup addresses in data-fallbacks, separated by |. If the image fails to load,
+   the next address is tried, so the page never shows a broken picture. */
+function usFallback(el){var l=(el.getAttribute('data-fallbacks')||'').split('|').filter(Boolean),n=l.shift();if(n){el.setAttribute('data-fallbacks',l.join('|'));if(n.charAt(0)==='/'){el.alt=el.getAttribute('data-alt-local')||'';}el.src=n;}else{el.onerror=null;}}
+</script>
+<style>
+:root{--ink:#0b0a0c;--panel:#171215;--line:#332a2d;--line-soft:#231c1f;--paper:#f3efe9;--mute:#a49a9d;--mute-dim:#857b7e;--red:#e8232f;--red-dim:#5c1116;--mono:'Special Elite','Courier New',ui-monospace,monospace;--disp:'Barlow Condensed','Arial Narrow',Arial,sans-serif;--body:'Barlow',system-ui,-apple-system,'Segoe UI',sans-serif}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--ink);scroll-behavior:smooth}
+body{background:var(--ink);color:var(--paper);font-family:var(--body);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%;height:auto}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit}
+::selection{background:var(--red);color:#fff}
+[data-scramble]{overflow-wrap:anywhere}
+:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+
+/* ---- shared chrome (same as the other project pages) ---- */
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 40px;background:rgba(11,10,12,.88);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line-soft)}
+.topbar-brand{font-family:var(--disp);font-weight:700;font-size:17px;letter-spacing:3px;text-transform:uppercase;white-space:nowrap}
+.topbar-brand span{color:var(--red)}
+.back-link{font-family:var(--mono);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mute);border:1px solid var(--line);padding:9px 16px;border-radius:3px;transition:all .2s;white-space:nowrap}
+.back-link:hover{color:var(--paper);border-color:var(--red)}
+@media(max-width:560px){.topbar{padding:14px 16px}}
+
+.detail-hero{width:100%;aspect-ratio:21/9;position:relative;overflow:hidden;background:var(--panel)}
+.detail-hero img{width:100%;height:100%;object-fit:cover;object-position:center}
+.detail-hero::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,10,12,.18) 0%,transparent 38%,var(--ink) 100%);pointer-events:none}
+/* Title and kicker share one bottom-anchored box, so a kicker that wraps onto two lines pushes the title up instead of colliding with it. */
+.detail-text{position:absolute;left:40px;right:40px;bottom:24px;z-index:2;display:flex;flex-direction:column;gap:10px}
+.detail-h1{font-family:var(--disp);font-weight:700;font-size:clamp(40px,6.6vw,80px);line-height:1;letter-spacing:1px;text-transform:uppercase;min-height:1em}
+.detail-kicker{font-family:var(--mono);font-size:12px;letter-spacing:3px;line-height:1.5;text-transform:uppercase;color:var(--red)}
+
+.section{max-width:1000px;margin:0 auto;padding:72px 24px 0}
+.section-label{font-family:var(--mono);font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--red);text-align:center;margin-bottom:20px}
+.section-body{font-size:16px;line-height:1.8;color:var(--mute);text-align:center;max-width:740px;margin:0 auto}
+.small-tag-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:22px}
+.small-tag{font-family:var(--mono);font-size:12px;color:var(--mute);border:1px solid var(--line);border-radius:3px;padding:6px 12px}
+
+/* ---- at a glance ---- */
+.facts{display:grid;grid-template-columns:repeat(4,1fr);max-width:920px;margin:34px auto 0;border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft)}
+.facts>div{padding:18px 16px;text-align:center}
+.facts>div+div{border-left:1px solid var(--line-soft)}
+.facts dt{font-family:var(--mono);font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:var(--mute-dim);margin-bottom:8px}
+.facts dd{font-size:14.5px;line-height:1.5;color:var(--paper)}
+@media(max-width:820px){.facts{grid-template-columns:1fr 1fr}.facts>div:nth-child(3){border-left:0}.facts>div:nth-child(n+3){border-top:1px solid var(--line-soft)}}
+@media(max-width:480px){.facts{grid-template-columns:1fr}.facts>div+div{border-left:0;border-top:1px solid var(--line-soft)}}
+
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;padding:12px 20px;border-radius:4px;border:1px solid var(--line);background:transparent;color:var(--paper);cursor:pointer;transition:all .2s;line-height:1.2}
+.btn:hover{border-color:var(--red);color:var(--red)}
+.btn.primary{background:var(--red);border-color:var(--red);color:#fff}
+.btn.primary:hover{background:#ff3541;border-color:#ff3541;color:#fff}
+.btn svg{width:14px;height:14px;flex:none}
+.section .actions{justify-content:center;margin-top:26px}
+
+/* ---- video: one video is centred; two or more lay out in a grid ---- */
+.videos{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:24px 20px;max-width:1000px;margin:28px auto 0;padding:0 24px}
+.video:only-child{grid-column:1/-1;width:100%;max-width:880px;justify-self:center}
+.trailer-frame{aspect-ratio:16/9;background:#000;border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+.trailer-frame iframe{width:100%;height:100%;border:0;display:block}
+.video-note{margin-top:14px;text-align:center;font-family:var(--mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase}
+.video-note a{color:var(--mute);border-bottom:1px solid var(--line);padding-bottom:2px;transition:all .2s}
+.video-note a:hover{color:var(--red);border-color:var(--red)}
+
+/* ---- case-study card ---- */
+.study-card{max-width:1000px;margin:0 auto;padding:0 24px}
+.study-card-inner{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden;display:grid;grid-template-columns:320px 1fr;transition:border-color .2s}
+.study-card-inner:hover{border-color:var(--red)}
+.study-card-img{background:#000}
+.study-card-img img{width:100%;height:100%;object-fit:cover}
+.study-card-body{padding:36px;display:flex;flex-direction:column;justify-content:center}
+.study-card-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--red);margin-bottom:10px}
+.study-card-title{font-family:var(--disp);font-weight:700;font-size:30px;line-height:1.05;text-transform:uppercase;margin-bottom:12px}
+.study-card-desc{font-size:14.5px;color:var(--mute);line-height:1.7;margin-bottom:22px}
+.study-card-btn{display:inline-flex;background:var(--red);color:#fff;font-family:var(--mono);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;padding:12px 22px;border-radius:4px;width:fit-content}
+
+/* ---- screens carousel: every item is a 16:9 frame and each screen is shown whole (tall and square ones get side bars) ---- */
+.carousel-wrap{max-width:1000px;margin:28px auto 0;padding:0 24px}
+.carousel-track{display:flex;overflow-x:auto;gap:12px;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:2px}
+.carousel-track::-webkit-scrollbar{display:none}
+.carousel-item{flex:0 0 78%;aspect-ratio:16/9;scroll-snap-align:start;border-radius:5px;overflow:hidden;background:var(--panel);border:1px solid var(--line);cursor:zoom-in;padding:0;display:block;transition:border-color .2s}
+.carousel-item:hover{border-color:var(--red)}
+.carousel-item img{width:100%;height:100%;object-fit:contain}
+.carousel-nav{display:flex;justify-content:center;gap:12px;margin-top:18px}
+.carousel-btn{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--paper);cursor:pointer;font-size:16px;transition:all .2s}
+.carousel-btn:hover{border-color:var(--red);color:var(--red)}
+@media(min-width:640px){.carousel-item{flex-basis:48%}}
+
+.conclusion{max-width:680px;margin:64px auto 0;padding:32px 24px 28px;text-align:center;border-top:1px solid var(--line-soft)}
+.conclusion-label{font-family:var(--mono);font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--mute-dim);margin:32px 0 16px}
+.conclusion-body{font-size:16px;line-height:1.8;color:var(--mute)}
+.conclusion-body+.conclusion-body{margin-top:14px}
+.credit{max-width:680px;margin:0 auto;padding:0 24px 96px;text-align:center;font-family:var(--mono);font-size:11px;letter-spacing:1px;line-height:1.7;color:var(--mute-dim);text-wrap:balance}
+
+/* ---- lightbox: fixed 16:9 frame, scales to any device ---- */
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.985);z-index:999;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px}
+.lightbox.open{display:flex}
+.lb-frame{position:relative;width:min(92vw,150vh);aspect-ratio:16/9;background:#000;border-radius:6px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.lb-frame img{width:100%;height:100%;object-fit:contain;background:#000;-webkit-user-drag:none;user-select:none}
+.lb-cap{font-family:var(--mono);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mute);text-align:center;max-width:92vw;line-height:1.6}
+.lb-btn{position:absolute;background:rgba(11,10,12,.7);border:1px solid var(--line);color:#fff;cursor:pointer;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:20px;line-height:1;transition:all .2s;z-index:2}
+.lb-btn:hover{border-color:var(--red);color:var(--red)}
+.lb-close{top:18px;right:20px;font-size:26px}
+.lb-prev{left:16px;top:50%;margin-top:-22px}
+.lb-next{right:16px;top:50%;margin-top:-22px}
+@media(max-width:700px){.lb-prev,.lb-next{top:auto;bottom:18px;margin:0}.lb-prev{left:20px}.lb-next{right:20px}}
+
+@media(max-width:700px){.study-card-inner{grid-template-columns:1fr}.study-card-img{aspect-ratio:16/9}.study-card-body{padding:26px 22px}.detail-hero{aspect-ratio:16/10}.detail-text{left:20px;right:20px;bottom:18px;gap:8px}.detail-kicker{font-size:11px;letter-spacing:2px}.section{padding-top:56px}}
+/* very narrow phones: keep the top bar on one line */
+@media(max-width:400px){.topbar-brand{font-size:15px;letter-spacing:2px}.back-link{font-size:11px;letter-spacing:1px;padding:8px 11px}}
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="/work" class="topbar-brand">ALEX <span>STEFAN</span></a>
+  <a href="/work" class="back-link">&larr; Back to Work</a>
+</nav>
+
+<header class="detail-hero">
+  <img id="hero-img" src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/710230/library_hero.jpg" data-fallbacks="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/710230/page_bg_raw.jpg|/images/projects/urbanstrife/hero-journal.jpg" onerror="usFallback(this)" data-alt-local="Shelter development plan screen styled as a worn field journal with blueprint upgrade icons, census and stockpile tables" alt="Official Urban Strife key art, from the game's Steam page" fetchpriority="high" decoding="async">
+  <div class="detail-text">
+    <h1 class="detail-h1" data-scramble="URBAN STRIFE">URBAN STRIFE</h1>
+    <div class="detail-kicker">UI/UX Design &middot; MicroProse &times; White Pond Games</div>
+  </div>
+</header>
+
+<main>
+
+<section class="section">
+  <div class="section-label">Overview</div>
+  <p class="section-body">Full UI redesign of an isometric, Jagged Alliance-style tactical survival RPG — a diegetic, hardware-inspired interface of CRT readouts, ballistic calculators and field journals, from the combat HUD to inventory, shelter, crafting, trade and map. Done remotely, reworking every HUD, menu and widget while keeping the retro, old-school turn-based, post-apocalyptic identity at the heart of the game.</p>
+  <div class="small-tag-row"><span class="small-tag">UI/UX Design</span><span class="small-tag">HUD</span><span class="small-tag">Diegetic UI</span><span class="small-tag">Icon Design</span><span class="small-tag">PC / Steam</span></div>
+  <dl class="facts"><div><dt>Role</dt><dd>UI/UX Designer &amp; UI Artist (remote)</dd></div><div><dt>Timeline</dt><dd>Dec 2022 – Feb 2023 · ~3 months</dd></div><div><dt>Tools</dt><dd>Photoshop (PSD/PSB), Illustrator, 3D renders for UI props</dd></div><div><dt>Platform</dt><dd>PC (Windows) · Steam</dd></div></dl>
+  <div class="actions">
+    <a class="btn primary" href="https://store.steampowered.com/app/710230/Urban_Strife/" target="_blank" rel="noopener noreferrer">View on Steam <span aria-hidden="true">&#8599;</span></a>
+    <button class="btn" type="button" data-copy="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg><span>Copy page link</span></button>
+  </div>
+</section>
+
+<div class="section-label" style="margin-top:72px">Video</div>
+<div class="videos">
+  <figure class="video">
+    <div class="trailer-frame"><iframe src="https://www.youtube.com/embed/RpPt2ijSDLc" title="Urban Strife video" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+    <p class="video-note"><a href="https://www.youtube.com/watch?v=RpPt2ijSDLc" target="_blank" rel="noopener noreferrer">Watch on YouTube &#8599;</a></p>
+  </figure>
+</div>
+
+<div class="section-label" style="margin-top:72px">Full Case Study</div>
+<div class="study-card"><a class="study-card-inner" href="/case-studies/urbanstrife.html">
+  <div class="study-card-img"><img src="/images/projects/urbanstrife/hero-journal.jpg" width="2000" height="1125" alt="" loading="lazy"></div>
+  <div class="study-card-body"><div class="study-card-eyebrow">Deep Dive</div><div class="study-card-title">Urban Strife &mdash; Full UI/UX Case Study</div>
+  <p class="study-card-desc">The complete breakdown: the retro-modern art direction, the tactical combat HUD, inventory, stash and trade, shelter, crafting and base management, the world map, and the front-end, intro and loading screens, with the deliverables and key takeaways.</p>
+  <span class="study-card-btn">Read Full Case Study &rarr;</span></div></a></div>
+
+<div class="section-label" style="margin-top:72px">Screens &middot; 25</div>
+<div class="carousel-wrap">
+  <div class="carousel-track" aria-label="Urban Strife screens">
+    <button class="carousel-item" type="button" data-lb="/images/projects/urbanstrife/hero-journal.jpg" data-cap="Shelter development plan: census, stockpile &amp; production, and three upgrade tiers in one field-journal spread"><img src="/images/projects/urbanstrife/hero-journal.jpg" width="2000" height="1125" alt="Shelter development plan screen styled as a worn field journal with blueprint upgrade icons, census and stockpile tables" loading="lazy" decoding="async"></button>
+    <button class="carousel-item" type="button" data-lb="/images/projects/urbanstrife/base-supplies.jpg" data-cap="Base Supplies widget: CRT readout + End Turn switch"><img src="/images/projects/urbanstrife/base-supplies.jpg" width="1400" height="698" alt="Base Supplies widget: CRT screen with food, medical, morale and fuel counters beside a red End Turn button" loading="lazy" decoding="async"></button>
+    <button class="carousel-item" type="button" data-lb="/images/projects/urbanstrife/clipboard.jpg" data-cap="Character setup clipboard"><img src="/images/projects/urbanstrife/clipboard.jpg" width="700" height="943" alt="CDC top-secret clipboard used for character setup" loading="lazy" decoding="async"></button>
+    <button class="carousel-item" type="button" data-lb="/images/projects/urbanstrife/icon-sheet.jpg" data-cap="Component sheet: buttons, cursor hands, scavenge, stash-filter and inventory icons"><img src="/images/projects/urbanstrife/icon-sheet.jpg" width="1800" height="1034" alt="Icon sheet with menu buttons, take-all buttons, scavenge icons, cursor hands, trader accept/deny hands, stash filters and inventory icons" loading="lazy" decoding="async"></button>
+    <button class="carousel-item" type="button" data-lb="/images/projects/urbanstrife/combat-hud.jpg" data-cap="The HUD in context: weapon panel, squad cards, objectives and tutorial notes"><img src="/images/projects/urbanstrife/combat-hud.jpg" width="2000" height="1125" alt="In-game screenshot with the weapon control panel, squad portraits, objective notes and tutorial pop-up over an isometric highway scene" loading="lazy" decoding="async"></button>
+    <button class="carousel-item" type="button" data-lb="/images/projects/urbanstrife/ballistic-shell.jpg" data-cap="&quot;W&amp;P Ballistic Calculator&quot; control-panel housing"><img src="/images/projects/urbanstrife/ballistic-shell.jpg" width="1100" height="491" alt="Empty metal control panel housing labeled W&amp;P Electronics Ballistic Calculator" loading="lazy" decoding="async"></button>
+    <button class="carousel-item" type="button" data-lb="/images/projects/urbanstrife/turn-widgets.jpg" data-cap="Turn / objective / enemy-turn CRT states"><img src="/images/projects/urbanstrife/turn-widgets.jpg" width="2000" height="1083" alt="Stack of CRT widgets showing Your Turn, New Objective, Enemy Turn and Base Supplies states" loading="lazy" decoding="async"></button>
+    <button class="carousel-item" type="button" data-lb="/images/projects/urbanstrife/tutorial-controls.jpg" data-cap="Controls &amp; mechanics reference: stances, fire modes, Overwatch, warning overlays"><img src="/images/projects/urbanstrife/tutorial-controls.jpg" width="1883" height="1125" alt="Journal spread documenting camera controls, combat controls, aimed shot mechanics and warning overlays" loading="lazy" decoding="async"></button>
+    <button class="carousel-item" type="button" data-lb="/images/projects/urbanstrife/container-loot.jpg" data-cap="Loot container + backpack + paper-doll equipment sheet"><img src="/images/projects/urbanstrife/container-loot.jpg" width="1800" height="894" alt="Leather loot container grid beside character backpack and paper-doll equipment sheet" loading="lazy" decoding="async"></button>
+    <button class="carousel-item" type="button" data-lb="/images/projects/urbanstrife/weapon-attachments.jpg" data-cap="Weapon attachments &amp; stats card"><img src="/images/projects/urbanstrife/weapon-attachments.jpg" width="1200" height="1141" alt="AK weapon card with attachment slots and stats such as ammo, range, spread and AP cost" loading="lazy" decoding="async"></button>
+    <button class="carousel-item" type="button" data-lb="/images/projects/urbanstrife/trader.jpg" data-cap="Trader"><img src="/images/projects/urbanstrife/trader.jpg" width="1000" height="967" alt="Trader screen with portrait header, accept/deny hand icons and split inventory columns" loading="lazy" decoding="async"></button>
+    <button class="carousel-item" type="button" data-lb="/images/projects/urbanstrife/recycling-order.jpg" data-cap="Recycling order"><img src="/images/projects/urbanstrife/recycling-order.jpg" width="1000" height="1011" alt="Recycling order form on a clipboard with foreman, accepted goods and balance table" loading="lazy" decoding="async"></button>
+    <button class="carousel-item" type="button" data-lb="/images/projects/urbanstrife/sheriff-stash.jpg" data-cap="Sheriff Stash: steel locker material vs. leather backpack"><img src="/images/projects/urbanstrife/sheriff-stash.jpg" width="1800" height="894" alt="Steel Sheriff stash grid next to character inventory" loading="lazy" decoding="async"></button>
+    <button class="carousel-item" type="button" data-lb="/images/projects/urbanstrife/shelter-plan.jpg" data-cap="Shelter journal with survival-rating and horde-progress bars"><img src="/images/projects/urbanstrife/shelter-plan.jpg" width="2000" height="1125" alt="Shelter journal with survival rating and horde progress bars above the upgrade plan" loading="lazy" decoding="async"></button>
+    <button class="carousel-item" type="button" data-lb="/images/projects/urbanstrife/shelter-dump.jpg" data-cap="Warehouse ledger: donations, reserves, security advisory"><img src="/images/projects/urbanstrife/shelter-dump.jpg" width="1800" height="931" alt="Warehouse inventory ledger form with production, consumption and donation balances beside character inventory" loading="lazy" decoding="async"></button>
+    <button class="carousel-item" type="button" data-lb="/images/projects/urbanstrife/industry-order.jpg" data-cap="Industry build order"><img src="/images/projects/urbanstrife/industry-order.jpg" width="1200" height="1127" alt="Industry build order clipboard for a vegetable garden with available upgrades list" loading="lazy" decoding="async"></button>
+    <button class="carousel-item" type="button" data-lb="/images/projects/urbanstrife/craft-disassembly.jpg" data-cap="Crafting: tool / input / output on blueprint paper"><img src="/images/projects/urbanstrife/craft-disassembly.jpg" width="1800" height="894" alt="Crafting screen with tool, input and output columns on blueprint paper, beside the backpack" loading="lazy" decoding="async"></button>
+    <button class="carousel-item" type="button" data-lb="/images/projects/urbanstrife/map-notebook.jpg" data-cap="Map tab: location notes with travel method, ETA and confirm/cancel"><img src="/images/projects/urbanstrife/map-notebook.jpg" width="2000" height="1125" alt="Urban County transportation map inside the field journal with an Adams Villa location note and travel controls" loading="lazy" decoding="async"></button>
+    <button class="carousel-item" type="button" data-lb="/images/projects/urbanstrife/map-county.jpg" data-cap="Location labels &amp; exit ramps"><img src="/images/projects/urbanstrife/map-county.jpg" width="1800" height="1303" alt="Urban County map with green location labels for shelter, motel, gas station, courthouse and more" loading="lazy" decoding="async"></button>
+    <button class="carousel-item" type="button" data-lb="/images/projects/urbanstrife/map-encounter.jpg" data-cap="Random-encounter interrupt"><img src="/images/projects/urbanstrife/map-encounter.jpg" width="1800" height="1146" alt="Map with a random encounter notepad warning that fast travel has been cancelled" loading="lazy" decoding="async"></button>
+    <button class="carousel-item" type="button" data-lb="/images/projects/urbanstrife/main-menu.jpg" data-cap="Main menu"><img src="/images/projects/urbanstrife/main-menu.jpg" width="1800" height="1012" alt="Main menu with Urban Strife logo and green New Game, Load Game, Options and Quit buttons over a night firefight" loading="lazy" decoding="async"></button>
+    <button class="carousel-item" type="button" data-lb="/images/projects/urbanstrife/intro-comic.jpg" data-cap="Comic-panel intro"><img src="/images/projects/urbanstrife/intro-comic.jpg" width="1800" height="1012" alt="Comic-panel intro screen with captions over a highway at night" loading="lazy" decoding="async"></button>
+    <button class="carousel-item" type="button" data-lb="/images/projects/urbanstrife/loading-adams-villa.jpg" data-cap="Loading screen: Adams Villa"><img src="/images/projects/urbanstrife/loading-adams-villa.jpg" width="1800" height="1012" alt="Loading screen with stacked Polaroid photos of Adams Villa over a desaturated level view" loading="lazy" decoding="async"></button>
+    <button class="carousel-item" type="button" data-lb="/images/projects/urbanstrife/loading-california-motel.jpg" data-cap="Loading screen: California Motel"><img src="/images/projects/urbanstrife/loading-california-motel.jpg" width="1800" height="1012" alt="Loading screen with a California Motel photo on a desk beside a pistol and newspaper" loading="lazy" decoding="async"></button>
+    <button class="carousel-item" type="button" data-lb="/images/projects/urbanstrife/tutorial-popup.jpg" data-cap="Tutorial pop-up widget"><img src="/images/projects/urbanstrife/tutorial-popup.jpg" width="1800" height="1012" alt="Tutorial pop-up titled Moving Around with a gameplay preview and Next button" loading="lazy" decoding="async"></button>
+  </div>
+  <div class="carousel-nav"><button class="carousel-btn" type="button" data-dir="prev" aria-label="Previous screen">&larr;</button><button class="carousel-btn" type="button" data-dir="next" aria-label="Next screen">&rarr;</button></div>
+</div>
+
+<div class="conclusion">
+  <div class="conclusion-label">Closing Notes</div>
+  <p class="conclusion-body">Modernizing a retro identity isn't a polish pass. The hard part was deciding what not to change, so the game stayed true to its old-school TBS roots.</p>
+  <p class="conclusion-body">A gritty, physical look only scales across dozens of screens when it sits on consistent templates and grids.</p>
+</div>
+<p class="credit">Urban Strife &copy; White Pond Games / MicroProse Software. Images shown for portfolio purposes.</p>
+
+</main>
+
+<div class="lightbox" id="lb" role="dialog" aria-modal="true" aria-label="Image viewer" aria-hidden="true">
+  <button class="lb-btn lb-close" type="button" aria-label="Close">&times;</button>
+  <button class="lb-btn lb-prev" type="button" aria-label="Previous image">&larr;</button>
+  <button class="lb-btn lb-next" type="button" aria-label="Next image">&rarr;</button>
+  <div class="lb-frame"><img id="lbimg" alt="" draggable="false"></div>
+  <div class="lb-cap" id="lbcap"></div>
+</div>
+
+<script>
+(function(){
+  // ---- scramble-text on the title (same effect as the other project pages) ----
+  var GLYPHS="ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890!<>-_/[]{}=+*^?#";
+  var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Spaces are kept, so the scrambled frames wrap where the real title wraps and can never run wider than the screen.
+  function scrambleStr(t){var s='';for(var i=0;i<t.length;i++){var c=t.charAt(i);s+=/\s/.test(c)?c:GLYPHS[Math.floor(Math.random()*GLYPHS.length)];}return s;}
+  function typeScramble(el,text,ms,steps){if(reduced||!el){if(el)el.textContent=text;return;}var i=0,st=ms/steps;var iv=setInterval(function(){i++;el.textContent=scrambleStr(text);if(i>=steps){clearInterval(iv);el.textContent=text;}},st);}
+  document.addEventListener('DOMContentLoaded',function(){
+    var els=document.querySelectorAll('[data-scramble]');
+    if(!('IntersectionObserver' in window)){return;}
+    var io=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){typeScramble(e.target,e.target.getAttribute('data-scramble'),500,10);io.unobserve(e.target);}});},{threshold:0.5});
+    els.forEach(function(el){io.observe(el);});
+  });
+
+  // ---- copy-link button ----
+  function copyText(text){
+    function fallback(){try{var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();var ok=document.execCommand('copy');document.body.removeChild(ta);return ok;}catch(e){return false;}}
+    if(navigator.clipboard&&navigator.clipboard.writeText){return navigator.clipboard.writeText(text).then(function(){return true;},function(){return fallback();});}
+    return Promise.resolve(fallback());
+  }
+  document.querySelectorAll('[data-copy]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var t=btn.getAttribute('data-copy');
+      if(t==='page'){t=location.href;}else if(t.charAt(0)==='/'){t=location.origin+t;}
+      var label=btn.querySelector('span'),old=label.textContent;
+      copyText(t).then(function(ok){label.textContent=ok?'Copied!':'Copy failed';setTimeout(function(){label.textContent=old;},1400);});
+    });
+  });
+
+  // ---- screens carousel ----
+  var track=document.querySelector('.carousel-track');
+  document.querySelectorAll('.carousel-btn').forEach(function(b){
+    b.addEventListener('click',function(){
+      var it=track.querySelector('.carousel-item'),step=it.getBoundingClientRect().width+12;
+      track.scrollBy({left:(b.getAttribute('data-dir')==='prev'?-1:1)*step,behavior:reduced?'auto':'smooth'});
+    });
+  });
+
+  // ---- lightbox: fixed 16:9 frame, arrows / swipe / keyboard ----
+  var items=[].slice.call(document.querySelectorAll('[data-lb]'));
+  var lb=document.getElementById('lb'),img=document.getElementById('lbimg'),cap=document.getElementById('lbcap');
+  var bClose=lb.querySelector('.lb-close'),bPrev=lb.querySelector('.lb-prev'),bNext=lb.querySelector('.lb-next');
+  var idx=0,lastFocus=null,sx=null,sy=null,swiped=false;
+  function show(i){
+    idx=(i+items.length)%items.length;
+    var it=items[idx],pic=it.querySelector('img');
+    img.src=it.getAttribute('data-lb');
+    img.alt=pic?pic.getAttribute('alt'):'';
+    cap.textContent=(idx+1)+' / '+items.length+' — '+(it.getAttribute('data-cap')||'');
+  }
+  function open(i){lastFocus=document.activeElement;show(i);lb.classList.add('open');lb.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';bClose.focus();}
+  function close(){lb.classList.remove('open');lb.setAttribute('aria-hidden','true');img.removeAttribute('src');document.body.style.overflow='';if(lastFocus&&lastFocus.focus){lastFocus.focus();}}
+  items.forEach(function(el,i){el.addEventListener('click',function(){open(i);});});
+  bClose.addEventListener('click',close);
+  bPrev.addEventListener('click',function(e){e.stopPropagation();show(idx-1);});
+  bNext.addEventListener('click',function(e){e.stopPropagation();show(idx+1);});
+  lb.addEventListener('click',function(e){if(e.target===lb&&!swiped)close();swiped=false;});
+  // Swipe: touch uses touch events (they keep firing while the browser pans or pinch-zooms, pointer events do not);
+  // mouse and pen use pointer events. A swipe is ignored while the page is pinch-zoomed, so zoomed-in panning is left alone.
+  function zoomed(){return !!(window.visualViewport&&window.visualViewport.scale>1.05);}
+  function endSwipe(x,y){
+    if(sx===null)return;
+    var dx=x-sx,dy=y-sy;sx=null;
+    swiped=Math.abs(dx)>6||Math.abs(dy)>6;
+    if(!zoomed()&&Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.3){show(idx+(dx<0?1:-1));}
+  }
+  lb.addEventListener('touchstart',function(e){swiped=false;if(e.touches.length===1){sx=e.touches[0].clientX;sy=e.touches[0].clientY;}else{sx=null;}},{passive:true});
+  lb.addEventListener('touchend',function(e){var t=e.changedTouches[0];if(t&&e.touches.length===0){endSwipe(t.clientX,t.clientY);}},{passive:true});
+  lb.addEventListener('touchcancel',function(){sx=null;},{passive:true});
+  lb.addEventListener('pointerdown',function(e){if(e.pointerType==='touch')return;sx=e.clientX;sy=e.clientY;swiped=false;});
+  lb.addEventListener('pointerup',function(e){if(e.pointerType==='touch')return;endSwipe(e.clientX,e.clientY);});
+  document.addEventListener('keydown',function(e){
+    if(!lb.classList.contains('open'))return;
+    if(e.key==='Escape'){close();}
+    else if(e.key==='ArrowLeft'){show(idx-1);}
+    else if(e.key==='ArrowRight'){show(idx+1);}
+    else if(e.key==='Tab'){var f=[bClose,bPrev,bNext],i=f.indexOf(document.activeElement);e.preventDefault();f[(i+(e.shiftKey?-1:1)+f.length)%f.length].focus();}
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+{
+ "checks": [
+  {
+   "name": "page loads with no console errors/warnings",
+   "ok": true,
+   "detail": "[]"
+  },
+  {
+   "name": "px/mm identical for all 8 keys @ 390x844",
+   "ok": true,
+   "detail": "5.132 px/mm, spread 0.00e+00"
+  },
+  {
+   "name": "px/mm identical for all 8 keys @ 375x667",
+   "ok": true,
+   "detail": "4.934 px/mm, spread 0.00e+00"
+  },
+  {
+   "name": "px/mm identical for all 8 keys @ 768x1024",
+   "ok": true,
+   "detail": "9.474 px/mm, spread 0.00e+00"
+  },
+  {
+   "name": "px/mm identical for all 8 keys @ 1280x800",
+   "ok": true,
+   "detail": "9.474 px/mm, spread 0.00e+00"
+  },
+  {
+   "name": "key + labels fully inside the preview at 1x (390x844), all types",
+   "ok": true,
+   "detail": "{'SC1': 23.1, 'SC4': 23.1, 'KW1': 41.1, 'WR3': 48.8, 'Y1': 33.4, 'M3': 56.4, 'BEST': 12.8, 'AR1': 35.9}"
+  },
+  {
+   "name": "3x zoom: dragging brings the bow end and the tip fully on screen for every key",
+   "ok": true,
+   "detail": "[('SC1', True, True), ('SC4', True, True), ('KW1', True, True), ('WR3', True, True), ('Y1', True, True), ('M3', True, True), ('BEST', True, True), ('AR1', True, True)]"
+  },
+  {
+   "name": "pinch zooms in (80px -> 200px spread => 2.5x)",
+   "ok": true,
+   "detail": "{'scale': 2.5, 'panX': 0, 'panY': 0, 'slider': '2.5', 'disp': '2.5\u00d7'}"
+  },
+  {
+   "name": "pinch about the centre does not drift the key",
+   "ok": true,
+   "detail": "{'scale': 2.5, 'panX': 0, 'panY': 0, 'slider': '2.5', 'disp': '2.5\u00d7'}"
+  },
+  {
+   "name": "one-finger drag pans when zoomed in",
+   "ok": true,
+   "detail": "{'panX': 30, 'panY': 10}"
+  },
+  {
+   "name": "reset returns to 1x with no pan",
+   "ok": true,
+   "detail": "{'scale': 1, 'panX': 0, 'panY': 0}"
+  },
+  {
+   "name": "ctrl+wheel zooms in about the cursor (pan shifts away from cursor side)",
+   "ok": true,
+   "detail": "{'scale': 2.718281828459045, 'panX': -85.91409142295225}"
+  },
+  {
+   "name": "double-tap resets zoom",
+   "ok": true,
+   "detail": "{'scale': 1, 'panX': 0, 'panY': 0}"
+  },
+  {
+   "name": "pin slider drives the key and the code badge",
+   "ok": true,
+   "detail": "92514"
+  },
+  {
+   "name": "key-type card switches profile (KW1) and rebuilds the scene",
+   "ok": true,
+   "detail": "Kwikset KW1"
+  },
+  {
+   "name": "KW1 shows 5 pin labels",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "preset applies",
+   "ok": true,
+   "detail": "65656"
+  },
+  {
+   "name": "download names carry key code + bitting",
+   "ok": true,
+   "detail": "['KW1_65656.svg', 'KW1_65656.stl', 'KW1_65656.dxf']"
+  },
+  {
+   "name": "downloaded STL: watertight, consistent winding, positive volume, genus 1",
+   "ok": true,
+   "detail": "vol 1202.7 mm3, tris 348, euler 0"
+  },
+  {
+   "name": "downloaded STL: extents match key (X length, Z thickness)",
+   "ok": true,
+   "detail": "[[-22.0, 0.0, 0.0], [38.0, 17.8, 2.3]]"
+  },
+  {
+   "name": "downloaded DXF: audit clean, mm units, closed outline + hole circle",
+   "ok": true,
+   "detail": "units 4, ['CIRCLE', 'POLYLINE']"
+  },
+  {
+   "name": "downloaded SVG: true-size (mm) with a 1:1 viewBox",
+   "ok": true,
+   "detail": "('61', '18.8', '61', '18.8')"
+  },
+  {
+   "name": "downloaded SVG: width = key length + padding",
+   "ok": true,
+   "detail": "61"
+  },
+  {
+   "name": "SVG path (true arcs) matches the polygon used for STL/DXF: IoU > 0.998 for all keys",
+   "ok": true,
+   "detail": "{'SC1': 0.99946, 'SC4': 0.9994, 'KW1': 0.99917, 'WR3': 0.99868, 'Y1': 0.99863, 'M3': 0.99921, 'BEST': 0.99929, 'AR1': 0.99936}"
+  },
+  {
+   "name": "renderKey well under a frame (<2 ms)",
+   "ok": true,
+   "detail": "0.068"
+  },
+  {
+   "name": "STL build well under 100 ms",
+   "ok": true,
+   "detail": "2.63"
+  },
+  {
+   "name": "no console errors after the whole session",
+   "ok": true,
+   "detail": "[]"
+  }
+ ],
+ "fail": [],
+ "timing_ms": {
+  "render": 0.06775000000023283,
+  "path": 0.07,
+  "stl": 2.6275000000023283,
+  "dxf": 0.08499999999767169
+ },
+ "path_chars": {
+  "SC1": 619,
+  "SC4": 633,
+  "KW1": 568,
+  "WR3": 549,
+  "Y1": 594,
+  "M3": 499,
+  "BEST": 606,
+  "AR1": 572
+ },
+ "file_bytes": 48915
+}

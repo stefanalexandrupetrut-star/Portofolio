@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ChibiChum — Full Case Study — Alex Stefan</title>
+<meta name="description" content="Case study: ChibiChum, an 8-bit virtual pet and desktop companion game for the Windows taskbar, web and mobile, available now on itch.io. Product vision, game systems, cross-platform architecture, the media gallery and the lessons learned.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0b0a0c;--panel:#171215;--panel-2:#1d171a;--line:#332a2d;--line-soft:#231c1f;--paper:#f3efe9;--mute:#a49a9d;--mute-dim:#857b7e;--red:#e8232f;--red-hi:#ff8a92;--red-dim:#5c1116;--mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;--disp:'Space Grotesk',system-ui,sans-serif;--body:'DM Sans',system-ui,sans-serif}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--ink);scroll-behavior:smooth}
+body{background:var(--ink);color:var(--paper);font-family:var(--body);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%;height:auto}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit}
+::selection{background:var(--red);color:#fff}
+[data-scramble]{overflow-wrap:anywhere}
+:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+/* ---- shared chrome (same as the other case studies) ---- */
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 40px;background:rgba(11,10,12,.88);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line-soft)}
+.topbar-brand{font-family:var(--disp);font-weight:700;font-size:14px;letter-spacing:3px;text-transform:uppercase;white-space:nowrap}
+.topbar-brand span{color:var(--red)}
+.back-link{font-family:var(--mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mute);border:1px solid var(--line);padding:9px 16px;border-radius:3px;transition:all .2s;white-space:nowrap}
+.back-link:hover{color:var(--paper);border-color:var(--red)}
+.back-link .sm{display:none}
+@media(max-width:560px){.topbar{padding:14px 16px}.back-link .lg{display:none}.back-link .sm{display:inline}}
+
+/* ---- cover ---- */
+.cover{min-height:92vh;display:flex;flex-direction:column;justify-content:center;padding:0 8vw;position:relative;overflow:hidden;border-bottom:1px solid var(--line-soft)}
+.cover-bg{position:absolute;inset:0;opacity:.22}.cover-bg img{width:100%;height:100%;object-fit:cover}
+.cover-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,10,12,.4),var(--ink) 90%)}
+.cover-eyebrow{position:relative;z-index:2;font-family:var(--mono);font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--red);margin-bottom:22px}
+.cover-title{position:relative;z-index:2;font-family:var(--disp);font-weight:700;font-size:clamp(46px,9vw,128px);line-height:.94;letter-spacing:1px;text-transform:uppercase;margin-bottom:24px;min-height:1.1em}
+.cover-sub{position:relative;z-index:2;font-size:16px;color:var(--mute);max-width:660px;line-height:1.7}
+.cover-status{position:relative;z-index:2;display:inline-flex;align-items:center;gap:8px;margin-top:28px;font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;border:1px solid var(--red-dim);background:rgba(232,35,47,.08);padding:8px 16px;border-radius:3px;width:fit-content;max-width:100%}
+.cover-status .dot{width:7px;height:7px;border-radius:50%;background:var(--red);flex:none}
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+.cover .actions{position:relative;z-index:2;margin-top:22px}
+.cover-chips{position:relative;z-index:2;display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+.cover-chips .cover-status{margin-top:0}
+.cover-status.hot{border-color:var(--red);background:rgba(232,35,47,.18);color:var(--paper)}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;padding:12px 20px;border-radius:4px;border:1px solid var(--line);background:transparent;color:var(--paper);cursor:pointer;transition:all .2s;line-height:1.2}
+.btn:hover{border-color:var(--red);color:var(--red)}
+.btn.primary{background:var(--red);border-color:var(--red);color:#fff}
+.btn.primary:hover{background:#ff3541;border-color:#ff3541;color:#fff}
+.btn svg{width:14px;height:14px;flex:none}
+
+/* ---- boards ---- */
+.board{padding:100px 8vw;border-bottom:1px solid var(--line-soft);scroll-margin-top:56px}
+.board-num{font-family:var(--mono);font-size:11px;letter-spacing:3px;color:var(--mute-dim);margin-bottom:14px;text-transform:uppercase}
+.board-title{font-family:var(--disp);font-weight:700;font-size:clamp(28px,4vw,48px);letter-spacing:.5px;text-transform:uppercase;margin-bottom:22px;min-height:1.1em}
+.board-body{font-size:15px;line-height:1.85;color:var(--mute);max-width:760px;margin-bottom:20px}
+.board-body b{color:var(--paper);font-weight:600}
+.board-body code,.find-d code,.fcard li code,.layer-cell code{font-family:var(--mono);font-size:.88em;color:var(--paper);background:var(--panel);border:1px solid var(--line-soft);border-radius:3px;padding:1px 6px}
+.sub{margin-top:72px}
+.sub-n{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--red);margin-bottom:10px;text-transform:uppercase}
+.sub-h{font-family:var(--disp);font-weight:600;font-size:clamp(21px,2.6vw,28px);letter-spacing:.2px;margin-bottom:14px}
+.spec-row{display:flex;flex-wrap:wrap;gap:10px;margin:26px 0 0}
+.spec-tag{font-family:var(--mono);font-size:11px;background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:8px 14px}
+
+/* ---- figures + lightbox triggers ---- */
+.fig{max-width:1100px;margin:36px 0 0}
+.shot{display:block;width:100%;text-align:left;padding:0;background:var(--panel);border:1px solid var(--line);border-radius:6px;overflow:hidden;cursor:zoom-in;transition:border-color .2s}
+.shot:hover{border-color:var(--red)}
+.shot img{width:100%;height:auto;aspect-ratio:16/9;object-fit:cover}
+.shot-cap{display:flex;justify-content:space-between;gap:14px;font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mute-dim);padding:10px 14px;border-top:1px solid var(--line)}
+.shot-cap span:last-child{white-space:nowrap;color:var(--mute)}
+.fig-note{font-size:13px;line-height:1.7;color:var(--mute-dim);margin-top:12px;max-width:760px}
+/* wide strip: the figure images are 16:9 (so the viewer shows them whole), the page shows their middle 21:9 */
+.shot.wide img{aspect-ratio:21/9}
+.fcard-fig{margin:26px 0 0}
+.fcard-fig .fig-note{max-width:none}
+
+/* ---- 01 identity ---- */
+.kv{max-width:1100px;margin-top:34px;border-top:1px solid var(--line)}
+.kv>div{display:grid;grid-template-columns:190px 1fr;gap:6px 24px;padding:15px 0;border-bottom:1px solid var(--line-soft)}
+.kv dt{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--mute-dim);padding-top:3px}
+.kv dd{font-size:15px;line-height:1.6;color:var(--paper)}
+.kv dd small{display:block;font-size:13px;color:var(--mute);margin-top:2px}
+.callout{max-width:1100px;margin-top:30px;border:1px solid var(--line);border-left:3px solid var(--red);background:var(--panel);border-radius:6px;padding:20px 24px}
+.callout-t{font-family:var(--mono);font-size:10.5px;letter-spacing:2px;text-transform:uppercase;color:var(--red);margin-bottom:8px}
+.callout p{font-size:14px;line-height:1.8;color:var(--mute);max-width:820px}
+.callout p b{color:var(--paper);font-weight:600}
+.callout.tagline p{font-family:var(--disp);font-size:clamp(17px,2vw,21px);line-height:1.5;color:var(--paper);font-weight:600}
+.goal-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;max-width:1100px;margin-top:36px}
+.goal{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:22px 20px 24px;display:flex;flex-direction:column}
+.goal-n{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--red);margin-bottom:14px}
+.goal-t{font-family:var(--disp);font-weight:600;font-size:18px;margin-bottom:8px}
+.goal-d{font-size:13.5px;line-height:1.7;color:var(--mute)}
+.goal-l{margin-top:auto;padding-top:14px;font-family:var(--mono);font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--red)}
+.goal-l a{border-bottom:1px solid transparent;transition:border-color .2s}
+.goal-l a:hover{border-color:var(--red)}
+
+/* ---- cards (02 vision, 06 lessons) ---- */
+.finds{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:1100px;margin-top:26px}
+.find{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:18px 18px 20px}
+.find-n{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--red);color:#fff;font-family:var(--mono);font-size:12px;font-weight:600;margin-bottom:12px}
+.find-t{font-family:var(--disp);font-weight:600;font-size:16px;margin-bottom:6px}
+.find-d{font-size:13.5px;line-height:1.65;color:var(--mute)}
+.decide{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:1100px;margin-top:30px}
+.decide .find{border-color:var(--line-soft);background:transparent;border-top:2px solid var(--red);border-radius:0 0 8px 8px;display:flex;flex-direction:column;padding:20px 20px 22px}
+.decide .find-t{font-size:18px;margin-bottom:10px}
+.decide .find-d{margin-bottom:16px}
+.find-q{margin-top:auto;padding-top:14px;border-top:1px dashed var(--line);font-size:13px;line-height:1.65;color:var(--mute)}
+.find-q b{display:block;font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--red);font-weight:500;margin-bottom:6px}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;max-width:1100px;margin-top:26px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:22px 20px}
+.tile-big{font-family:var(--disp);font-weight:700;font-size:clamp(24px,2.6vw,32px);letter-spacing:-.3px;line-height:1.05;margin-bottom:8px}
+.tile-d{font-size:13px;line-height:1.65;color:var(--mute)}
+
+/* ---- 03 feature cards ---- */
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:1100px;margin-top:34px}
+.fcard{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden;display:flex;flex-direction:column}
+.fcard.wide{grid-column:1/-1}
+.fcard-body{padding:22px 24px 26px}
+.fcard-n{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--red);margin-bottom:8px}
+.fcard-t{font-family:var(--disp);font-weight:600;font-size:22px;margin-bottom:6px}
+.fcard-s{font-size:14px;line-height:1.7;color:var(--paper);margin-bottom:14px}
+.fcard ul{list-style:none;display:grid;gap:9px}
+.fcard.wide ul{grid-template-columns:repeat(3,1fr);gap:9px 28px}
+.fcard li{font-size:13.5px;line-height:1.65;color:var(--mute);padding-left:16px;position:relative}
+.fcard li::before{content:'';position:absolute;left:0;top:.7em;width:7px;height:2px;background:var(--red)}
+.fcard li b{color:var(--paper);font-weight:600}
+
+/* ---- 04 architecture ---- */
+.layers{display:grid;gap:10px;max-width:1100px;margin-top:34px}
+.layer{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:16px 18px 18px}
+.layer-h{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--mute-dim);margin-bottom:12px}
+.layer-cells{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.layer-cell{border:1px solid var(--line-soft);border-radius:4px;padding:12px 14px;background:rgba(255,255,255,.02)}
+.layer-cell code{display:inline-block;margin-bottom:8px;color:var(--paper)}
+.layer-cell span{display:block;font-size:13px;line-height:1.6;color:var(--mute)}
+.layer-tags{display:flex;flex-wrap:wrap;gap:8px}
+.layer-tags span{font-family:var(--mono);font-size:12px;color:var(--paper);border:1px solid var(--line);border-radius:3px;padding:7px 12px}
+.layer-core{border-color:var(--red);background:linear-gradient(180deg,rgba(232,35,47,.12),rgba(232,35,47,.02))}
+.layer-core .layer-h{color:var(--red-hi)}
+.layer-core .layer-tags span{border-color:var(--red-dim);background:rgba(232,35,47,.06)}
+.layers-note{font-family:var(--mono);font-size:11px;letter-spacing:1px;color:var(--mute-dim);margin-top:12px}
+.plat{width:100%;max-width:1100px;border-collapse:collapse;margin-top:44px;font-size:14px}
+.plat th,.plat td{text-align:left;padding:14px 18px 14px 0;border-bottom:1px solid var(--line-soft);vertical-align:top;line-height:1.6}
+.plat th{font-family:var(--mono);font-size:10.5px;letter-spacing:2px;text-transform:uppercase;color:var(--mute-dim);font-weight:500;border-bottom:1px solid var(--line)}
+.plat td:first-child{font-family:var(--mono);font-size:12px;color:var(--red);white-space:nowrap;width:150px}
+.plat td:nth-child(2),.plat td:nth-child(3){color:var(--paper)}
+.plat td:last-child{color:var(--mute)}
+
+/* ---- 05 gallery ---- */
+.gal{display:grid;grid-template-columns:1fr 1fr;gap:26px 18px;max-width:1100px;margin-top:34px}
+.gal figure{margin:0}
+.gal .fig-note{margin-top:10px}
+
+/* ---- outcome ---- */
+.outcome{padding:100px 8vw 140px;text-align:center}
+.outcome-title{font-family:var(--disp);font-weight:700;font-size:clamp(28px,4vw,44px);text-transform:uppercase;margin-bottom:24px;min-height:1.1em}
+.outcome-body{font-size:15px;line-height:1.9;color:var(--mute);max-width:660px;margin:0 auto}
+.outcome .actions{justify-content:center;margin-top:30px}
+
+/* ---- lightbox: fixed 16:9 frame, scales to any device ---- */
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.985);z-index:999;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px}
+.lightbox.open{display:flex}
+.lb-frame{position:relative;width:min(92vw,150vh);aspect-ratio:16/9;background:#000;border-radius:6px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.lb-frame img{width:100%;height:100%;object-fit:contain;background:#000;-webkit-user-drag:none;user-select:none}
+.lb-cap{font-family:var(--mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mute);text-align:center;max-width:92vw;line-height:1.6}
+.lb-btn{position:absolute;background:rgba(11,10,12,.7);border:1px solid var(--line);color:#fff;cursor:pointer;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:20px;line-height:1;transition:all .2s;z-index:2}
+.lb-btn:hover{border-color:var(--red);color:var(--red)}
+.lb-close{top:18px;right:20px;font-size:26px}
+.lb-prev{left:16px;top:50%;margin-top:-22px}
+.lb-next{right:16px;top:50%;margin-top:-22px}
+@media(max-width:700px){.lb-prev,.lb-next{top:auto;bottom:18px;margin:0}.lb-prev{left:20px}.lb-next{right:20px}}
+
+/* ---- responsive ---- */
+@media(max-width:1000px){.goal-grid,.tiles{grid-template-columns:1fr 1fr}.finds,.decide{grid-template-columns:1fr 1fr}.fcard.wide ul{grid-template-columns:1fr 1fr}}
+@media(max-width:800px){.fgrid,.gal{grid-template-columns:1fr}.fcard.wide ul{grid-template-columns:1fr}.layer-cells{grid-template-columns:1fr}}
+@media(max-width:780px){
+  /* the platform table becomes stacked cards; the header row stays in the DOM for screen readers */
+  .plat thead{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .plat,.plat tbody,.plat tr,.plat td{display:block}
+  .plat tr{padding:16px 0;border-bottom:1px solid var(--line-soft)}
+  .plat tbody tr:first-child{border-top:1px solid var(--line)}
+  .plat td{padding:0;border:0;width:auto}
+  .plat{margin-top:36px}
+  .plat td:first-child{white-space:normal;width:auto;margin-bottom:8px}
+  .plat td[data-l]{display:grid;grid-template-columns:112px 1fr;gap:10px;padding:3px 0}
+  .plat td[data-l]::before{content:attr(data-l);font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mute-dim);padding-top:3px}
+}
+@media(max-width:600px){.board{padding:64px 6vw}.goal-grid,.tiles,.finds,.decide{grid-template-columns:1fr}.cover{min-height:86vh}.sub{margin-top:56px}.outcome{padding:72px 6vw 110px}.kv>div{grid-template-columns:1fr;gap:4px}}
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="/work" class="topbar-brand">ALEX <span>STEFAN</span></a>
+  <a href="/case-studies/chibichum-detail.html" class="back-link">&larr; <span class="lg">Back to ChibiChum</span><span class="sm">Back</span></a>
+</nav>
+
+<header class="cover">
+  <div class="cover-bg"><img src="/images/projects/chibichum/main_room.png" alt=""></div>
+  <div class="cover-eyebrow">Personal Project &middot; Independent Game</div>
+  <h1 class="cover-title" data-scramble="CHIBICHUM">CHIBICHUM</h1>
+  <p class="cover-sub">A retro, cozy virtual pet that lives on your Windows desktop taskbar, web browser, or mobile device. This case study covers the product vision, the game systems, the cross-platform architecture, and what the project taught along the way.</p>
+  <div class="cover-chips">
+    <div class="cover-status hot"><span class="dot"></span> Available now on itch.io</div>
+    <div class="cover-status"><span class="dot"></span> Formerly Retro Petz &middot; Eastern European Tamagotchi</div>
+  </div>
+  <div class="actions">
+    <a class="btn primary" href="https://itch.io/search?q=CHIBICHUM" target="_blank" rel="noopener noreferrer">Download &amp; play on itch.io <span aria-hidden="true">&#8599;</span></a>
+    <a class="btn" href="#gallery">See the gallery <span aria-hidden="true">&darr;</span></a>
+    <button class="btn" type="button" data-copy="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg><span>Copy page link</span></button>
+  </div>
+</header>
+
+<main>
+
+<!-- 01 ───────────────────────────────────────── -->
+<section class="board" id="overview">
+  <div class="board-num">01 &mdash; Project Overview &amp; Product Identity</div>
+  <h2 class="board-title" data-scramble="OVERVIEW &amp; IDENTITY">OVERVIEW &amp; IDENTITY</h2>
+  <p class="board-body">ChibiChum is the single product identity for a game that was previously referred to as <i>Retro Petz</i> and as <i>Eastern European Tamagotchi</i>. At its core it is a Tamagotchi-style care game: a small creature with needs (hunger, energy, happiness and hygiene), living in a room the player decorates, rendered in 8-bit pixel art.</p>
+  <p class="board-body">What sets it apart is where it lives. Rather than asking for a full-screen session, the pet sits on the desktop, in a browser tab or on a phone, and rewards a few seconds of attention at a time.</p>
+
+  <div class="callout tagline">
+    <div class="callout-t">Tagline</div>
+    <p>A retro, cozy virtual pet that lives on your Windows desktop taskbar, web browser, or mobile device.</p>
+  </div>
+
+  <dl class="kv">
+    <div><dt>Project name</dt><dd>ChibiChum<small>formerly <i>Retro Petz</i> / <i>Eastern European Tamagotchi</i></small></dd></div>
+    <div><dt>Genre</dt><dd>8-Bit Virtual Pet &amp; Desktop Companion Game</dd></div>
+    <div><dt>Platforms</dt><dd>Windows desktop (taskbar and system tray), web browser, mobile</dd></div>
+    <div><dt>Role</dt><dd>Lead Developer &amp; Designer</dd></div>
+    <div><dt>Tech stack</dt><dd>TypeScript / HTML5 Canvas / Tauri &amp; Electron / CSS3 / Web Audio API</dd></div>
+    <div><dt>Business model</dt><dd>Free-to-play, with a GP currency and rewarded ads</dd></div>
+  </dl>
+
+  <div class="sub">
+    <div class="sub-n">What this project demonstrates</div>
+    <div class="goal-grid">
+      <div class="goal"><div class="goal-n">01</div><div class="goal-t">Product thinking</div><p class="goal-d">A companion designed around real work routines, with notifications that double as micro-break cues.</p><div class="goal-l"><a href="#vision">Vision &rarr;</a></div></div>
+      <div class="goal"><div class="goal-n">02</div><div class="goal-t">Systems design</div><p class="goal-d">Needs, care routines, minigames, a shop and a light economy that fit together into one loop.</p><div class="goal-l"><a href="#systems">Systems &rarr;</a></div></div>
+      <div class="goal"><div class="goal-n">03</div><div class="goal-t">Cross-platform engineering</div><p class="goal-d">One shared core engine behind the Windows, web and mobile builds.</p><div class="goal-l"><a href="#architecture">Architecture &rarr;</a></div></div>
+      <div class="goal"><div class="goal-n">04</div><div class="goal-t">Pixel-art UI craft</div><p class="goal-d">Sliced sprite-sheet panels, state-driven animation and a consistent 8-bit visual language.</p><div class="goal-l"><a href="#gallery">Gallery &rarr;</a> &nbsp;<a href="#lessons">Lessons &rarr;</a></div></div>
+    </div>
+  </div>
+
+  <figure class="fig">
+    <button class="shot" type="button" data-lb="/images/projects/chibichum/desktop_widget.png" data-cap="System Tray &amp; Desktop Widget Mode" aria-haspopup="dialog">
+      <img src="/images/projects/chibichum/desktop_widget.png" width="1600" height="900" alt="System Tray &amp; Desktop Widget Mode: the widget on a Linux desktop with no frame, kept on top of other windows; its right-click tray menu; and the same game in a normal window." loading="lazy" decoding="async">
+      <span class="shot-cap"><span>The desktop widget &middot; captured on Linux</span><span>Enlarge</span></span>
+    </button>
+  </figure>
+</section>
+
+<!-- 02 ───────────────────────────────────────── -->
+<section class="board" id="vision">
+  <div class="board-num">02 &mdash; Why a Desktop Taskbar &amp; Mobile Companion Pet?</div>
+  <h2 class="board-title" data-scramble="WHY A DESKTOP PET?">WHY A DESKTOP PET?</h2>
+  <div class="sub-n">Product vision &amp; UX value</div>
+  <p class="board-body">The appeal of a virtual pet is the small, repeatable satisfaction of looking after something. Many pet games, though, ask for what a busy day rarely has: a dedicated screen and a dedicated session. ChibiChum starts from the opposite end. The pet goes where the person already is, and the experience is built from moments that take seconds.</p>
+
+  <div class="decide">
+    <div class="find"><div class="find-t">Unobtrusive companionship</div><p class="find-d">A traditional full-screen game competes with whatever else the player is doing. A taskbar or desktop pet does not. It offers low-friction micro-interactions, such as a click, a pet, or a glance at what it is up to, that brighten up a daily routine without taking it over. The pet roams its room on its own, so it is a presence rather than a task.</p><div class="find-q"><b>Design consequence</b>Every interaction has to be quick, optional and forgiving.</div></div>
+    <div class="find"><div class="find-t">Productivity &amp; micro-breaks</div><p class="find-d">Care needs surface as gentle reminders and non-intrusive notification nudges: hunger, care, cleanliness. During a long study or work session they act as small cues to look away from the task for a minute, so they are designed as invitations rather than alarms.</p><div class="find-q"><b>Design consequence</b>The wording and frequency of a nudge matter as much as the mechanism that delivers it.</div></div>
+    <div class="find"><div class="find-t">Cross-platform accessibility</div><p class="find-d">The companion goes where the player goes. It docks in the Windows system tray while they work, and is available on the web and on mobile for downtime. The platform changes; the product identity does not.</p></div>
+  </div>
+
+  <div class="sub">
+    <div class="sub-n">Design principles</div>
+    <div class="tiles">
+      <div class="tile"><div class="tile-big">Glanceable</div><p class="tile-d">Understandable at a glance, rewarding in seconds.</p></div>
+      <div class="tile"><div class="tile-big">Gentle</div><p class="tile-d">Nudges are invitations, not interruptions.</p></div>
+      <div class="tile"><div class="tile-big">Cozy</div><p class="tile-d">A warm 8-bit look and a relaxed pace.</p></div>
+      <div class="tile"><div class="tile-big">Everywhere</div><p class="tile-d">One identity across desktop, web and mobile.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 ───────────────────────────────────────── -->
+<section class="board" id="systems">
+  <div class="board-num">03 &mdash; Key Game Systems &amp; Features Showcase</div>
+  <h2 class="board-title" data-scramble="GAME SYSTEMS &amp; FEATURES">GAME SYSTEMS &amp; FEATURES</h2>
+  <p class="board-body">ChibiChum is built from five connected systems. Needs create the reasons to act, care routines and minigames provide the interaction, and the shop and economy give the player something to build toward.</p>
+
+  <div class="fgrid">
+    <article class="fcard">
+      <div class="fcard-body">
+        <div class="fcard-n">01 / 05</div>
+        <h3 class="fcard-t">Pet AI &amp; room dynamics</h3>
+        <p class="fcard-s">A pet with a life of its own, in a room that needs upkeep too.</p>
+        <ul>
+          <li><b>Autonomous roaming.</b> The pet wanders its room on its own, so the screen is alive without any input.</li>
+          <li><b>Multi-toy physics and interaction.</b> Several toys share the room and respond to being played with.</li>
+          <li><b>Room cleaning.</b> The room needs upkeep as well as the pet.</li>
+          <li><b>State decay loops.</b> Hunger, energy, happiness and hygiene decay in real time and give the player a reason to care.</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="fcard">
+      <div class="fcard-body">
+        <div class="fcard-n">02 / 05</div>
+        <h3 class="fcard-t">Interactive care routines</h3>
+        <p class="fcard-s">Each routine turns upkeep into a small piece of play instead of a menu action.</p>
+        <ul>
+          <li><b>Petting.</b> An animation with floating hearts gives immediate, readable feedback.</li>
+          <li><b>Fitness.</b> A dumbbell minigame.</li>
+          <li><b>Grooming.</b> Teeth brushing and bathtub care.</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="fcard">
+      <div class="fcard-body">
+        <div class="fcard-n">03 / 05</div>
+        <h3 class="fcard-t">Fruit Slash minigame</h3>
+        <p class="fcard-s">A quick, skill-based change of pace from the care loop.</p>
+        <ul>
+          <li>A fruit-ninja-style mode in which the player swipes or slashes fruit that spawns dynamically.</li>
+          <li>It fits the product&rsquo;s micro-break philosophy.</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="fcard">
+      <div class="fcard-body">
+        <div class="fcard-n">04 / 05</div>
+        <h3 class="fcard-t">Room customization &amp; shop</h3>
+        <p class="fcard-s">Customization gives the pet a place that feels like the player&rsquo;s own.</p>
+        <ul>
+          <li><b>Independent wallpaper slots</b> and <b>flooring customization</b> let players compose their own room.</li>
+          <li><b>Seasonal decor:</b> a Christmas tree, plus Easter and Halloween holiday themes.</li>
+          <li><b>8-bit coloring sketchbook</b> with buyable crayon packs.</li>
+          <li>Seasonal items give the room a reason to change through the year.</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="fcard wide">
+      <div class="fcard-body">
+        <div class="fcard-n">05 / 05</div>
+        <h3 class="fcard-t">Monetization architecture</h3>
+        <p class="fcard-s">Free-to-play, with a GP currency and a rewarded-ad fallback.</p>
+        <ul>
+          <li>ChibiChum is free-to-play and uses a <b>GP currency</b>.</li>
+          <li>A <b>rewarded commercial/ad fallback system</b>, coordinated through <code>AdManager</code>, handles the rewarded-ad side of the economy.</li>
+          <li>Keeping ad handling behind a single manager keeps monetization logic out of the gameplay code.</li>
+        </ul>
+        <figure class="fcard-fig">
+          <button class="shot wide" type="button" data-lb="/images/projects/chibichum/ad_break.png" data-cap="Out of GP: the commercial break" aria-haspopup="dialog">
+            <img src="/images/projects/chibichum/ad_break.png" width="1600" height="900" alt="Out of GP: the commercial break, in four screens. A +20 GP button beside Shop on the main screen; the Commercial break card with an ad counting down and Collect +20 GP not yet available; the same card finished, with Collect +20 GP available; and the Shop&rsquo;s Out of GP? row showing Commercial break +20 GP, ready in 30 s." loading="lazy" decoding="async">
+            <span class="shot-cap"><span>Out of GP &middot; the commercial break</span><span>Enlarge</span></span>
+          </button>
+          <figcaption class="fig-note"><i>Out of GP, on the web build. Below 20 GP a +20 GP button appears, and the Shop and the Menu offer it too. The break plays the game&rsquo;s own card, or a real ad when the page has one, and pays only if it is watched to the end. The next one is 30 s away; 5 a day.</i></figcaption>
+        </figure>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- 04 ───────────────────────────────────────── -->
+<section class="board" id="architecture">
+  <div class="board-num">04 &mdash; Technical Architecture &amp; Multi-Platform Delivery</div>
+  <h2 class="board-title" data-scramble="ARCHITECTURE &amp; DELIVERY">ARCHITECTURE &amp; DELIVERY</h2>
+  <p class="board-body">The goal was to ship the same game on Windows, the web and mobile without rewriting its core logic for each. The approach is to keep everything that makes ChibiChum a game on one side of a boundary, and everything that makes it an app on a particular platform on the other.</p>
+
+  <div class="layers" role="group" aria-label="Architecture: platform wrappers for Windows desktop, web and mobile sit on one shared core engine, which runs the game systems">
+    <div class="layer">
+      <div class="layer-h">Platform wrappers</div>
+      <div class="layer-cells">
+        <div class="layer-cell"><code>Windows desktop</code><span>Tauri / Electron. Frameless window, system tray, native notifications.</span></div>
+        <div class="layer-cell"><code>Web</code><span>Optimized canvas export for web portals such as Itch.io.</span></div>
+        <div class="layer-cell"><code>Mobile</code><span>Capacitor / Tauri packaging for mobile releases.</span></div>
+      </div>
+    </div>
+    <div class="layer layer-core">
+      <div class="layer-h">Core engine &middot; shared by every platform</div>
+      <div class="layer-tags"><span>game loop</span><span>state managers</span><span>sprite animation rendering</span></div>
+    </div>
+    <div class="layer">
+      <div class="layer-h">Game systems</div>
+      <div class="layer-tags"><span>pet AI</span><span>care routines</span><span>Fruit Slash</span><span>room &amp; shop</span><span>AdManager</span></div>
+    </div>
+  </div>
+  <p class="layers-note">Conceptual layering, simplified.</p>
+
+  <div class="decide">
+    <div class="find"><div class="find-t">Core engine separation</div><p class="find-d">The game loop, the state managers and sprite animation rendering are modular and independent of any platform wrapper. A wrapper hosts the engine and provides what the operating system needs. It does not contain gameplay.</p></div>
+    <div class="find"><div class="find-t">Windows desktop companion mode</div><p class="find-d">A frameless, transparent window overlay with no window chrome, so the game appears to sit directly on the desktop. System tray minimization tucks the pet away without quitting the game, and care nudges arrive through the operating system&rsquo;s own native notifications.</p></div>
+    <div class="find"><div class="find-t">Web &amp; mobile packaging</div><p class="find-d"><b style="color:var(--paper);font-weight:600">Web.</b> An optimized canvas export targets web portals such as Itch.io.<br><b style="color:var(--paper);font-weight:600">Mobile.</b> Capacitor / Tauri packaging covers mobile releases.</p></div>
+  </div>
+
+  <div class="spec-row">
+    <span class="spec-tag">TypeScript</span><span class="spec-tag">HTML5 Canvas</span><span class="spec-tag">Tauri</span><span class="spec-tag">Electron</span><span class="spec-tag">Capacitor</span><span class="spec-tag">CSS3</span><span class="spec-tag">Web Audio API</span>
+  </div>
+
+  <table class="plat" role="table">
+    <thead role="rowgroup"><tr role="row"><th role="columnheader">Platform</th><th role="columnheader">Delivered as</th><th role="columnheader">The wrapper&rsquo;s job</th><th role="columnheader">Shared from the core</th></tr></thead>
+    <tbody role="rowgroup">
+      <tr role="row"><td role="cell">Windows desktop</td><td role="cell" data-l="Delivered as">Tauri / Electron app</td><td role="cell" data-l="Wrapper&rsquo;s job">Frameless transparent window, system tray, native notifications</td><td role="cell" data-l="From the core">Game loop, state, sprite rendering and all game systems</td></tr>
+      <tr role="row"><td role="cell">Web</td><td role="cell" data-l="Delivered as">Optimized canvas export (for example, Itch.io)</td><td role="cell" data-l="Wrapper&rsquo;s job">Hosting the canvas in a web page</td><td role="cell" data-l="From the core">The same</td></tr>
+      <tr role="row"><td role="cell">Mobile</td><td role="cell" data-l="Delivered as">Capacitor / Tauri package</td><td role="cell" data-l="Wrapper&rsquo;s job">Packaging for mobile releases</td><td role="cell" data-l="From the core">The same</td></tr>
+    </tbody>
+  </table>
+
+  <figure class="fig">
+    <button class="shot wide" type="button" data-lb="/images/projects/chibichum/window_sizes.png" data-cap="One screen, four window sizes" aria-haspopup="dialog">
+      <img src="/images/projects/chibichum/window_sizes.png" width="1600" height="900" alt="One screen, four window sizes: the same handheld screen at 320 × 568, 393 × 852, 768 × 1024 and 1440 × 900, keeping its shape and scaling to fit." loading="lazy" decoding="async">
+      <span class="shot-cap"><span>One screen &middot; four window sizes</span><span>Enlarge</span></span>
+    </button>
+    <figcaption class="fig-note"><i>The same screen at four window sizes, from the smallest phone to a desktop tab. The handheld keeps its shape and scales to fit: nothing is stretched and nothing is cut off. On a desktop it stops at 420 px and the rest is page.</i></figcaption>
+  </figure>
+
+  <div class="callout">
+    <div class="callout-t">One place for gameplay</div>
+    <p>Because gameplay lives in one place, a balance change or a new care routine reaches every platform at once, and platform quirks stay contained in the wrappers.</p>
+  </div>
+</section>
+
+<!-- 05 ───────────────────────────────────────── -->
+<section class="board" id="gallery">
+  <div class="board-num">05 &mdash; Visual Asset &amp; Media Gallery</div>
+  <h2 class="board-title" data-scramble="MEDIA GALLERY">MEDIA GALLERY</h2>
+  <p class="board-body">Four views of the game: the room, the minigames, the shop and the desktop widget.</p>
+
+  <div class="gal">
+    <figure>
+      <button class="shot" type="button" data-lb="/images/projects/chibichum/main_room.png" data-cap="ChibiChum Main Room &amp; Pet Roaming" aria-haspopup="dialog">
+        <img src="/images/projects/chibichum/main_room.png" width="1600" height="900" alt="ChibiChum Main Room &amp; Pet Roaming: the main screen with the pet in a decorated room, between the Halloween set and the Christmas set." loading="lazy" decoding="async">
+        <span class="shot-cap"><span>Main room &amp; pet roaming</span><span>Enlarge</span></span>
+      </button>
+      <figcaption class="fig-note"><i>The main screen, with the pet in a customized room, between the Halloween set (left) and the Christmas set (right).</i></figcaption>
+    </figure>
+    <figure>
+      <button class="shot" type="button" data-lb="/images/projects/chibichum/minigames.png" data-cap="Minigames &amp; Grooming" aria-haspopup="dialog">
+        <img src="/images/projects/chibichum/minigames.png" width="1600" height="900" alt="Minigames &amp; Grooming: four small games, Bath time, Open wide! (teeth), Fitness and Fruit Slash, each opening over the main screen." loading="lazy" decoding="async">
+        <span class="shot-cap"><span>Minigames &amp; grooming</span><span>Enlarge</span></span>
+      </button>
+      <figcaption class="fig-note"><i>Bath, teeth, fitness and Fruit Slash: each opens as its own small game over the main screen.</i></figcaption>
+    </figure>
+    <figure>
+      <button class="shot" type="button" data-lb="/images/projects/chibichum/shop_customization.png" data-cap="Seasonal Decor &amp; Sketchbook" aria-haspopup="dialog">
+        <img src="/images/projects/chibichum/shop_customization.png" width="1600" height="900" alt="Seasonal Decor &amp; Sketchbook: the Menu with its eight tiles, Sketchbook among them; the Shop&rsquo;s Room tab with wallpapers; and the Holiday tab&rsquo;s Christmas shelf." loading="lazy" decoding="async">
+        <span class="shot-cap"><span>Seasonal decor &amp; sketchbook</span><span>Enlarge</span></span>
+      </button>
+      <figcaption class="fig-note"><i>The Menu, with its Sketchbook tile; the Shop&rsquo;s Room tab; and the Holiday shelf, here with the Christmas set.</i></figcaption>
+    </figure>
+    <figure>
+      <button class="shot" type="button" data-lb="/images/projects/chibichum/desktop_widget.png" data-cap="System Tray &amp; Desktop Widget Mode" aria-haspopup="dialog">
+        <img src="/images/projects/chibichum/desktop_widget.png" width="1600" height="900" alt="System Tray &amp; Desktop Widget Mode: the widget on a Linux desktop with no frame, kept on top of other windows; its right-click tray menu; and the same game in a normal window." loading="lazy" decoding="async">
+        <span class="shot-cap"><span>System tray &amp; desktop widget mode</span><span>Enlarge</span></span>
+      </button>
+      <figcaption class="fig-note"><i>The Electron widget as run on a Linux desktop: no frame and no background, kept on top of other windows; the right-click tray menu; and the same game in an ordinary window.</i></figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- 06 ───────────────────────────────────────── -->
+<section class="board" id="lessons">
+  <div class="board-num">06 &mdash; Project Key Takeaways &amp; Lessons Learned</div>
+  <h2 class="board-title" data-scramble="KEY TAKEAWAYS">KEY TAKEAWAYS</h2>
+  <p class="board-body">What the project taught, in two groups: engineering lessons from building it, and UX and product lessons about how a companion should behave.</p>
+
+  <div class="sub">
+    <div class="sub-n">6.1</div>
+    <h3 class="sub-h">Engineering</h3>
+    <div class="finds">
+      <div class="find"><span class="find-n">1</span><div class="find-t">Pixel-art panels need slice-aware scaling</div><p class="find-d">UI panels cut from sprite sheets stay crisp only when the corners keep their exact pixels and the edges and center do the stretching. Using the wrong resize mode on panel images distorted the art in the original mobile build. Treating panels as 9-slice assets lets them scale cleanly at any size.</p></div>
+      <div class="find"><span class="find-n">2</span><div class="find-t">One source of truth for sizing</div><p class="find-d">Hard-coded dimensions drift as screens multiply. The original mobile build centralized device-dependent sizing in a single <code>useDeviceMetrics</code> hook, so screens share one set of sizing rules.</p></div>
+      <div class="find"><span class="find-n">3</span><div class="find-t">Treat animation as a state machine</div><p class="find-d">Modeling the pet&rsquo;s behavior as explicit states with defined transitions, and blending animations between them, lets autonomous roaming and player-triggered reactions such as petting coexist without fighting each other.</p></div>
+      <div class="find"><span class="find-n">4</span><div class="find-t">An always-on window is judged on its idle cost</div><p class="find-d">A companion that stays open all day beside real work earns its place by being cheap to keep running, not by its peak frame rate. Keeping the window lightweight is what makes it welcome rather than merely tolerated.</p></div>
+      <div class="find"><span class="find-n">5</span><div class="find-t">Keep platform code at the edges</div><p class="find-d">With the loop, state and rendering in a shared core, wrappers stay thin and gameplay changes do not need per-platform rewrites.</p></div>
+    </div>
+
+    <figure class="fig">
+      <button class="shot wide" type="button" data-lb="/images/projects/chibichum/device_body.png" data-cap="The device body: v1.5 against v1.6" aria-haspopup="dialog">
+        <img src="/images/projects/chibichum/device_body.png" width="1600" height="900" alt="The device body, v1.5 against v1.6: two phones that look alike at normal size, then a zoomed corner of each. The v1.5 corner is smeared and ragged; the v1.6 corner is built from whole pixels." loading="lazy" decoding="async">
+        <span class="shot-cap"><span>The device body &middot; v1.5 against v1.6</span><span>Enlarge</span></span>
+      </button>
+      <figcaption class="fig-note"><i>Lesson 1 in the web build: the handheld&rsquo;s casing in v1.5 and v1.6 (same saved game, Chromium at 393 &times; 852, 3&times;). In v1.5 the casing is a bitmap with its bevel baked in, enlarged and clipped, so the corner comes out ragged. In v1.6 it is painted from whole pixels at the size it is shown: four identical corners, one cell per step. The corners are enlarged with nearest-neighbour, so each square is one device pixel.</i></figcaption>
+    </figure>
+  </div>
+
+  <div class="sub">
+    <div class="sub-n">6.2</div>
+    <h3 class="sub-h">UX &amp; product</h3>
+    <div class="finds">
+      <div class="find"><span class="find-n">6</span><div class="find-t">Nudges are invitations, not interruptions</div><p class="find-d">Notifications work as small cues for a break. Their tone and frequency are part of the design, not an afterthought.</p></div>
+      <div class="find"><span class="find-n">7</span><div class="find-t">Personalization creates ownership</div><p class="find-d">A room the player has decorated, with seasonal items and a sketchbook to color in, turns a generic pet into <i>their</i> pet.</p></div>
+      <div class="find"><span class="find-n">8</span><div class="find-t">Monetize around the cozy loop, not through it</div><p class="find-d">Rewarded ads and a free-to-play economy fit a cozy game only when they stay out of the care loop. Isolating them behind <code>AdManager</code> keeps that boundary explicit.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- outcome ───────────────────────────────────── -->
+<section class="outcome">
+  <div class="board-num" style="text-align:center">Outcome</div>
+  <h2 class="outcome-title" data-scramble="A FAMILIAR IDEA, FITTED TO A MODERN DAY">A FAMILIAR IDEA, FITTED TO A MODERN DAY</h2>
+  <p class="outcome-body">The virtual pet is a familiar idea. ChibiChum fits it to a modern day: small enough to live in a taskbar, rich enough to carry a care loop, minigames, a shop and a seasonal room, and built to reach three platforms from one core.</p>
+  <p class="outcome-body" style="margin-top:14px"><b style="color:var(--paper);font-weight:600">ChibiChum is already available on itch.io.</b> You can download it and play it there.</p>
+  <div class="actions">
+    <a class="btn primary" href="https://itch.io/search?q=CHIBICHUM" target="_blank" rel="noopener noreferrer">Download &amp; play on itch.io <span aria-hidden="true">&#8599;</span></a>
+    <a class="btn" href="/case-studies/chibichum-detail.html">Back to the project</a>
+    <a class="btn" href="/work?tab=personal">More personal projects</a>
+  </div>
+</section>
+
+</main>
+
+<div class="lightbox" id="lb" role="dialog" aria-modal="true" aria-label="Image viewer" aria-hidden="true">
+  <button class="lb-btn lb-close" type="button" aria-label="Close">&times;</button>
+  <button class="lb-btn lb-prev" type="button" aria-label="Previous image">&larr;</button>
+  <button class="lb-btn lb-next" type="button" aria-label="Next image">&rarr;</button>
+  <div class="lb-frame"><img id="lbimg" alt="" draggable="false"></div>
+  <div class="lb-cap" id="lbcap"></div>
+</div>
+
+<script>
+(function(){
+  // ---- scramble-text on titles (same effect as the other case studies) ----
+  var GLYPHS="ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890!<>-_/[]{}=+*^?#";
+  var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Spaces are kept, so the scrambled frames wrap where the real title wraps and can never run wider than the screen.
+  function scrambleStr(t){var s='';for(var i=0;i<t.length;i++){var c=t.charAt(i);s+=/\s/.test(c)?c:GLYPHS[Math.floor(Math.random()*GLYPHS.length)];}return s;}
+  function typeScramble(el,text,ms,steps){if(reduced||!el){if(el)el.textContent=text;return;}var i=0,st=ms/steps;var iv=setInterval(function(){i++;el.textContent=scrambleStr(text);if(i>=steps){clearInterval(iv);el.textContent=text;}},st);}
+  document.addEventListener('DOMContentLoaded',function(){
+    var els=document.querySelectorAll('[data-scramble]');
+    if(!('IntersectionObserver' in window)){return;}
+    var io=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){typeScramble(e.target,e.target.getAttribute('data-scramble'),500,10);io.unobserve(e.target);}});},{threshold:0.5});
+    els.forEach(function(el){io.observe(el);});
+  });
+
+  // ---- copy-link buttons ----
+  function copyText(text){
+    function fallback(){try{var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();var ok=document.execCommand('copy');document.body.removeChild(ta);return ok;}catch(e){return false;}}
+    if(navigator.clipboard&&navigator.clipboard.writeText){return navigator.clipboard.writeText(text).then(function(){return true;},function(){return fallback();});}
+    return Promise.resolve(fallback());
+  }
+  document.querySelectorAll('[data-copy]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var t=btn.getAttribute('data-copy');
+      if(t==='page'){t=location.href;}else if(t.charAt(0)==='/'){t=location.origin+t;}
+      var label=btn.querySelector('span'),old=label.textContent;
+      copyText(t).then(function(ok){label.textContent=ok?'Copied!':'Copy failed';setTimeout(function(){label.textContent=old;},1400);});
+    });
+  });
+
+  // ---- lightbox: fixed 16:9 frame, arrows / swipe / keyboard ----
+  // The gallery sets the order of the viewer. A picture that also appears elsewhere on the page (the desktop
+  // widget in the overview) is the same stop, not a second one, and opens at its place in the gallery.
+  var nodes=[].slice.call(document.querySelectorAll('[data-lb]'));
+  var inGal=function(n){return !!n.closest('#gallery');};
+  var items=[],seen={};
+  nodes.filter(inGal).concat(nodes.filter(function(n){return !inGal(n);})).forEach(function(el){var s=el.getAttribute('data-lb');if(!(s in seen)){seen[s]=items.length;items.push(el);}});
+  var pos=nodes.map(function(el){return seen[el.getAttribute('data-lb')];});
+  var lb=document.getElementById('lb'),img=document.getElementById('lbimg'),cap=document.getElementById('lbcap');
+  var bClose=lb.querySelector('.lb-close'),bPrev=lb.querySelector('.lb-prev'),bNext=lb.querySelector('.lb-next');
+  var idx=0,lastFocus=null,sx=null,sy=null,swiped=false;
+  function show(i){
+    idx=(i+items.length)%items.length;
+    var it=items[idx],pic=it.querySelector('img');
+    img.src=it.getAttribute('data-lb');
+    img.alt=pic?pic.getAttribute('alt'):'';
+    cap.textContent=(idx+1)+' / '+items.length+' — '+(it.getAttribute('data-cap')||'');
+  }
+  function open(i){lastFocus=document.activeElement;show(i);lb.classList.add('open');lb.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';bClose.focus();}
+  function close(){lb.classList.remove('open');lb.setAttribute('aria-hidden','true');img.removeAttribute('src');document.body.style.overflow='';if(lastFocus&&lastFocus.focus){lastFocus.focus();}}
+  nodes.forEach(function(el,k){el.addEventListener('click',function(){open(pos[k]);});});
+  bClose.addEventListener('click',close);
+  bPrev.addEventListener('click',function(e){e.stopPropagation();show(idx-1);});
+  bNext.addEventListener('click',function(e){e.stopPropagation();show(idx+1);});
+  lb.addEventListener('click',function(e){if(e.target===lb&&!swiped)close();swiped=false;});
+  // Swipe: touch uses touch events (they keep firing while the browser pans or pinch-zooms, pointer events do not);
+  // mouse and pen use pointer events. A swipe is ignored while the page is pinch-zoomed, so zoomed-in panning is left alone.
+  function zoomed(){return !!(window.visualViewport&&window.visualViewport.scale>1.05);}
+  function endSwipe(x,y){
+    if(sx===null)return;
+    var dx=x-sx,dy=y-sy;sx=null;
+    swiped=Math.abs(dx)>6||Math.abs(dy)>6;
+    if(!zoomed()&&Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.3){show(idx+(dx<0?1:-1));}
+  }
+  lb.addEventListener('touchstart',function(e){swiped=false;if(e.touches.length===1){sx=e.touches[0].clientX;sy=e.touches[0].clientY;}else{sx=null;}},{passive:true});
+  lb.addEventListener('touchend',function(e){var t=e.changedTouches[0];if(t&&e.touches.length===0){endSwipe(t.clientX,t.clientY);}},{passive:true});
+  lb.addEventListener('touchcancel',function(){sx=null;},{passive:true});
+  lb.addEventListener('pointerdown',function(e){if(e.pointerType==='touch')return;sx=e.clientX;sy=e.clientY;swiped=false;});
+  lb.addEventListener('pointerup',function(e){if(e.pointerType==='touch')return;endSwipe(e.clientX,e.clientY);});
+  document.addEventListener('keydown',function(e){
+    if(!lb.classList.contains('open'))return;
+    if(e.key==='Escape'){close();}
+    else if(e.key==='ArrowLeft'){show(idx-1);}
+    else if(e.key==='ArrowRight'){show(idx+1);}
+    else if(e.key==='Tab'){var f=[bClose,bPrev,bNext],i=f.indexOf(document.activeElement);e.preventDefault();f[(i+(e.shiftKey?-1:1)+f.length)%f.length].focus();}
+  });
+})();
+</script>
+</body>
+</html>

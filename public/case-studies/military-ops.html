@@ -1,0 +1,119 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Military Ops — Full Case Study — Alex Stefan</title>
+<meta name="description" content="Full case study of a UI/UX system for an unlaunched, Ghost Recon-branded military live-service shooter: home, debrief, progression, moderation and UI kit."><link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet"><style>
+:root{--ink:#0b0a0c;--panel:#171215;--line:#332a2d;--line-soft:#231c1f;--paper:#f3efe9;--mute:#a49a9d;--mute-dim:#6e6467;--red:#e8232f;--red-dim:#5c1116;--pink:#ff2f78;--mono:'IBM Plex Mono',monospace;--disp:'Chakra Petch',sans-serif;--body:'Inter',sans-serif}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--ink);scroll-behavior:smooth}
+body{background:var(--ink);color:var(--paper);font-family:var(--body);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%;height:auto}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--red);color:#fff}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:20px 40px;background:rgba(11,10,12,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line-soft)}
+.topbar-brand{font-family:var(--disp);font-weight:700;font-size:14px;letter-spacing:3px;text-transform:uppercase}
+.topbar-brand span{color:var(--red)}
+.back-link{font-family:var(--mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mute);border:1px solid var(--line);padding:9px 16px;border-radius:3px;transition:all .2s}
+.back-link:hover{color:var(--paper);border-color:var(--red)}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:999;display:none;align-items:center;justify-content:center;padding:30px}
+.lightbox.open{display:flex}
+.lightbox img{max-width:92vw;max-height:90vh;object-fit:contain}
+.lightbox-close{position:absolute;top:24px;right:32px;font-size:30px;color:#fff;background:none;border:none;cursor:pointer}
+
+.cover{min-height:92vh;display:flex;flex-direction:column;justify-content:center;padding:0 8vw;position:relative;overflow:hidden;border-bottom:1px solid var(--line-soft)}
+.cover-bg{position:absolute;inset:0;opacity:.22}.cover-bg img{width:100%;height:100%;object-fit:cover}
+.cover-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,10,12,.4),var(--ink) 90%)}
+.cover-eyebrow{position:relative;z-index:2;font-family:var(--mono);font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--red);margin-bottom:22px}
+.cover-title{position:relative;z-index:2;font-family:var(--disp);font-weight:700;font-size:clamp(52px,9vw,128px);line-height:.94;letter-spacing:1px;text-transform:uppercase;margin-bottom:24px;min-height:1.1em}
+.cover-sub{position:relative;z-index:2;font-size:16px;color:var(--mute);max-width:640px;line-height:1.7}
+.cover-status{position:relative;z-index:2;display:inline-flex;align-items:center;gap:8px;margin-top:28px;font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;border:1px solid var(--red-dim);background:rgba(232,35,47,.08);padding:8px 16px;border-radius:3px;width:fit-content}
+.cover-status .dot{width:7px;height:7px;border-radius:50%;background:var(--red)}
+.board{padding:100px 8vw;border-bottom:1px solid var(--line-soft)}
+.board-num{font-family:var(--mono);font-size:11px;letter-spacing:3px;color:var(--mute-dim);margin-bottom:14px}
+.board-title{font-family:var(--disp);font-weight:700;font-size:clamp(28px,4vw,48px);letter-spacing:.5px;text-transform:uppercase;margin-bottom:22px;min-height:1.1em}
+.board-body{font-size:15px;line-height:1.85;color:var(--mute);max-width:760px;margin-bottom:24px}
+.board-body b{color:var(--paper);font-weight:600}
+.shot-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.shot-grid.single{grid-template-columns:1fr;max-width:760px}
+.shot{background:var(--panel);border:1px solid var(--line);border-radius:6px;overflow:hidden;cursor:pointer;display:block;width:100%;text-align:left}
+.shot img{width:100%;height:100%;object-fit:cover;transition:transform .4s}.shot:hover img{transform:scale(1.03)}
+.shot-cap{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mute-dim);padding:10px 14px;border-top:1px solid var(--line)}
+.pair-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px}
+.pair-label{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--red);margin-bottom:10px}
+.spec-row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:32px}
+.spec-tag{font-family:var(--mono);font-size:11px;background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:8px 14px}
+.timing-bar{display:flex;height:44px;border-radius:4px;overflow:hidden;margin-bottom:36px;max-width:760px}
+.timing-seg{display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;font-weight:600;color:#0b0a0c}
+.timing-a{background:#f5d76e;flex:.5}.timing-b{background:#50c8e0;flex:3.5}.timing-c{background:#6ef578;flex:1}
+.videos-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:1100px}
+.video-frame{aspect-ratio:16/9;background:#000;border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+.video-frame iframe{width:100%;height:100%;border:none}
+@media(max-width:900px){.shot-grid,.pair-row{grid-template-columns:1fr}.videos-grid{grid-template-columns:1fr;max-width:680px}}
+@media(max-width:600px){.board{padding:64px 6vw}}
+.outcome{padding:100px 8vw 140px;text-align:center}
+.outcome-title{font-family:var(--disp);font-weight:700;font-size:clamp(28px,4vw,44px);text-transform:uppercase;margin-bottom:24px}
+.outcome-body{font-size:15px;line-height:1.9;color:var(--mute);max-width:660px;margin:0 auto}
+</style></head><body>
+<nav class="topbar"><a href="/work" class="topbar-brand">ALEX <span>STEFAN</span></a><a href="military-ops-detail.html" class="back-link">&larr; Back to Military Ops</a></nav>
+<div class="cover"><div class="cover-bg"><img src="/images/projects/military-ops/landing.jpg" alt=""></div>
+<div class="cover-eyebrow">UI/UX Design &middot; Ghost Recon (Unlaunched)</div>
+<h1 class="cover-title" data-scramble="MILITARY OPS">MILITARY OPS</h1>
+<p class="cover-sub">A full UI/UX system built for an unlaunched, Ghost Recon&#8211;branded military live-service shooter &#8212; home &amp; landing, player identity, post-match debrief, weekly progression, a full player-reporting &amp; moderation system, the underlying UI kit, and an animated tactical-tablet interface.</p>
+<div class="cover-status"><span class="dot"></span> Project Status: Unlaunched / Prototype</div></div>
+
+<div class="board"><div class="board-num">01 &mdash; Overview</div><h2 class="board-title" data-scramble="WHAT THIS PROJECT WAS">WHAT THIS PROJECT WAS</h2>
+<p class="board-body">This was UI/UX design work for an unlaunched military live-service title referencing the <b>Ghost Recon</b> brand internally. The scope covered the full player journey: the home/landing HUD, player identity (specialization cards), post-match debrief screens, a weekly assignments &amp; progression system, and a complete player-reporting and moderation flow &#8212; all built on a shared UI kit (colors, buttons, cursor).</p>
+<p class="board-body">The project did not ship. The pages below walk through the systems as designed.</p></div>
+
+<div class="board"><div class="board-num">02 &mdash; Home &amp; Landing</div><h2 class="board-title" data-scramble="HOME &amp; LANDING">HOME &amp; LANDING</h2>
+<p class="board-body">The landing screen surfaces the current squad, an assignment tracker (capped at two lines per entry &#8212; deliberately no scroll, to keep the panel from breaking), promotional tiles, operator switching, and the current match mode &#8212; all readable at a glance before a match starts.</p>
+<div class="shot-grid"><button class="shot" onclick="openLB('/images/projects/military-ops/landing.jpg')"><img src="/images/projects/military-ops/landing.jpg" alt="Landing / Home HUD"><div class="shot-cap">Landing / Home HUD</div></button><button class="shot" onclick="openLB('/images/projects/military-ops/landing-blocked-feedback.jpg')"><img src="/images/projects/military-ops/landing-blocked-feedback.jpg" alt="Locked Feedback"><div class="shot-cap">Locked Feedback</div></button></div></div>
+
+<div class="board"><div class="board-num">03 &mdash; Player Identity</div><h2 class="board-title" data-scramble="PLAYER IDENTITY">PLAYER IDENTITY</h2>
+<p class="board-body">Player cards carry a specialization (Demolition Expert, Sniper, Ghost Recon), callsign, rank, and platform identity &#8212; designed to read clearly whether shown solo or side-by-side with squadmates.</p>
+<div class="shot-grid single"><button class="shot" onclick="openLB('/images/projects/military-ops/player-cards.jpg')"><img src="/images/projects/military-ops/player-cards.jpg" alt="Player Specialization Cards"><div class="shot-cap">Player Specialization Cards</div></button></div></div>
+
+<div class="board"><div class="board-num">04 &mdash; Post-Match Debrief</div><h2 class="board-title" data-scramble="POST-MATCH DEBRIEF">POST-MATCH DEBRIEF</h2>
+<p class="board-body">Two directions for the end-of-match summary: one breaking the score down by category (combat, economy, objective) against a rolling history of the last 10 matches, and a second exploring a playstyle read-out on a triangular chart, labeling the player's session (e.g. &ldquo;Casualty&rdquo;) from the same three axes.</p>
+<div class="shot-grid"><button class="shot" onclick="openLB('/images/projects/military-ops/finish-categories.jpg')"><img src="/images/projects/military-ops/finish-categories.jpg" alt="Debrief — Category Breakdown"><div class="shot-cap">Debrief — Category Breakdown</div></button><button class="shot" onclick="openLB('/images/projects/military-ops/finish-playstyle.jpg')"><img src="/images/projects/military-ops/finish-playstyle.jpg" alt="Debrief — Playstyle Chart"><div class="shot-cap">Debrief — Playstyle Chart</div></button></div></div>
+
+<div class="board"><div class="board-num">05 &mdash; Weekly Assignments &amp; Progression</div><h2 class="board-title" data-scramble="WEEKLY PROGRESSION">WEEKLY PROGRESSION</h2>
+<p class="board-body">Players choose between two weekly objective packages (each built from the same underlying pool of objectives, reframed under a different theme), then track progress against a week-long checklist with objectives unlocking in sequence and their locations pinned on the map.</p>
+<div class="shot-grid"><button class="shot" onclick="openLB('/images/projects/military-ops/objective-package.jpg')"><img src="/images/projects/military-ops/objective-package.jpg" alt="Choose Objective Package"><div class="shot-cap">Choose Objective Package</div></button><button class="shot" onclick="openLB('/images/projects/military-ops/week-detail.jpg')"><img src="/images/projects/military-ops/week-detail.jpg" alt="Week Detail — Progress & Map"><div class="shot-cap">Week Detail — Progress & Map</div></button></div></div>
+
+<div class="board"><div class="board-num">06 &mdash; Reporting a Player</div><h2 class="board-title" data-scramble="REPORTING A PLAYER">REPORTING A PLAYER</h2>
+<p class="board-body">The report flow needed two contexts &#8212; from the menus, and without interrupting play in-game &#8212; with different category sets for each (general conduct in menus; conduct <b>and</b> cheating call-outs in-game, since that's where cheating is actually witnessed). Each went through a wireframe pass before the visual design.</p>
+<div class="pair-row"><div><div class="pair-label">Wireframe &mdash; In Menus</div><button class="shot" onclick="openLB('/images/projects/military-ops/wire-report-menus.jpg')"><img src="/images/projects/military-ops/wire-report-menus.jpg" alt="Wireframe"><div class="shot-cap">Wireframe</div></button></div><div><div class="pair-label">Mockup &mdash; In Menus</div><button class="shot" onclick="openLB('/images/projects/military-ops/mock-report-menus.jpg')"><img src="/images/projects/military-ops/mock-report-menus.jpg" alt="Mockup"><div class="shot-cap">Mockup</div></button></div></div><div class="pair-row"><div><div class="pair-label">Wireframe &mdash; In Game</div><button class="shot" onclick="openLB('/images/projects/military-ops/wire-report-ingame.jpg')"><img src="/images/projects/military-ops/wire-report-ingame.jpg" alt="Wireframe"><div class="shot-cap">Wireframe</div></button></div><div><div class="pair-label">Mockup &mdash; In Game</div><button class="shot" onclick="openLB('/images/projects/military-ops/mock-report-ingame.jpg')"><img src="/images/projects/military-ops/mock-report-ingame.jpg" alt="Mockup"><div class="shot-cap">Mockup</div></button></div></div></div>
+
+<div class="board"><div class="board-num">07 &mdash; Consequences &amp; Feedback</div><h2 class="board-title" data-scramble="CONSEQUENCES &amp; FEEDBACK">CONSEQUENCES &amp; FEEDBACK</h2>
+<p class="board-body">On the other side of a report: clear, unambiguous consequence screens for cheating and toxic behavior, each carried from wireframe to final mockup, plus explorations for a lighter-weight &ldquo;temporary block&rdquo; notification used for shorter cooldowns rather than a full ban.</p>
+<div class="pair-row"><div><div class="pair-label">Wireframe &mdash; Banned for Cheating</div><button class="shot" onclick="openLB('/images/projects/military-ops/wire-ban-cheating.jpg')"><img src="/images/projects/military-ops/wire-ban-cheating.jpg" alt="Wireframe"><div class="shot-cap">Wireframe</div></button></div><div><div class="pair-label">Mockup &mdash; Banned for Cheating</div><button class="shot" onclick="openLB('/images/projects/military-ops/mock-ban-cheating.jpg')"><img src="/images/projects/military-ops/mock-ban-cheating.jpg" alt="Mockup"><div class="shot-cap">Mockup</div></button></div></div><div class="pair-row"><div><div class="pair-label">Wireframe &mdash; Banned for Toxicity</div><button class="shot" onclick="openLB('/images/projects/military-ops/wire-ban-toxic.jpg')"><img src="/images/projects/military-ops/wire-ban-toxic.jpg" alt="Wireframe"><div class="shot-cap">Wireframe</div></button></div><div><div class="pair-label">Mockup &mdash; Banned for Toxicity</div><button class="shot" onclick="openLB('/images/projects/military-ops/mock-ban-toxic.jpg')"><img src="/images/projects/military-ops/mock-ban-toxic.jpg" alt="Mockup"><div class="shot-cap">Mockup</div></button></div></div><div class="shot-grid"><button class="shot" onclick="openLB('/images/projects/military-ops/ban-modal-context.jpg')"><img src="/images/projects/military-ops/ban-modal-context.jpg" alt="Ban Modal — In Context"><div class="shot-cap">Ban Modal — In Context</div></button><button class="shot" onclick="openLB('/images/projects/military-ops/blocked-button-explorations.jpg')"><img src="/images/projects/military-ops/blocked-button-explorations.jpg" alt=""Blocked" Explorations"><div class="shot-cap">"Blocked" Explorations</div></button></div></div>
+
+<div class="board"><div class="board-num">08 &mdash; UI Kit &amp; Visual System</div><h2 class="board-title" data-scramble="UI KIT &amp; VISUAL SYSTEM">UI KIT &amp; VISUAL SYSTEM</h2>
+<p class="board-body">The shared foundation underneath every screen above: a custom cursor and reticle-style icon set, a four-category color system (Brand, Extended, Rarity, Party) with tonal variants, and a full button-state matrix (Default, CTA, Blocked, Disabled, Error &times; Normal, Hover, Click).</p>
+<div class="shot-grid"><button class="shot" onclick="openLB('/images/projects/military-ops/cursor.jpg')"><img src="/images/projects/military-ops/cursor.jpg" alt="Cursor & Reticle Icons"><div class="shot-cap">Cursor & Reticle Icons</div></button><button class="shot" onclick="openLB('/images/projects/military-ops/colors.jpg')"><img src="/images/projects/military-ops/colors.jpg" alt="Color System"><div class="shot-cap">Color System</div></button></div><div class="shot-grid single" style="margin-top:16px"><button class="shot" onclick="openLB('/images/projects/military-ops/buttons-standard.jpg')"><img src="/images/projects/military-ops/buttons-standard.jpg" alt="Standard Button States"><div class="shot-cap">Standard Button States</div></button></div></div>
+
+<div class="board" style="border-bottom:none"><div class="board-num">09 &mdash; TAC-OS: The Tactical Tablet</div><h2 class="board-title" data-scramble="TAC-OS TABLET SYSTEM">TAC-OS TABLET SYSTEM</h2>
+<p class="board-body">TAC-OS is the in-fiction operating system running on the player's tactical tablet &#8212; built as its own consistent design language so every tablet screen feels like the same device, no matter which tool is open, and sharing its color scheme with the main game UI.</p>
+<p class="board-body">The drone-hacking sequence was specced as a 5-second, three-state animation &#8212; a fixed format (4:3, 640&times;480, WebM VP9, no audio) so it could be produced consistently in After Effects and Blender.</p>
+<div class="timing-bar"><div class="timing-seg timing-a">0.5s Unlock</div><div class="timing-seg timing-b">3.5s Hacking Progress</div><div class="timing-seg timing-c">1s Success</div></div>
+<div class="spec-row"><span class="spec-tag">4:3 &middot; 640&times;480</span><span class="spec-tag">WebM VP9 &middot; 30FPS</span><span class="spec-tag">No Audio</span><span class="spec-tag">States: Intro / Hacking / Success</span></div>
+<div class="shot-grid"><button class="shot" onclick="openLB('/images/projects/military-ops/tacos-specs.jpg')"><img src="/images/projects/military-ops/tacos-specs.jpg" alt="Spec — States & Content"><div class="shot-cap">Spec — States & Content</div></button><button class="shot" onclick="openLB('/images/projects/military-ops/tacos-timing.jpg')"><img src="/images/projects/military-ops/tacos-timing.jpg" alt="Spec — Animation Timing"><div class="shot-cap">Spec — Animation Timing</div></button></div><div class="shot-grid single" style="margin:16px 0 36px"><button class="shot" onclick="openLB('/images/projects/military-ops/tacos-os-branding.jpg')"><img src="/images/projects/military-ops/tacos-os-branding.jpg" alt="TAC-OS Branding Rationale"><div class="shot-cap">TAC-OS Branding Rationale</div></button></div>
+<p class="board-body"><b>Rendered sequences</b> &#8212; six drone-hacking animation variants, built in After Effects and Blender to this spec:</p>
+<div class="videos-grid"><div class="video-frame"><iframe src="https://www.youtube.com/embed/Mz2lsN-kyKA" allow="encrypted-media" allowfullscreen></iframe></div><div class="video-frame"><iframe src="https://www.youtube.com/embed/hLrcLpuTlr0" allow="encrypted-media" allowfullscreen></iframe></div><div class="video-frame"><iframe src="https://www.youtube.com/embed/DtS5FaCVM48" allow="encrypted-media" allowfullscreen></iframe></div><div class="video-frame"><iframe src="https://www.youtube.com/embed/2vCRcH3tsLE" allow="encrypted-media" allowfullscreen></iframe></div><div class="video-frame"><iframe src="https://www.youtube.com/embed/j2gm-GKt9ok" allow="encrypted-media" allowfullscreen></iframe></div><div class="video-frame"><iframe src="https://www.youtube.com/embed/C5woLpF1Glo" allow="encrypted-media" allowfullscreen></iframe></div></div></div>
+
+<div class="outcome"><div class="board-num" style="text-align:center">10 &mdash; Outcome</div><h2 class="outcome-title" data-scramble="UNLAUNCHED, NOT UNFINISHED">UNLAUNCHED, NOT UNFINISHED</h2>
+<p class="outcome-body">This project didn't ship &#8212; but the systems above were carried from wireframe to finished mockup across every major player-facing surface: onboarding into a match, identity, progression, moderation, and the tactical tablet's own motion language. It's a fuller picture of end-to-end UI/UX ownership than a single shipped feature usually shows.</p></div>
+<div class="lightbox" id="lb" onclick="closeLB()"><button class="lightbox-close" type="button" onclick="closeLB()" aria-label="Close">&times;</button><img id="lbimg" alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" onclick="event.stopPropagation()"></div><script>
+var GLYPHS="ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890!<>-_/[]{}=+*^?#";
+var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function scrambleStr(n){var s='';for(var i=0;i<n;i++){s+=GLYPHS[Math.floor(Math.random()*GLYPHS.length)];}return s;}
+function typeScramble(el,text,ms,steps){if(reduced||!el){if(el)el.textContent=text;return;}var i=0,st=ms/steps;var iv=setInterval(function(){i++;el.textContent=scrambleStr(Math.max(text.length,4));if(i>=steps){clearInterval(iv);el.textContent=text;}},st);}
+document.addEventListener('DOMContentLoaded',function(){
+  var els=document.querySelectorAll('[data-scramble]');
+  var io=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){typeScramble(e.target,e.target.getAttribute('data-scramble'),500,10);io.unobserve(e.target);}});},{threshold:0.5});
+  els.forEach(function(el){io.observe(el);});
+});
+function openLB(src){document.getElementById('lbimg').src=src;document.getElementById('lb').classList.add('open');}
+function closeLB(){document.getElementById('lb').classList.remove('open');}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLB();});
+var track=document.querySelector('.carousel-track');
+if(track){document.querySelectorAll('.carousel-btn').forEach(function(b){b.addEventListener('click',function(){var d=b.getAttribute('data-dir')==='prev'?-1:1;track.scrollBy({left:d*track.clientWidth*0.62,behavior:'smooth'});});});}
+</script></body></html>

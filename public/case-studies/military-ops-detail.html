@@ -1,0 +1,95 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Military Ops — Alex Stefan</title>
+<meta name="description" content="Military Ops: a full UI/UX system for an unlaunched, Ghost Recon-branded military live-service shooter. Landing, debrief, progression, reporting and UI kit."><link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet"><style>
+:root{--ink:#0b0a0c;--panel:#171215;--line:#332a2d;--line-soft:#231c1f;--paper:#f3efe9;--mute:#a49a9d;--mute-dim:#6e6467;--red:#e8232f;--red-dim:#5c1116;--pink:#ff2f78;--mono:'IBM Plex Mono',monospace;--disp:'Chakra Petch',sans-serif;--body:'Inter',sans-serif}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--ink);scroll-behavior:smooth}
+body{background:var(--ink);color:var(--paper);font-family:var(--body);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%;height:auto}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--red);color:#fff}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:20px 40px;background:rgba(11,10,12,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line-soft)}
+.topbar-brand{font-family:var(--disp);font-weight:700;font-size:14px;letter-spacing:3px;text-transform:uppercase}
+.topbar-brand span{color:var(--red)}
+.back-link{font-family:var(--mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mute);border:1px solid var(--line);padding:9px 16px;border-radius:3px;transition:all .2s}
+.back-link:hover{color:var(--paper);border-color:var(--red)}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:999;display:none;align-items:center;justify-content:center;padding:30px}
+.lightbox.open{display:flex}
+.lightbox img{max-width:92vw;max-height:90vh;object-fit:contain}
+.lightbox-close{position:absolute;top:24px;right:32px;font-size:30px;color:#fff;background:none;border:none;cursor:pointer}
+
+.detail-hero{width:100%;aspect-ratio:21/9;position:relative;overflow:hidden;background:var(--panel)}
+.detail-hero img{width:100%;height:100%;object-fit:cover}
+.detail-hero::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,var(--ink) 100%);pointer-events:none}
+.detail-kicker{position:absolute;bottom:24px;left:40px;z-index:2;font-family:var(--mono);font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--red)}
+.detail-h1{position:absolute;bottom:44px;left:40px;z-index:2;font-family:var(--disp);font-weight:700;font-size:clamp(32px,5vw,58px);letter-spacing:1px;text-transform:uppercase;min-height:1.2em}
+.section{max-width:1000px;margin:0 auto;padding:72px 24px 0}
+.section-label{font-family:var(--mono);font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--red);text-align:center;margin-bottom:20px}
+.section-body{font-size:15px;line-height:1.85;color:var(--mute);text-align:center;max-width:720px;margin:0 auto}
+.small-tag-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:20px}
+.small-tag{font-family:var(--mono);font-size:11px;color:var(--mute);border:1px solid var(--line);border-radius:3px;padding:6px 12px}
+.trailers-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:1100px;margin:28px auto 0;padding:0 24px}
+.trailer-frame{aspect-ratio:16/9;background:#000;border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+.trailer-frame iframe{width:100%;height:100%;border:none}
+.study-card{max-width:1000px;margin:0 auto;padding:0 24px}
+.study-card-inner{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden;display:grid;grid-template-columns:320px 1fr}
+.study-card-img img{width:100%;height:100%;object-fit:cover}
+.study-card-body{padding:36px;display:flex;flex-direction:column;justify-content:center}
+.study-card-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--red);margin-bottom:10px}
+.study-card-title{font-family:var(--disp);font-weight:700;font-size:24px;text-transform:uppercase;margin-bottom:12px}
+.study-card-desc{font-size:13px;color:var(--mute);line-height:1.7;margin-bottom:22px}
+.study-card-btn{display:inline-flex;background:var(--red);color:#fff;font-family:var(--mono);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;padding:12px 22px;border-radius:4px;width:fit-content}
+.carousel-wrap{max-width:1000px;margin:28px auto 0;padding:0 24px}
+.carousel-track{display:flex;overflow-x:auto;gap:12px;scroll-snap-type:x mandatory;scrollbar-width:none}
+.carousel-track::-webkit-scrollbar{display:none}
+.carousel-item{flex:0 0 62%;aspect-ratio:16/10;scroll-snap-align:start;border-radius:5px;overflow:hidden;background:var(--panel);border:1px solid var(--line);cursor:pointer}
+.carousel-item img{width:100%;height:100%;object-fit:cover}
+.carousel-nav{display:flex;justify-content:center;gap:12px;margin-top:18px}
+.carousel-btn{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--paper);cursor:pointer;font-size:16px}
+.carousel-btn:hover{border-color:var(--red);color:var(--red)}
+@media(min-width:640px){.carousel-item{flex-basis:44%}}
+.conclusion{max-width:680px;margin:64px auto 0;padding:32px 24px 110px;text-align:center;border-top:1px solid var(--line-soft)}
+.conclusion-label{font-family:var(--mono);font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--mute-dim);margin:32px 0 16px}
+.conclusion-body{font-size:15px;line-height:1.85;color:var(--mute)}
+@media(max-width:700px){.trailers-grid{grid-template-columns:1fr}.study-card-inner{grid-template-columns:1fr}.detail-h1,.detail-kicker{left:20px}}
+</style></head><body>
+<nav class="topbar"><a href="/work" class="topbar-brand">ALEX <span>STEFAN</span></a><a href="/work" class="back-link">&larr; Back to Work</a></nav>
+<div class="detail-hero"><img src="/images/projects/military-ops/landing.jpg" alt="Military Ops">
+<div class="detail-kicker">UI/UX Design &middot; Unlaunched Project</div><h1 class="detail-h1" data-scramble="MILITARY OPS">MILITARY OPS</h1></div>
+
+<div class="section"><div class="section-label">Overview</div>
+<p class="section-body">UI/UX design for an unlaunched, Ghost Recon&#8211;branded military live-service shooter: a full set of player-facing systems &#8212; home &amp; landing, player identity cards, post-match debrief, weekly progression, a complete player-reporting and moderation flow, the shared UI kit, and the animated TAC-OS tactical tablet. The project didn't ship; the work stands on its own.</p>
+<div class="small-tag-row"><span class="small-tag">UI/UX Design</span><span class="small-tag">HUD</span><span class="small-tag">Moderation UX</span><span class="small-tag">Motion (After Effects + Blender)</span><span class="small-tag">Unlaunched</span></div></div>
+
+<div class="section-label" style="margin-top:72px">TAC-OS Tablet Animations</div>
+<div class="trailers-grid"><div class="trailer-frame"><iframe src="https://www.youtube.com/embed/Mz2lsN-kyKA" allow="encrypted-media" allowfullscreen></iframe></div><div class="trailer-frame"><iframe src="https://www.youtube.com/embed/hLrcLpuTlr0" allow="encrypted-media" allowfullscreen></iframe></div><div class="trailer-frame"><iframe src="https://www.youtube.com/embed/DtS5FaCVM48" allow="encrypted-media" allowfullscreen></iframe></div><div class="trailer-frame"><iframe src="https://www.youtube.com/embed/2vCRcH3tsLE" allow="encrypted-media" allowfullscreen></iframe></div><div class="trailer-frame"><iframe src="https://www.youtube.com/embed/j2gm-GKt9ok" allow="encrypted-media" allowfullscreen></iframe></div><div class="trailer-frame"><iframe src="https://www.youtube.com/embed/C5woLpF1Glo" allow="encrypted-media" allowfullscreen></iframe></div></div>
+
+<div class="section-label" style="margin-top:72px">Full Case Study</div>
+<div class="study-card"><a class="study-card-inner" href="military-ops.html">
+<div class="study-card-img"><img src="/images/projects/military-ops/landing.jpg" alt=""></div>
+<div class="study-card-body"><div class="study-card-eyebrow">Deep Dive</div><div class="study-card-title">Military Ops — Full UI/UX Case Study</div>
+<p class="study-card-desc">The complete breakdown: landing &amp; identity, debrief screens, weekly progression, the player-reporting and moderation system (wireframe to mockup), the UI kit, and the TAC-OS tablet specs and animations.</p>
+<span class="study-card-btn">Read Full Case Study &rarr;</span></div></a></div>
+
+<div class="section-label" style="margin-top:72px">Screenshots &middot; 10</div>
+<div class="carousel-wrap"><div class="carousel-track"><div class="carousel-item" onclick="openLB('/images/projects/military-ops/landing.jpg')"><img src="/images/projects/military-ops/landing.jpg" alt="" loading="lazy"></div><div class="carousel-item" onclick="openLB('/images/projects/military-ops/player-cards.jpg')"><img src="/images/projects/military-ops/player-cards.jpg" alt="" loading="lazy"></div><div class="carousel-item" onclick="openLB('/images/projects/military-ops/finish-categories.jpg')"><img src="/images/projects/military-ops/finish-categories.jpg" alt="" loading="lazy"></div><div class="carousel-item" onclick="openLB('/images/projects/military-ops/finish-playstyle.jpg')"><img src="/images/projects/military-ops/finish-playstyle.jpg" alt="" loading="lazy"></div><div class="carousel-item" onclick="openLB('/images/projects/military-ops/objective-package.jpg')"><img src="/images/projects/military-ops/objective-package.jpg" alt="" loading="lazy"></div><div class="carousel-item" onclick="openLB('/images/projects/military-ops/week-detail.jpg')"><img src="/images/projects/military-ops/week-detail.jpg" alt="" loading="lazy"></div><div class="carousel-item" onclick="openLB('/images/projects/military-ops/mock-report-menus.jpg')"><img src="/images/projects/military-ops/mock-report-menus.jpg" alt="" loading="lazy"></div><div class="carousel-item" onclick="openLB('/images/projects/military-ops/mock-report-ingame.jpg')"><img src="/images/projects/military-ops/mock-report-ingame.jpg" alt="" loading="lazy"></div><div class="carousel-item" onclick="openLB('/images/projects/military-ops/mock-ban-cheating.jpg')"><img src="/images/projects/military-ops/mock-ban-cheating.jpg" alt="" loading="lazy"></div><div class="carousel-item" onclick="openLB('/images/projects/military-ops/ban-modal-context.jpg')"><img src="/images/projects/military-ops/ban-modal-context.jpg" alt="" loading="lazy"></div></div>
+<div class="carousel-nav"><button class="carousel-btn" data-dir="prev">&larr;</button><button class="carousel-btn" data-dir="next">&rarr;</button></div></div>
+
+<div class="conclusion"><div class="conclusion-label">Closing Notes</div>
+<p class="conclusion-body">Unlaunched, not unfinished: every major player-facing surface was carried from wireframe to finished mockup &#8212; a fuller picture of end-to-end UI/UX ownership than a single shipped feature usually shows.</p></div>
+<div class="lightbox" id="lb" onclick="closeLB()"><button class="lightbox-close" type="button" onclick="closeLB()" aria-label="Close">&times;</button><img id="lbimg" alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" onclick="event.stopPropagation()"></div><script>
+var GLYPHS="ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890!<>-_/[]{}=+*^?#";
+var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function scrambleStr(n){var s='';for(var i=0;i<n;i++){s+=GLYPHS[Math.floor(Math.random()*GLYPHS.length)];}return s;}
+function typeScramble(el,text,ms,steps){if(reduced||!el){if(el)el.textContent=text;return;}var i=0,st=ms/steps;var iv=setInterval(function(){i++;el.textContent=scrambleStr(Math.max(text.length,4));if(i>=steps){clearInterval(iv);el.textContent=text;}},st);}
+document.addEventListener('DOMContentLoaded',function(){
+  var els=document.querySelectorAll('[data-scramble]');
+  var io=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){typeScramble(e.target,e.target.getAttribute('data-scramble'),500,10);io.unobserve(e.target);}});},{threshold:0.5});
+  els.forEach(function(el){io.observe(el);});
+});
+function openLB(src){document.getElementById('lbimg').src=src;document.getElementById('lb').classList.add('open');}
+function closeLB(){document.getElementById('lb').classList.remove('open');}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLB();});
+var track=document.querySelector('.carousel-track');
+if(track){document.querySelectorAll('.carousel-btn').forEach(function(b){b.addEventListener('click',function(){var d=b.getAttribute('data-dir')==='prev'?-1:1;track.scrollBy({left:d*track.clientWidth*0.62,behavior:'smooth'});});});}
+</script></body></html>

@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1KeyForge Pro — Full Case Study — Alex Stefan</title>
+<meta name="description" content="Case study: 1KeyForge Pro, a single-file mobile web app that turns a bitting code into a true-scale key and exports it as SVG, STL and DXF. Goals, architecture, features, the geometry audit and the roadmap.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0b0a0c;--panel:#171215;--panel-2:#1d171a;--line:#332a2d;--line-soft:#231c1f;--paper:#f3efe9;--mute:#a49a9d;--mute-dim:#857b7e;--red:#e8232f;--red-hi:#ff8a92;--red-dim:#5c1116;--mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;--disp:'Space Grotesk',system-ui,sans-serif;--body:'DM Sans',system-ui,sans-serif}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--ink);scroll-behavior:smooth}
+body{background:var(--ink);color:var(--paper);font-family:var(--body);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%;height:auto}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit}
+::selection{background:var(--red);color:#fff}
+[data-scramble]{overflow-wrap:anywhere}
+:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+/* ---- shared chrome (same as the other case studies) ---- */
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 40px;background:rgba(11,10,12,.88);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line-soft)}
+.topbar-brand{font-family:var(--disp);font-weight:700;font-size:14px;letter-spacing:3px;text-transform:uppercase;white-space:nowrap}
+.topbar-brand span{color:var(--red)}
+.back-link{font-family:var(--mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mute);border:1px solid var(--line);padding:9px 16px;border-radius:3px;transition:all .2s;white-space:nowrap}
+.back-link:hover{color:var(--paper);border-color:var(--red)}
+.back-link .sm{display:none}
+@media(max-width:560px){.topbar{padding:14px 16px}.back-link .lg{display:none}.back-link .sm{display:inline}}
+
+/* ---- cover ---- */
+.cover{min-height:92vh;display:flex;flex-direction:column;justify-content:center;padding:0 8vw;position:relative;overflow:hidden;border-bottom:1px solid var(--line-soft)}
+.cover-bg{position:absolute;inset:0;opacity:.22}.cover-bg img{width:100%;height:100%;object-fit:cover}
+.cover-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,10,12,.4),var(--ink) 90%)}
+.cover-eyebrow{position:relative;z-index:2;font-family:var(--mono);font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--red);margin-bottom:22px}
+.cover-title{position:relative;z-index:2;font-family:var(--disp);font-weight:700;font-size:clamp(46px,9vw,128px);line-height:.94;letter-spacing:1px;text-transform:uppercase;margin-bottom:24px;min-height:1.1em}
+.cover-sub{position:relative;z-index:2;font-size:16px;color:var(--mute);max-width:660px;line-height:1.7}
+.cover-status{position:relative;z-index:2;display:inline-flex;align-items:center;gap:8px;margin-top:28px;font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;border:1px solid var(--red-dim);background:rgba(232,35,47,.08);padding:8px 16px;border-radius:3px;width:fit-content}
+.cover-status .dot{width:7px;height:7px;border-radius:50%;background:var(--red);flex:none}
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+.cover .actions{position:relative;z-index:2;margin-top:22px}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;padding:12px 20px;border-radius:4px;border:1px solid var(--line);background:transparent;color:var(--paper);cursor:pointer;transition:all .2s;line-height:1.2}
+.btn:hover{border-color:var(--red);color:var(--red)}
+.btn.primary{background:var(--red);border-color:var(--red);color:#fff}
+.btn.primary:hover{background:#ff3541;border-color:#ff3541;color:#fff}
+.btn svg{width:14px;height:14px;flex:none}
+
+/* ---- boards ---- */
+.board{padding:100px 8vw;border-bottom:1px solid var(--line-soft)}
+.board-num{font-family:var(--mono);font-size:11px;letter-spacing:3px;color:var(--mute-dim);margin-bottom:14px;text-transform:uppercase}
+.board-title{font-family:var(--disp);font-weight:700;font-size:clamp(28px,4vw,48px);letter-spacing:.5px;text-transform:uppercase;margin-bottom:22px;min-height:1.1em}
+.board-body{font-size:15px;line-height:1.85;color:var(--mute);max-width:760px;margin-bottom:20px}
+.board-body b{color:var(--paper);font-weight:600}
+.board-body code,.find-d code,.road-d code,.fcard li code{font-family:var(--mono);font-size:.88em;color:var(--paper);background:var(--panel);border:1px solid var(--line-soft);border-radius:3px;padding:1px 6px}
+.wide{max-width:1100px}
+.sub{margin-top:72px}
+.sub-n{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--red);margin-bottom:10px}
+.sub-h{font-family:var(--disp);font-weight:600;font-size:clamp(21px,2.6vw,28px);letter-spacing:.2px;margin-bottom:14px}
+.spec-row{display:flex;flex-wrap:wrap;gap:10px;margin:26px 0 0}
+.spec-tag{font-family:var(--mono);font-size:11px;background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:8px 14px}
+
+/* ---- figures + lightbox triggers ---- */
+.fig{max-width:1100px;margin:28px 0 0}
+.shot{display:block;width:100%;text-align:left;padding:0;background:var(--panel);border:1px solid var(--line);border-radius:6px;overflow:hidden;cursor:zoom-in;transition:border-color .2s}
+.shot:hover{border-color:var(--red)}
+.shot img{width:100%;height:auto;aspect-ratio:16/9;object-fit:cover}
+.shot.wide-img img{aspect-ratio:auto;object-fit:contain}
+.shot-cap{display:flex;justify-content:space-between;gap:14px;font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mute-dim);padding:10px 14px;border-top:1px solid var(--line)}
+.shot-cap span:last-child{white-space:nowrap;color:var(--mute)}
+.fig-note{font-size:13px;line-height:1.7;color:var(--mute-dim);margin-top:12px;max-width:760px}
+
+/* ---- 01 goals ---- */
+.goal-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;max-width:1100px;margin-top:36px}
+.goal{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:22px 20px 24px}
+.goal-n{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--red);margin-bottom:14px}
+.goal-t{font-family:var(--disp);font-weight:600;font-size:18px;margin-bottom:8px}
+.goal-d{font-size:13.5px;line-height:1.7;color:var(--mute)}
+
+/* ---- 02 pipeline ---- */
+.pipe{display:grid;grid-template-columns:1fr 40px 1.1fr 40px 1.1fr;align-items:stretch;max-width:1100px;margin-top:34px}
+.pipe-col{display:flex;flex-direction:column;gap:10px}
+.pipe-h{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--mute-dim);margin-bottom:2px}
+.pipe-box{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px;flex:1}
+.pipe-box code{display:block;font-family:var(--mono);font-size:12.5px;color:var(--paper);margin-bottom:6px}
+.pipe-box span{display:block;font-size:13px;line-height:1.6;color:var(--mute)}
+.pipe-core .pipe-box{border-color:var(--red);background:linear-gradient(180deg,rgba(232,35,47,.12),rgba(232,35,47,.02))}
+.pipe-core ul{list-style:none;margin-top:12px;display:grid;gap:8px}
+.pipe-core li{font-size:13px;line-height:1.55;color:var(--mute);padding-left:16px;position:relative}
+.pipe-core li::before{content:'';position:absolute;left:0;top:.62em;width:7px;height:2px;background:var(--red)}
+.pipe-arrow{display:flex;align-items:center;justify-content:center;color:var(--red);font-family:var(--mono);font-size:20px}
+.pipe-foot{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;max-width:1100px}
+.pipe-foot span{font-family:var(--mono);font-size:11px;color:var(--mute);border:1px solid var(--line-soft);border-radius:3px;padding:7px 12px}
+.pipe-foot b{color:var(--paper);font-weight:500}
+@media(max-width:900px){.pipe{grid-template-columns:1fr}.pipe-arrow{height:34px;transform:rotate(90deg)}}
+
+.points{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:1100px;margin-top:40px}
+.point{border-top:1px solid var(--line);padding-top:16px}
+.point-t{font-family:var(--disp);font-weight:600;font-size:17px;margin-bottom:6px}
+.point-d{font-size:14px;line-height:1.75;color:var(--mute)}
+.point-d code{font-family:var(--mono);font-size:.88em;color:var(--paper)}
+
+.stack{width:100%;max-width:1100px;border-collapse:collapse;margin-top:44px;font-size:14px}
+.stack th,.stack td{text-align:left;padding:14px 16px 14px 0;border-bottom:1px solid var(--line-soft);vertical-align:top;line-height:1.6}
+.stack th{font-family:var(--mono);font-size:10.5px;letter-spacing:2px;text-transform:uppercase;color:var(--mute-dim);font-weight:500;border-bottom:1px solid var(--line)}
+.stack td:first-child{font-family:var(--mono);font-size:12px;color:var(--red);white-space:nowrap;width:140px}
+.stack td:nth-child(2){color:var(--paper)}
+.stack td:last-child{color:var(--mute)}
+.code-wrap{max-width:1100px;margin-top:40px}
+.code-label{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--mute-dim);margin-bottom:10px}
+pre.code{background:#100c0e;border:1px solid var(--line);border-radius:6px;padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;line-height:1.75;color:#d9d2d4;tab-size:2}
+pre.code .c{color:var(--mute-dim)}
+pre.code .n{color:var(--red-hi)}
+pre.code .k{color:var(--paper);font-weight:500}
+
+/* ---- 03 feature cards ---- */
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:1100px;margin-top:34px}
+.fcard{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden;display:flex;flex-direction:column}
+.fcard .shot{border:0;border-radius:0;border-bottom:1px solid var(--line)}
+.fcard-body{padding:22px 24px 26px}
+.fcard-n{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--red);margin-bottom:8px}
+.fcard-t{font-family:var(--disp);font-weight:600;font-size:22px;margin-bottom:6px}
+.fcard-s{font-size:14px;line-height:1.7;color:var(--paper);margin-bottom:14px}
+.fcard ul{list-style:none;display:grid;gap:9px}
+.fcard li{font-size:13.5px;line-height:1.65;color:var(--mute);padding-left:16px;position:relative}
+.fcard li::before{content:'';position:absolute;left:0;top:.7em;width:7px;height:2px;background:var(--red)}
+
+/* ---- 04 challenges ---- */
+.finds{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:1100px;margin-top:26px}
+.find{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:18px 18px 20px}
+.find-n{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--red);color:#fff;font-family:var(--mono);font-size:12px;font-weight:600;margin-bottom:12px}
+.find-t{font-family:var(--disp);font-weight:600;font-size:16px;margin-bottom:6px}
+.find-d{font-size:13.5px;line-height:1.65;color:var(--mute)}
+.decide{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:1100px;margin-top:26px}
+.decide .find{border-color:var(--line-soft);background:transparent;border-top:2px solid var(--red);border-radius:0 0 8px 8px}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;max-width:1100px;margin-top:26px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:22px 20px}
+.tile-big{font-family:var(--disp);font-weight:700;font-size:clamp(26px,3vw,36px);letter-spacing:-.5px;line-height:1.05;margin-bottom:8px}
+.tile-d{font-size:13px;line-height:1.65;color:var(--mute)}
+.callout{max-width:1100px;margin-top:26px;border:1px solid var(--line);border-left:3px solid var(--red);background:var(--panel);border-radius:6px;padding:20px 24px}
+.callout-t{font-family:var(--mono);font-size:10.5px;letter-spacing:2px;text-transform:uppercase;color:var(--red);margin-bottom:8px}
+.callout p{font-size:14px;line-height:1.8;color:var(--mute);max-width:820px}
+.callout p b{color:var(--paper);font-weight:600}
+.cmp-wrap{max-width:1100px;margin-top:26px;overflow-x:auto}
+.cmp{width:100%;min-width:620px;border-collapse:collapse;font-size:14px}
+.cmp th,.cmp td{text-align:left;padding:14px 16px 14px 0;border-bottom:1px solid var(--line-soft);vertical-align:top;line-height:1.55}
+.cmp th{font-family:var(--mono);font-size:10.5px;letter-spacing:2px;text-transform:uppercase;color:var(--mute-dim);font-weight:500;border-bottom:1px solid var(--line)}
+.cmp td:first-child{color:var(--paper);width:34%}
+.cmp td.bad{color:var(--red-hi)}
+.cmp td.ok{color:var(--paper)}
+
+/* ---- 05 roadmap ---- */
+.road{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:1100px;margin-top:30px}
+.road-item{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:20px 22px 22px}
+.road-tag{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;border:1px solid var(--red-dim);background:rgba(232,35,47,.08);border-radius:3px;padding:3px 8px;display:inline-block;margin-bottom:12px}
+.road-tag.then{border-color:var(--line);background:transparent;color:var(--mute)}
+.road-tag.idea{border-color:var(--line-soft);background:transparent;color:var(--mute-dim)}
+.road-t{font-family:var(--disp);font-weight:600;font-size:18px;margin-bottom:6px}
+.road-d{font-size:13.5px;line-height:1.7;color:var(--mute)}
+
+/* ---- outcome ---- */
+.outcome{padding:100px 8vw 140px;text-align:center}
+.outcome-title{font-family:var(--disp);font-weight:700;font-size:clamp(28px,4vw,44px);text-transform:uppercase;margin-bottom:24px;min-height:1.1em}
+.outcome-body{font-size:15px;line-height:1.9;color:var(--mute);max-width:660px;margin:0 auto}
+.outcome .actions{justify-content:center;margin-top:30px}
+.note{max-width:660px;margin:44px auto 0;text-align:left;border:1px solid var(--line);border-left:3px solid var(--red);background:var(--panel);border-radius:6px;padding:20px 24px}
+.note-t{font-family:var(--mono);font-size:10.5px;letter-spacing:2px;text-transform:uppercase;color:var(--red);margin-bottom:8px}
+.note p{font-size:13.5px;line-height:1.8;color:var(--mute)}
+.note p+p{margin-top:10px}
+
+/* ---- lightbox: fixed 16:9 frame, scales to any device ---- */
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:999;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px}
+.lightbox.open{display:flex}
+.lb-frame{position:relative;width:min(92vw,150vh);aspect-ratio:16/9;background:#000;border-radius:6px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.lb-frame img{width:100%;height:100%;object-fit:contain;background:#000;-webkit-user-drag:none;user-select:none}
+.lb-cap{font-family:var(--mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mute);text-align:center;max-width:92vw;line-height:1.6}
+.lb-btn{position:absolute;background:rgba(11,10,12,.7);border:1px solid var(--line);color:#fff;cursor:pointer;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:20px;line-height:1;transition:all .2s;z-index:2}
+.lb-btn:hover{border-color:var(--red);color:var(--red)}
+.lb-close{top:18px;right:20px;font-size:26px}
+.lb-prev{left:16px;top:50%;margin-top:-22px}
+.lb-next{right:16px;top:50%;margin-top:-22px}
+@media(max-width:700px){.lb-prev,.lb-next{top:auto;bottom:18px;margin:0}.lb-prev{left:20px}.lb-next{right:20px}}
+
+/* ---- responsive ---- */
+@media(max-width:1000px){.goal-grid,.tiles{grid-template-columns:1fr 1fr}.finds,.decide{grid-template-columns:1fr 1fr}}
+@media(max-width:800px){.fgrid,.points,.road{grid-template-columns:1fr}}
+@media(max-width:780px){
+  /* tables become stacked cards; the header row stays in the DOM for screen readers */
+  .stack thead,.cmp thead{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .stack,.stack tbody,.stack tr,.stack td,.cmp,.cmp tbody,.cmp tr,.cmp td{display:block}
+  .stack tr,.cmp tr{padding:16px 0;border-bottom:1px solid var(--line-soft)}
+  .stack tbody tr:first-child,.cmp tbody tr:first-child{border-top:1px solid var(--line)}
+  .stack td,.cmp td{padding:0;border:0;width:auto}
+  .stack{margin-top:36px}
+  .stack td:first-child{white-space:normal;width:auto;margin-bottom:6px}
+  .stack td:nth-child(2){margin-bottom:3px}
+  .cmp-wrap{overflow-x:visible}
+  .cmp{min-width:0}
+  .cmp td:first-child{width:auto;margin-bottom:10px;font-weight:500}
+  .cmp td[data-l]{display:grid;grid-template-columns:34px 1fr;gap:10px;padding:3px 0}
+  .cmp td[data-l]::before{content:attr(data-l);font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mute-dim);padding-top:3px}
+}
+@media(max-width:600px){.board{padding:64px 6vw}.goal-grid,.tiles,.finds,.decide{grid-template-columns:1fr}.cover{min-height:86vh}.stack td:first-child{white-space:normal;width:auto}.sub{margin-top:56px}.outcome{padding:72px 6vw 110px}}
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="/work" class="topbar-brand">ALEX <span>STEFAN</span></a>
+  <a href="/case-studies/1keyforge-pro-detail.html" class="back-link">&larr; <span class="lg">Back to 1KeyForge Pro</span><span class="sm">Back</span></a>
+</nav>
+
+<header class="cover">
+  <div class="cover-bg"><img src="/images/projects/1keyforge-pro/cover.jpg" alt=""></div>
+  <div class="cover-eyebrow">Personal Project &middot; Independent Tool</div>
+  <h1 class="cover-title" data-scramble="1KEYFORGE PRO">1KEYFORGE PRO</h1>
+  <p class="cover-sub">A single-file mobile web app that turns a bitting code into a key you can see, zoom, print and cut. This case study covers what the app does, how it is built, and the geometry audit that made the key on screen, the STL file and the DXF drawing one and the same shape.</p>
+  <div class="cover-status"><span class="dot"></span> Status: Private tool &middot; v5 geometry</div>
+  <div class="actions">
+    <a class="btn primary" href="/case-studies/1keyforge-pro-detail.html">See the app screens <span aria-hidden="true">&rarr;</span></a>
+    <button class="btn" type="button" data-copy="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg><span>Copy page link</span></button>
+  </div>
+</header>
+
+<main>
+
+<!-- 01 ───────────────────────────────────────── -->
+<section class="board" id="overview">
+  <div class="board-num">01 &mdash; Project Overview &amp; Core Goals</div>
+  <h2 class="board-title" data-scramble="OVERVIEW &amp; CORE GOALS">OVERVIEW &amp; CORE GOALS</h2>
+  <p class="board-body">1KeyForge Pro designs a key from its bitting code. Pick one of eight profiles, set a cut value for each pin and the key redraws at true scale: the outline, a milled V-cut at every pin, the key-ring hole and a code badge. From there the same shape exports as an <b>SVG</b>, an <b>STL</b> for 3D printing or a <b>DXF</b> for CNC and laser.</p>
+  <p class="board-body">Four goals shaped the build.</p>
+
+  <div class="goal-grid">
+    <div class="goal"><div class="goal-n">01</div><div class="goal-t">Instant</div><p class="goal-d">Every slider move redraws the key straight away: under 0.1 ms per redraw, measured in headless Chromium.</p></div>
+    <div class="goal"><div class="goal-n">02</div><div class="goal-t">True to scale</div><p class="goal-d">One SVG unit is one millimetre. All eight profiles draw at the same pixels per millimetre, so a 71 mm key looks longer than a 54 mm one.</p></div>
+    <div class="goal"><div class="goal-n">03</div><div class="goal-t">One shape</div><p class="goal-d">The preview and all three exports are derived from a single outline, so they cannot disagree with each other.</p></div>
+    <div class="goal"><div class="goal-n">04</div><div class="goal-t">Self-contained</div><p class="goal-d">One HTML file of about 49 KB. No framework, no build step, no libraries and no network requests.</p></div>
+  </div>
+
+  <div class="spec-row">
+    <span class="spec-tag">8 key profiles</span><span class="spec-tag">4&ndash;6 pins</span><span class="spec-tag">54&ndash;71 mm keys</span><span class="spec-tag">SVG &middot; STL &middot; DXF</span><span class="spec-tag">Pinch &middot; drag &middot; double-tap</span><span class="spec-tag">Single file &middot; ~49 KB</span>
+  </div>
+
+  <figure class="fig">
+    <button class="shot wide-img" type="button" data-lb="/images/projects/1keyforge-pro/hero.jpg" data-cap="Schlage SC1, bitting 32514, drawn at true scale" aria-haspopup="dialog">
+      <img src="/images/projects/1keyforge-pro/hero.jpg" width="2400" height="1029" alt="A gold Schlage SC1 key with bitting 32514, drawn at true scale, with its 3.97 mm pin pitch and 67 mm length dimensioned." loading="lazy" decoding="async">
+      <span class="shot-cap"><span>Schlage SC1 &middot; bitting 32514 &middot; true scale</span><span>Enlarge</span></span>
+    </button>
+  </figure>
+</section>
+
+<!-- 02 ───────────────────────────────────────── -->
+<section class="board" id="architecture">
+  <div class="board-num">02 &mdash; Tech Stack &amp; Architecture Highlights</div>
+  <h2 class="board-title" data-scramble="TECH STACK &amp; ARCHITECTURE">TECH STACK &amp; ARCHITECTURE</h2>
+  <p class="board-body">No framework and no build step. The app is plain JavaScript and inline SVG in one HTML file, so it can live on any static host and opens straight from a file. The interesting decision is how the code is divided: a key database, one geometry engine, and thin layers that draw, move and export what the engine produces.</p>
+
+  <div class="pipe" role="group" aria-label="Architecture: key database and bitting feed one geometry engine, which feeds the screen and three exports">
+    <div class="pipe-col">
+      <div class="pipe-h">Input</div>
+      <div class="pipe-box"><code>KEY_TYPES</code><span>Eight profiles: dimensions, pin count, cut range, tip shape, presets.</span></div>
+      <div class="pipe-box"><code>bitting</code><span>One number per pin, for example 3 2 5 1 4. Written by the sliders, presets and saved cuts.</span></div>
+    </div>
+    <div class="pipe-arrow" aria-hidden="true">&rarr;</div>
+    <div class="pipe-col pipe-core">
+      <div class="pipe-h">Geometry engine &middot; pure functions &middot; mm</div>
+      <div class="pipe-box"><code>keyContour(k, bits)</code><span>One closed outline per key.</span>
+        <ul>
+          <li>A polygon with a fillet radius at each corner.</li>
+          <li>The V-cuts are its vertices, taken from the lower envelope of every cut profile.</li>
+          <li>Arcs stay arcs. Counter-clockwise, no self-contact.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="pipe-arrow" aria-hidden="true">&rarr;</div>
+    <div class="pipe-col">
+      <div class="pipe-h">Outputs</div>
+      <div class="pipe-box"><code>buildPath()</code><span>SVG path with true arcs. Drives the live preview and the SVG export.</span></div>
+      <div class="pipe-box"><code>buildSTL()</code><span>Arcs flattened to 0.02 mm, ear-clipped, written as a binary STL.</span></div>
+      <div class="pipe-box"><code>buildDXF()</code><span>One closed polyline with arc bulges, plus the key-ring circle. Millimetres.</span></div>
+    </div>
+  </div>
+  <div class="pipe-foot">
+    <span><b>render</b> scene built once per key type</span>
+    <span><b>view</b> zoom and pan as a CSS transform</span>
+    <span><b>export</b> Blob downloads</span>
+  </div>
+
+  <div class="points">
+    <div class="point"><div class="point-t">One outline, many outputs</div><p class="point-d"><code>keyContour()</code> builds the outline once. Every cut is a trapezoid and the top edge of the blade is the lowest of all of them, so neighbouring cuts can never overlap or leave a sliver. SVG, STL and DXF are all derived from the result.</p></div>
+    <div class="point"><div class="point-t">True arcs where they matter</div><p class="point-d">SVG and DXF keep arcs as arcs. Only the STL flattens them, to a 0.02 mm tolerance, because a mesh cannot hold a curve. The path in the SVG matches the polygon in the STL to an IoU above 0.998 on all eight profiles.</p></div>
+    <div class="point"><div class="point-t">Build the scene once</div><p class="point-d">Gradients, clip path, milling grooves and pin labels are created once per key type. Moving a slider only rewrites the path data and the label values, so nothing is torn down while you drag.</p></div>
+    <div class="point"><div class="point-t">Zoom without re-rendering</div><p class="point-d">Pinch, drag, Ctrl/&#8984; + wheel and double-tap reset all run through Pointer Events and one CSS transform. The pan is clamped so at least 48 px of the key always stays on screen.</p></div>
+  </div>
+
+  <table class="stack" role="table">
+    <thead role="rowgroup"><tr role="row"><th role="columnheader">Layer</th><th role="columnheader">Uses</th><th role="columnheader">Why</th></tr></thead>
+    <tbody role="rowgroup">
+      <tr role="row"><td role="cell">UI &amp; state</td><td role="cell">Vanilla JS, CSS custom properties, one HTML file</td><td role="cell">No build. Hosts anywhere.</td></tr>
+      <tr role="row"><td role="cell">Drawing</td><td role="cell">Inline SVG, one path per key, highlights clipped to it</td><td role="cell">Resolution independent. The same path data feeds the preview and the SVG export.</td></tr>
+      <tr role="row"><td role="cell">Interaction</td><td role="cell">Pointer Events, CSS transforms</td><td role="cell">One code path for touch, mouse and pen.</td></tr>
+      <tr role="row"><td role="cell">Geometry</td><td role="cell">Pure functions, millimetres in and out</td><td role="cell">Runs in Node as well as the browser, which is how it was tested.</td></tr>
+      <tr role="row"><td role="cell">Export</td><td role="cell">Blob downloads: SVG text, binary STL, DXF R12 text</td><td role="cell">Standard formats that drawing apps, slicers and CAM software read.</td></tr>
+      <tr role="row"><td role="cell">Verification</td><td role="cell">shapely, trimesh and ezdxf in Python; Playwright in Chromium</td><td role="cell">Independent of the code under test.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="code-wrap">
+    <div class="code-label">Key database &middot; one profile (excerpt, lightly reformatted)</div>
+<pre class="code" tabindex="0" role="region" aria-label="Code excerpt: one profile from the key database"><code><span class="k">const</span> KEY_TYPES = {
+  SC1: {
+    name: <span class="n">"Schlage SC1"</span>, code: <span class="n">"SC1"</span>,
+    bowW: <span class="n">24</span>, bowH: <span class="n">13</span>, bladeL: <span class="n">43</span>, bladeH: <span class="n">6.35</span>,        <span class="c">// mm</span>
+    tipStyle: <span class="n">"schlage"</span>,
+    pinCount: <span class="n">5</span>, firstPin: <span class="n">8.5</span>, pinPitch: <span class="n">3.97</span>,
+    cutMin: <span class="n">0</span>, cutMax: <span class="n">9</span>, shoulderH: <span class="n">6.35</span>, cutRange: <span class="n">3.5</span>,
+    thick: <span class="n">2.5</span>, color: <span class="n">"#c8a230"</span>,
+    presets: [{ l: <span class="n">"House"</span>, b: [<span class="n">3</span>,<span class="n">2</span>,<span class="n">5</span>,<span class="n">1</span>,<span class="n">4</span>] }, <span class="c">/* … */</span>]
+  },
+  <span class="c">/* SC4, KW1, WR3, Y1, M3, BEST, AR1 */</span>
+};</code></pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-label">The core of keyContour() &middot; every cut is a trapezoid, the top edge is the lowest of them all</div>
+<pre class="code" tabindex="0" role="region" aria-label="Code excerpt: the core of keyContour"><code><span class="c">// Top edge = lowest of: the shoulder line, the tip taper, and a V for every cut.</span>
+<span class="k">const</span> fns = [ [[<span class="n">0</span>,h],[L,h]], [[xs,h],[L,topEnd]] ];
+<span class="k">const</span> run = flankRun(k);
+pinCenters(k, bits).forEach((xc, i) =&gt; {
+  <span class="k">const</span> d = cutDepth(k, bits[i]), hw = CUT.flat/<span class="n">2</span> + run*d;
+  fns.push([[xc-hw,h], [xc-CUT.flat/<span class="n">2</span>,h-d], [xc+CUT.flat/<span class="n">2</span>,h-d], [xc+hw,h]]);
+});
+<span class="k">const</span> top = lowerEnvelope(fns, <span class="n">0</span>, L);</code></pre>
+  </div>
+</section>
+
+<!-- 03 ───────────────────────────────────────── -->
+<section class="board" id="features">
+  <div class="board-num">03 &mdash; Key Features &amp; Interactive Elements</div>
+  <h2 class="board-title" data-scramble="FEATURES &amp; INTERACTION">FEATURES &amp; INTERACTION</h2>
+  <p class="board-body">Four tabs under a live preview. The controls sit in the lower part of the screen and the key gets the rest; a collapse tab on the edge of the preview hides the controls and gives the key the whole screen.</p>
+
+  <div class="fgrid">
+    <article class="fcard">
+      <button class="shot" type="button" data-lb="/images/projects/1keyforge-pro/screen-bitting.jpg" data-cap="Bitting tab: sliders, calibration scale and code badge" aria-haspopup="dialog">
+        <img src="/images/projects/1keyforge-pro/screen-bitting.jpg" width="1600" height="900" alt="The Bitting tab on a phone: a gold SC1 key with bitting 32514, a calibration scale slider and one vertical slider per pin." loading="lazy" decoding="async">
+        <span class="shot-cap"><span>Bitting tab</span><span>Enlarge</span></span>
+      </button>
+      <div class="fcard-body">
+        <div class="fcard-n">01 / 04</div>
+        <h3 class="fcard-t">Bitting</h3>
+        <p class="fcard-s">Move a slider and the key redraws, with a milled V-cut at every pin.</p>
+        <ul>
+          <li><b>Live key.</b> Outline, cut depths and the bitting code update as you drag.</li>
+          <li><b>One slider per pin.</b> Four to six, depending on the profile, with the cut value under each.</li>
+          <li><b>Calibration scale.</b> 0.5&times; to 3.0&times; for matching the drawing to a real key. Pinch or Ctrl/&#8984; + wheel to zoom, drag to pan, double-tap to reset.</li>
+          <li><b>Code badge.</b> The bitting, as you would read it off a key.</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="fcard">
+      <button class="shot" type="button" data-lb="/images/projects/1keyforge-pro/screen-keytype.jpg" data-cap="Key Type tab: eight profiles" aria-haspopup="dialog">
+        <img src="/images/projects/1keyforge-pro/screen-keytype.jpg" width="1600" height="900" alt="The Key Type tab on a phone: a grid of eight key profiles with the Best A profile selected and drawn above." loading="lazy" decoding="async">
+        <span class="shot-cap"><span>Key Type tab</span><span>Enlarge</span></span>
+      </button>
+      <div class="fcard-body">
+        <div class="fcard-n">02 / 04</div>
+        <h3 class="fcard-t">Key Type</h3>
+        <p class="fcard-s">Pick a profile and every dimension follows.</p>
+        <ul>
+          <li><b>Eight profiles.</b> Schlage SC1 and SC4, Kwikset KW1, Weiser WR3, Yale Y1, Master No.3, Best A and Arrow AR1.</li>
+          <li><b>Specs on the card.</b> Pin count, length, code and cut range, for example 6 pins &middot; 71 mm &middot; cuts 1&ndash;7.</li>
+          <li><b>One true scale.</b> Every profile renders at the same pixels per millimetre, so lengths compare honestly.</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="fcard">
+      <button class="shot" type="button" data-lb="/images/projects/1keyforge-pro/screen-presets.jpg" data-cap="Presets tab: factory presets and saved cuts" aria-haspopup="dialog">
+        <img src="/images/projects/1keyforge-pro/screen-presets.jpg" width="1600" height="900" alt="The Presets tab on a phone: two factory presets, two saved cuts named KW1-01 and KW1-02, and a Save Current Bitting button." loading="lazy" decoding="async">
+        <span class="shot-cap"><span>Presets tab</span><span>Enlarge</span></span>
+      </button>
+      <div class="fcard-body">
+        <div class="fcard-n">03 / 04</div>
+        <h3 class="fcard-t">Presets</h3>
+        <p class="fcard-s">Start from a factory bitting, or save your own.</p>
+        <ul>
+          <li><b>Factory presets.</b> Each profile carries one to four of its own.</li>
+          <li><b>Saved cuts.</b> Auto-numbered per profile (KW1-01, KW1-02). Tap one to load it back onto the key.</li>
+          <li><b>Save current bitting.</b> One tap stores the sliders as they are. The list lives in memory for the session.</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="fcard">
+      <button class="shot" type="button" data-lb="/images/projects/1keyforge-pro/screen-export.jpg" data-cap="Export tab: SVG, STL, DXF and copy code" aria-haspopup="dialog">
+        <img src="/images/projects/1keyforge-pro/screen-export.jpg" width="1600" height="900" alt="The Export tab on a phone: four buttons for SVG, STL (3D print), DXF (CNC) and Copy Bitting Code." loading="lazy" decoding="async">
+        <span class="shot-cap"><span>Export tab</span><span>Enlarge</span></span>
+      </button>
+      <div class="fcard-body">
+        <div class="fcard-n">04 / 04</div>
+        <h3 class="fcard-t">Export</h3>
+        <p class="fcard-s">Take the key into a drawing, a slicer or a CNC.</p>
+        <ul>
+          <li><b>SVG.</b> True-size vector, in millimetres.</li>
+          <li><b>STL.</b> A watertight solid for 3D printing, with the key-ring hole cut through.</li>
+          <li><b>DXF.</b> One closed outline plus the key-ring circle, for CNC and laser.</li>
+          <li><b>Copy bitting code.</b> Puts the code on the clipboard. File names carry the profile and the bitting, for example <code>KW1_65656.stl</code>.</li>
+        </ul>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- 04 ───────────────────────────────────────── -->
+<section class="board" id="challenges">
+  <div class="board-num">04 &mdash; Key Design &amp; Engineering Challenges Overcome</div>
+  <h2 class="board-title" data-scramble="CHALLENGES OVERCOME">CHALLENGES OVERCOME</h2>
+  <p class="board-body">The original build (v4) looked right at a glance. To find out whether it was, the audit measured it the way a maker would: in millimetres, at the seams, with the exports opened in code instead of trusted. What follows compares v4 with the refactor (v5) on the same keys and the same bittings.</p>
+
+  <div class="sub">
+    <div class="sub-n">4.1</div>
+    <h3 class="sub-h">Six defects, one cause</h3>
+    <p class="board-body">Zoomed in, the original outline had six problems. They shared a root cause: the bow and the blade were separate sub-paths, the cuts were an effect added afterwards, and nothing guaranteed the pieces fitted. The fix was structural. v5 describes the key once, as a single closed outline, and everything else is derived from it.</p>
+    <figure class="fig">
+      <button class="shot" type="button" data-lb="/images/projects/1keyforge-pro/before-after.jpg" data-cap="Same key, same scale: v4 original above, v5 below, with the six defects marked" aria-haspopup="dialog">
+        <img src="/images/projects/1keyforge-pro/before-after.jpg" width="1600" height="900" alt="Before and after: the v4 key with six numbered defects marked, and the v5 key with the same six spots fixed, at the same scale." loading="lazy" decoding="async">
+        <span class="shot-cap"><span>Schlage SC1 &middot; bitting 32514 &middot; v4 above, v5 below</span><span>Enlarge</span></span>
+      </button>
+    </figure>
+
+    <div class="finds">
+      <div class="find"><span class="find-n">1</span><div class="find-t">Hook below the blade</div><p class="find-d">The bow dips 0.37 mm under the blade&rsquo;s bottom edge, right at the collar.</p></div>
+      <div class="find"><span class="find-n">2</span><div class="find-t">Seam at the collar</div><p class="find-d">Bow and blade are two sub-paths, so a stroke shows where they meet.</p></div>
+      <div class="find"><span class="find-n">3</span><div class="find-t">Highlight outside the key</div><p class="find-d">The edge highlight is shifted 0.4 mm and was never clipped to the silhouette.</p></div>
+      <div class="find"><span class="find-n">4</span><div class="find-t">Tip crosses itself</div><p class="find-d">On SC1 and SC4 the outline self-intersects in 36 of 36 test bittings.</p></div>
+      <div class="find"><span class="find-n">5</span><div class="find-t">No key-ring hole</div><p class="find-d">The bow was a plain slab, so the key could not hang from a ring.</p></div>
+      <div class="find"><span class="find-n">6</span><div class="find-t">Cuts as soft bumps</div><p class="find-d">Cosine curves instead of milled V-cuts, and the lowest cut value drew no cut at all.</p></div>
+    </div>
+
+    <figure class="fig">
+      <button class="shot" type="button" data-lb="/images/projects/1keyforge-pro/detail-crops.jpg" data-cap="Tip, collar and cuts at 26 px per mm: v4 above, v5 below" aria-haspopup="dialog">
+        <img src="/images/projects/1keyforge-pro/detail-crops.jpg" width="1600" height="900" alt="Three zoomed crops, each shown for v4 and v5: the tip, the collar and the cuts." loading="lazy" decoding="async">
+        <span class="shot-cap"><span>Three places the outline gave way &middot; 26 px per mm</span><span>Enlarge</span></span>
+      </button>
+    </figure>
+
+    <div class="decide">
+      <div class="find"><div class="find-t">Cuts that look milled</div><p class="find-d">Straight 45&deg; flanks and a flat 0.8 mm root, the way a cutter leaves them. The shallowest cut sits 0.45 mm below the blade top so every pin position has a seat, and a deep cut&rsquo;s flank steepens automatically if it would reach into the next pin.</p></div>
+      <div class="find"><div class="find-t">Metal that stays inside the lines</div><p class="find-d">A vertical gradient from highlight to shadow, milling grooves, and an edge highlight nudged 0.4 mm down. All of it is clipped to the outline, so nothing can leak past an edge.</p></div>
+      <div class="find"><div class="find-t">A code you can read</div><p class="find-d">Each pin gets its number above its cut value, centred over the pin and tied to the blade by a tick, so the code reads in the same order as the cuts.</p></div>
+    </div>
+  </div>
+
+  <div class="sub">
+    <div class="sub-n">4.2</div>
+    <h3 class="sub-h">What you see is what you print</h3>
+    <p class="board-body">The original STL exporter rebuilt a simplified bow and fanned the face out from a single corner. The printed face and the key on screen disagreed by 34.1 mm² (5.0%), seven edges were shared by more than two triangles, and the volume came out negative: the solid was inside-out. v5 cuts the face from the same outline the screen draws. The key-ring hole is joined to the outline with a bridge, ears are clipped, and every vertex is kept so the side walls and the faces share them.</p>
+    <figure class="fig">
+      <button class="shot" type="button" data-lb="/images/projects/1keyforge-pro/stl-triangulation.jpg" data-cap="STL face triangulation: v4 fan against v5 ear-clipped outline" aria-haspopup="dialog">
+        <img src="/images/projects/1keyforge-pro/stl-triangulation.jpg" width="1600" height="900" alt="The STL front face of the same key, triangulated by v4 as a fan with red areas where it disagrees with the screen, and by v5 as an ear-clipped outline with a hole." loading="lazy" decoding="async">
+        <span class="shot-cap"><span>STL export &middot; Schlage SC1 &middot; bitting 32514</span><span>Enlarge</span></span>
+      </button>
+    </figure>
+    <div class="callout">
+      <div class="callout-t">The trap in ear clipping</div>
+      <p>The first version of the new triangulator dropped collinear vertices, which left a crack against the side wall on about <b>6% of bittings</b>. It now keeps every vertex and emits a zero-area facet rather than a hole, and the audit counts open edges on every bitting.</p>
+    </div>
+  </div>
+
+  <div class="sub">
+    <div class="sub-n">4.3</div>
+    <h3 class="sub-h">Same key, same scale</h3>
+    <p class="board-body">In v4 every profile fitted its own viewBox, so on a phone the scale ran from 4.94 to 5.99 px per millimetre depending on the key, a spread of 19.3%. v5 uses one fixed 76 &times; 25 mm window, the longest key plus a margin, so all eight profiles render at the same scale: 5.13 px/mm on a 390 px phone and 9.47 px/mm from 768 px up. The same change fixed the zoom. At 3&times; the original showed about 37% of the key and could not pan. v5 keeps the pinch and adds drag-to-pan, Ctrl/&#8984; + wheel zoom and a double-tap reset, with a clamped pan, and every key fits fully inside the preview at 1&times;.</p>
+    <figure class="fig">
+      <button class="shot" type="button" data-lb="/images/projects/1keyforge-pro/key-profiles.jpg" data-cap="All eight key profiles at one true scale" aria-haspopup="dialog">
+        <img src="/images/projects/1keyforge-pro/key-profiles.jpg" width="1600" height="900" alt="All eight key profiles drawn at one scale, each with its pin count, length and cut range." loading="lazy" decoding="async">
+        <span class="shot-cap"><span>Eight profiles &middot; one true scale &middot; 7.7 px per mm</span><span>Enlarge</span></span>
+      </button>
+    </figure>
+    <figure class="fig">
+      <button class="shot" type="button" data-lb="/images/projects/1keyforge-pro/metrics.jpg" data-cap="Measured on all eight profiles: scale, path length and STL size" aria-haspopup="dialog">
+        <img src="/images/projects/1keyforge-pro/metrics.jpg" width="1600" height="900" alt="Three dot plots comparing v4 and v5 on all eight profiles: pixels per millimetre, SVG path length and STL file size." loading="lazy" decoding="async">
+        <span class="shot-cap"><span>Steadier, smaller, valid &middot; all eight profiles</span><span>Enlarge</span></span>
+      </button>
+    </figure>
+  </div>
+
+  <div class="sub">
+    <div class="sub-n">4.4</div>
+    <h3 class="sub-h">Exports built for real tools</h3>
+    <p class="board-body">The original DXF held 144 separate LINE entities: no bow, no closed contour and no units. v5 writes one closed polyline with true arc bulges, the key-ring hole as a circle, millimetres declared in the header and the origin at the blade shoulder. The SVG export is true size, with width and height in millimetres on a 1:1 viewBox (v4 exported at a fixed 10 px per millimetre, with 4 mm of margin at the sides, 10 mm above the bow and 7 to 9 mm below the blade).</p>
+    <figure class="fig">
+      <button class="shot" type="button" data-lb="/images/projects/1keyforge-pro/export-3d-dxf.jpg" data-cap="Three exports from one outline: SVG, STL preview and DXF drawing" aria-haspopup="dialog">
+        <img src="/images/projects/1keyforge-pro/export-3d-dxf.jpg" width="1600" height="900" alt="A 3D preview of the printed STL next to the DXF drawing of the same key with its 67 mm length, 43 mm blade and 4.84 mm hole dimensioned." loading="lazy" decoding="async">
+        <span class="shot-cap"><span>Three exports, one outline &middot; Schlage SC1 &middot; bitting 32514</span><span>Enlarge</span></span>
+      </button>
+    </figure>
+  </div>
+
+  <div class="sub">
+    <div class="sub-n">4.5</div>
+    <h3 class="sub-h">Proving it</h3>
+    <p class="board-body">Every claim above was checked by code that shares none of the app&rsquo;s logic: shapely for the outline, trimesh for the mesh, ezdxf for the drawing and Playwright for the behaviour in the browser.</p>
+    <div class="tiles">
+      <div class="tile"><div class="tile-big">1,040</div><p class="tile-d">geometry cases: 8 profiles &times; 130 bittings, including NaN, out-of-range and too-short input. Outline and STL checked on all, DXF on 320. 0 failures.</p></div>
+      <div class="tile"><div class="tile-big">27 / 27</div><p class="tile-d">in-browser checks in headless Chromium: scale, zoom, pan, presets and the three downloads.</p></div>
+      <div class="tile"><div class="tile-big">&le; 0.035%</div><p class="tile-d">largest gap between the STL volume and outline area &times; thickness.</p></div>
+      <div class="tile"><div class="tile-big">Exact</div><p class="tile-d">cut depth at every pin centre, to floating-point precision, on every case.</p></div>
+    </div>
+
+    <div class="cmp-wrap">
+      <table class="cmp" role="table">
+        <thead role="rowgroup"><tr role="row"><th role="columnheader">Measured, same keys and bittings</th><th role="columnheader">v4 original</th><th role="columnheader">v5 refactor</th></tr></thead>
+        <tbody role="rowgroup">
+          <tr role="row"><td role="cell">Outline self-intersections (SC1 and SC4, 36 bittings each)</td><td role="cell" class="bad" data-l="v4">36 of 36</td><td role="cell" class="ok" data-l="v5">0</td></tr>
+          <tr role="row"><td role="cell">Key-ring hole</td><td role="cell" class="bad" data-l="v4">None</td><td role="cell" class="ok" data-l="v5">&Oslash; 4.84 mm on SC1</td></tr>
+          <tr role="row"><td role="cell">STL: non-manifold edges</td><td role="cell" class="bad" data-l="v4">7</td><td role="cell" class="ok" data-l="v5">0 &middot; watertight &middot; genus 1</td></tr>
+          <tr role="row"><td role="cell">STL face against the key on screen</td><td role="cell" class="bad" data-l="v4">34.1 mm² off &middot; 5.0%</td><td role="cell" class="ok" data-l="v5">0.5 mm² &middot; 0.08% (arc tolerance)</td></tr>
+          <tr role="row"><td role="cell">STL size, SC1</td><td role="cell" class="bad" data-l="v4">213 KB ASCII &middot; 1,180 facets</td><td role="cell" class="ok" data-l="v5">19 KB binary &middot; 392 facets</td></tr>
+          <tr role="row"><td role="cell">DXF</td><td role="cell" class="bad" data-l="v4">144 LINE entities, no units</td><td role="cell" class="ok" data-l="v5">1 closed polyline + circle, mm</td></tr>
+          <tr role="row"><td role="cell">Scale spread between profiles (390 px phone)</td><td role="cell" class="bad" data-l="v4">19.3%</td><td role="cell" class="ok" data-l="v5">0%</td></tr>
+          <tr role="row"><td role="cell">SVG path data, average of 8 profiles</td><td role="cell" class="bad" data-l="v4">6.6&times; longer</td><td role="cell" class="ok" data-l="v5">1&times;</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <div class="callout-t">What this does not claim</div>
+      <p>Performance was never the problem. A redraw fell from about 0.35 ms to about 0.1 ms, but both are far below a frame; the gain is that dragging no longer rebuilds the whole scene. The key dimensions are working approximations of common profiles, not manufacturer drawings, and the exports were validated with libraries rather than in a physical slicer or on a CNC.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 05 ───────────────────────────────────────── -->
+<section class="board" id="roadmap">
+  <div class="board-num">05 &mdash; Future Enhancements / Roadmap</div>
+  <h2 class="board-title" data-scramble="WHAT&rsquo;S NEXT">WHAT&rsquo;S NEXT</h2>
+  <p class="board-body">Ideas, in rough order. The limits they address are real ones in the current build.</p>
+  <div class="road">
+    <div class="road-item"><span class="road-tag">Next</span><div class="road-t">Installable and offline</div><p class="road-d">Add a web manifest and a service worker. Today the app has the iOS home-screen tags but no manifest and no offline cache, so it is a web app rather than a full PWA.</p></div>
+    <div class="road-item"><span class="road-tag">Next</span><div class="road-t">Keep and share</div><p class="road-d">Saved cuts live in memory and vanish on reload. Persist them in <code>localStorage</code> and add share links such as <code>?k=SC1&amp;b=32514</code> and a paste-a-code import.</p></div>
+    <div class="road-item"><span class="road-tag">Next</span><div class="road-t">Say what is approximate</div><p class="road-d">Mark every profile as an approximation in the interface and record where each dimension comes from in the key database, instead of a comment that implies a standard.</p></div>
+    <div class="road-item"><span class="road-tag then">Then</span><div class="road-t">Accessibility pass</div><p class="road-d">The viewport disables browser zoom (<code>user-scalable=no</code>). Move to in-app zoom only where needed, check contrast of the orange labels, and add a reduced-motion path.</p></div>
+    <div class="road-item"><span class="road-tag then">Then</span><div class="road-t">Audit in CI</div><p class="road-d">The geometry audit and the browser checks run as scripts today. Put them in a CI job so a geometry regression fails the build.</p></div>
+    <div class="road-item"><span class="road-tag then">Then</span><div class="road-t">Undo and redo</div><p class="road-d">Step back through slider changes and preset loads, with a short history that survives a profile switch.</p></div>
+    <div class="road-item"><span class="road-tag idea">Idea</span><div class="road-t">Engraved label</div><p class="road-d">Deboss the profile code and bitting on the bow of the STL so printed samples can be identified.</p></div>
+    <div class="road-item"><span class="road-tag idea">Idea</span><div class="road-t">Finishes and dark mode</div><p class="road-d">Brass, nickel and anodised looks on the same geometry, and a dark interface that matches the system setting.</p></div>
+  </div>
+</section>
+
+<!-- 06 ───────────────────────────────────────── -->
+<section class="outcome">
+  <div class="board-num" style="text-align:center">06 &mdash; Outcome</div>
+  <h2 class="outcome-title" data-scramble="SAME APP, SOUNDER FOUNDATION">SAME APP, SOUNDER FOUNDATION</h2>
+  <p class="outcome-body">The interface keeps the original&rsquo;s tabs, sliders, presets and key database. What changed is underneath. One outline now drives the screen, the SVG, the STL and the DXF; all eight profiles draw at the same scale; the exports pass independent checks; and the app is still one 49 KB page with no dependencies.</p>
+  <div class="actions">
+    <a class="btn primary" href="/case-studies/1keyforge-pro-detail.html">Back to the project</a>
+  </div>
+  <div class="note">
+    <div class="note-t">Accuracy and use</div>
+    <p>The profile dimensions are working approximations of common key shapes and have not been checked against manufacturer drawings. 1KeyForge Pro is for visualising, learning and prototyping.</p>
+    <p>It is not a way to copy a key you do not own or are not authorised to duplicate.</p>
+  </div>
+</section>
+
+</main>
+
+<div class="lightbox" id="lb" role="dialog" aria-modal="true" aria-label="Image viewer" aria-hidden="true">
+  <button class="lb-btn lb-close" type="button" aria-label="Close">&times;</button>
+  <button class="lb-btn lb-prev" type="button" aria-label="Previous image">&larr;</button>
+  <button class="lb-btn lb-next" type="button" aria-label="Next image">&rarr;</button>
+  <div class="lb-frame"><img id="lbimg" alt="" draggable="false"></div>
+  <div class="lb-cap" id="lbcap"></div>
+</div>
+
+<script>
+(function(){
+  // ---- scramble-text on titles (same effect as the other case studies) ----
+  var GLYPHS="ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890!<>-_/[]{}=+*^?#";
+  var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Spaces are kept, so the scrambled frames wrap where the real title wraps and can never run wider than the screen.
+  function scrambleStr(t){var s='';for(var i=0;i<t.length;i++){var c=t.charAt(i);s+=/\s/.test(c)?c:GLYPHS[Math.floor(Math.random()*GLYPHS.length)];}return s;}
+  function typeScramble(el,text,ms,steps){if(reduced||!el){if(el)el.textContent=text;return;}var i=0,st=ms/steps;var iv=setInterval(function(){i++;el.textContent=scrambleStr(text);if(i>=steps){clearInterval(iv);el.textContent=text;}},st);}
+  document.addEventListener('DOMContentLoaded',function(){
+    var els=document.querySelectorAll('[data-scramble]');
+    if(!('IntersectionObserver' in window)){return;}
+    var io=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){typeScramble(e.target,e.target.getAttribute('data-scramble'),500,10);io.unobserve(e.target);}});},{threshold:0.5});
+    els.forEach(function(el){io.observe(el);});
+  });
+
+  // ---- copy-link buttons ----
+  function copyText(text){
+    function fallback(){try{var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();var ok=document.execCommand('copy');document.body.removeChild(ta);return ok;}catch(e){return false;}}
+    if(navigator.clipboard&&navigator.clipboard.writeText){return navigator.clipboard.writeText(text).then(function(){return true;},function(){return fallback();});}
+    return Promise.resolve(fallback());
+  }
+  document.querySelectorAll('[data-copy]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var t=btn.getAttribute('data-copy');
+      if(t==='page'){t=location.href;}else if(t.charAt(0)==='/'){t=location.origin+t;}
+      var label=btn.querySelector('span'),old=label.textContent;
+      copyText(t).then(function(ok){label.textContent=ok?'Copied!':'Copy failed';setTimeout(function(){label.textContent=old;},1400);});
+    });
+  });
+
+  // ---- lightbox: fixed 16:9 frame, arrows / swipe / keyboard ----
+  var items=[].slice.call(document.querySelectorAll('[data-lb]'));
+  var lb=document.getElementById('lb'),img=document.getElementById('lbimg'),cap=document.getElementById('lbcap');
+  var bClose=lb.querySelector('.lb-close'),bPrev=lb.querySelector('.lb-prev'),bNext=lb.querySelector('.lb-next');
+  var idx=0,lastFocus=null,sx=null,sy=null,swiped=false;
+  function show(i){
+    idx=(i+items.length)%items.length;
+    var it=items[idx],pic=it.querySelector('img');
+    img.src=it.getAttribute('data-lb');
+    img.alt=pic?pic.getAttribute('alt'):'';
+    cap.textContent=(idx+1)+' / '+items.length+' — '+(it.getAttribute('data-cap')||'');
+  }
+  function open(i){lastFocus=document.activeElement;show(i);lb.classList.add('open');lb.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';bClose.focus();}
+  function close(){lb.classList.remove('open');lb.setAttribute('aria-hidden','true');img.removeAttribute('src');document.body.style.overflow='';if(lastFocus&&lastFocus.focus){lastFocus.focus();}}
+  items.forEach(function(el,i){el.addEventListener('click',function(){open(i);});});
+  bClose.addEventListener('click',close);
+  bPrev.addEventListener('click',function(e){e.stopPropagation();show(idx-1);});
+  bNext.addEventListener('click',function(e){e.stopPropagation();show(idx+1);});
+  lb.addEventListener('click',function(e){if(e.target===lb&&!swiped)close();swiped=false;});
+  // Swipe: touch uses touch events (they keep firing while the browser pans or pinch-zooms, pointer events do not);
+  // mouse and pen use pointer events. A swipe is ignored while the page is pinch-zoomed, so zoomed-in panning is left alone.
+  function zoomed(){return !!(window.visualViewport&&window.visualViewport.scale>1.05);}
+  function endSwipe(x,y){
+    if(sx===null)return;
+    var dx=x-sx,dy=y-sy;sx=null;
+    swiped=Math.abs(dx)>6||Math.abs(dy)>6;
+    if(!zoomed()&&Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.3){show(idx+(dx<0?1:-1));}
+  }
+  lb.addEventListener('touchstart',function(e){swiped=false;if(e.touches.length===1){sx=e.touches[0].clientX;sy=e.touches[0].clientY;}else{sx=null;}},{passive:true});
+  lb.addEventListener('touchend',function(e){var t=e.changedTouches[0];if(t&&e.touches.length===0){endSwipe(t.clientX,t.clientY);}},{passive:true});
+  lb.addEventListener('touchcancel',function(){sx=null;},{passive:true});
+  lb.addEventListener('pointerdown',function(e){if(e.pointerType==='touch')return;sx=e.clientX;sy=e.clientY;swiped=false;});
+  lb.addEventListener('pointerup',function(e){if(e.pointerType==='touch')return;endSwipe(e.clientX,e.clientY);});
+  document.addEventListener('keydown',function(e){
+    if(!lb.classList.contains('open'))return;
+    if(e.key==='Escape'){close();}
+    else if(e.key==='ArrowLeft'){show(idx-1);}
+    else if(e.key==='ArrowRight'){show(idx+1);}
+    else if(e.key==='Tab'){var f=[bClose,bPrev,bNext],i=f.indexOf(document.activeElement);e.preventDefault();f[(i+(e.shiftKey?-1:1)+f.length)%f.length].focus();}
+  });
+})();
+</script>
+</body>
+</html>

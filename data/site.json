@@ -1,0 +1,82 @@
+{
+  "name": "Alex Stefan",
+  "role": "UI/UX Designer & Indie Developer",
+  "hero": {
+    "hello": "Hello, I'm",
+    "firstName": "Alex",
+    "lastName": "Stefan",
+    "roleTag": "UI/UX Designer & Creative Technologist",
+    "description": "12+ years designing UI/UX for AAA and mobile games — including Ubisoft's Watch Dogs: Legion — plus independent apps, games, and tools built solo, from first sketch to shipped product.",
+    "availableText": "Open to New Opportunities",
+    "bgWord": "PORTFOLIO"
+  },
+  "stats": [
+    {
+      "number": "12+",
+      "label": "Years Experience"
+    },
+    {
+      "number": "6",
+      "label": "Studios & Companies"
+    },
+    {
+      "number": "9",
+      "label": "Featured Projects"
+    },
+    {
+      "number": "1",
+      "label": "One-Person Studio"
+    }
+  ],
+  "skills": [
+    {
+      "icon": "figma",
+      "label": "Figma"
+    },
+    {
+      "icon": "adobe",
+      "label": "Adobe Package"
+    },
+    {
+      "icon": "blender",
+      "label": "Blender / 3ds Max"
+    },
+    {
+      "icon": "unity",
+      "label": "Unity"
+    },
+    {
+      "icon": "reactnative",
+      "label": "React Native"
+    },
+    {
+      "icon": "ai",
+      "label": "Stable Diffusion"
+    },
+    {
+      "icon": "abtest",
+      "label": "A/B Testing"
+    },
+    {
+      "icon": "krita",
+      "label": "Krita"
+    },
+    {
+      "icon": "comfy",
+      "label": "ComfyUI"
+    }
+  ],
+  "studios": [
+    "Ubisoft Bucharest",
+    "Playtika",
+    "Playtiviti",
+    "Little Red Dog Games",
+    "AB InBev",
+    "T-Me Studios"
+  ],
+  "contact": {
+    "email": "stefan.alexandru.petrut@gmail.com",
+    "location": "Bucharest, Romania",
+    "behance": "https://www.behance.net/stefanalexandru9"
+  }
+}

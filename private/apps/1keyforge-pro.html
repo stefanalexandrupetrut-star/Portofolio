@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="1KeyForge"/>
+<meta name="theme-color" content="#f97316"/>
+<title>1KeyForge Pro</title>
+<style>
+:root {
+  --or:#f97316; --or-dk:#ea6c0a; --or-lt:#fff7ed;
+  --g100:#f3f4f6; --g200:#e5e7eb; --g400:#9ca3af; --g600:#4b5563; --g900:#111827;
+  --sb:env(safe-area-inset-bottom,0px); --st:env(safe-area-inset-top,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;
+  display:flex;flex-direction:column;height:100dvh;
+  background:#fff;
+  padding-top:var(--st);padding-bottom:var(--sb);
+}
+
+/* HEADER */
+header{
+  background:var(--or);color:#fff;
+  padding:12px 16px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+}
+header h1{font-size:18px;font-weight:800;letter-spacing:-.4px;}
+.badge{
+  background:var(--or-dk);color:#fff;
+  font-family:'Courier New',monospace;
+  font-size:13px;font-weight:700;
+  padding:4px 14px;border-radius:999px;
+  letter-spacing:2px;min-width:60px;text-align:center;
+}
+
+/* PREVIEW */
+.preview{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  background:#f9fafb;
+  background-image:radial-gradient(circle,#d1d5db 1px,transparent 1px);
+  background-size:20px 20px;
+  overflow:hidden;position:relative;touch-action:none;
+}
+.preview svg{width:100%;height:100%;max-width:720px;max-height:380px;overflow:visible;transition:transform .06s linear;}
+.preview{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;}  /* a drag that starts on a pin label must pan, not select text */
+.preview.drag svg{transition:none;}
+.sc-hint{
+  position:absolute;bottom:10px;right:12px;
+  font-size:11px;color:var(--g400);
+  background:rgba(255,255,255,.9);padding:3px 8px;border-radius:6px;
+  pointer-events:none;
+}
+.kt-badge{
+  position:absolute;top:10px;left:12px;
+  font-size:11px;font-weight:700;color:var(--or);
+  background:rgba(255,255,255,.92);padding:3px 10px;border-radius:6px;
+  pointer-events:none;
+}
+.collapse-btn{
+  position:absolute;top:50%;right:0;transform:translateY(-50%);
+  background:var(--or);color:#fff;border:none;cursor:pointer;
+  width:22px;height:44px;border-radius:6px 0 0 6px;
+  font-size:13px;display:flex;align-items:center;justify-content:center;
+  box-shadow:-2px 0 8px rgba(0,0,0,.15);z-index:20;
+}
+
+/* BOTTOM */
+.bottom{
+  flex-shrink:0;background:#fff;
+  border-top:1px solid var(--g200);
+  box-shadow:0 -4px 16px rgba(0,0,0,.09);
+  display:flex;flex-direction:column;
+  max-height:50vh;
+  transition:max-height .28s ease,opacity .28s ease;
+}
+.bottom.collapsed{max-height:0!important;opacity:0;overflow:hidden;border-top:none;box-shadow:none;}
+
+/* TABS */
+.tabs{display:flex;border-bottom:1px solid var(--g200);flex-shrink:0;}
+.tab{
+  flex:1;padding:11px 0;
+  font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
+  border:none;background:none;cursor:pointer;color:var(--g400);
+  border-bottom:2.5px solid transparent;transition:color .15s,border-color .15s;
+}
+.tab.active{color:var(--or);border-bottom-color:var(--or);}
+
+/* PANELS */
+.panel{display:none;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 16px 16px;gap:10px;}
+.panel.active{display:flex;}
+
+/* RANGE */
+.row2{display:flex;align-items:center;justify-content:space-between;}
+.lbl{font-size:11px;font-weight:700;color:var(--g400);letter-spacing:.7px;text-transform:uppercase;}
+.val{font-size:12px;font-weight:700;color:var(--or);}
+
+input[type=range]{
+  -webkit-appearance:none;appearance:none;
+  width:100%;height:5px;border-radius:3px;outline:none;cursor:pointer;
+  background:linear-gradient(to right,var(--or) var(--pct,0%),var(--g200) var(--pct,0%));
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:26px;height:26px;border-radius:50%;
+  background:#fff;border:2.5px solid var(--or);
+  box-shadow:0 1px 6px rgba(249,115,22,.28);cursor:pointer;
+}
+
+/* PINS */
+.pins-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;align-items:end;}
+.pin-col{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.pin-num{font-size:11px;font-weight:700;color:var(--g400);}
+.pin-val{font-size:17px;font-weight:800;font-family:'Courier New',monospace;color:var(--or);text-align:center;min-width:20px;}
+.vwrap{display:flex;justify-content:center;align-items:center;height:78px;}
+input[type=range].vert{
+  writing-mode:vertical-lr;direction:rtl;
+  width:26px;height:70px;padding:0;
+  background:linear-gradient(to top,var(--or) var(--pct,0%),var(--g200) var(--pct,0%));
+}
+
+/* KEY TYPE GRID */
+.kt-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+.kt-card{
+  background:var(--g100);border:1.5px solid var(--g200);border-radius:10px;
+  padding:10px;cursor:pointer;text-align:center;transition:all .15s;
+}
+.kt-card.sel{background:var(--or-lt);border-color:var(--or);}
+.kt-name{font-size:12px;font-weight:700;color:var(--g900);}
+.kt-spec{font-size:10px;color:var(--g400);margin-top:2px;}
+
+/* PRESETS */
+.vscroll{display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px;}
+.vscroll::-webkit-scrollbar{display:none;}
+.vcard{
+  flex-shrink:0;background:var(--or-lt);border:1.5px solid var(--or);
+  border-radius:10px;padding:7px 12px;cursor:pointer;transition:background .15s;
+}
+.vcard.sel{background:var(--or);}
+.vcode{font-family:'Courier New',monospace;font-size:12px;font-weight:700;color:var(--or);}
+.vcard.sel .vcode,.vcard.sel .vlbl{color:#fff;}
+.vlbl{font-size:10px;color:var(--g400);margin-top:2px;}
+
+/* EXPORT */
+.xbtn{
+  background:var(--or);color:#fff;border:none;border-radius:12px;
+  padding:13px;font-size:14px;font-weight:700;cursor:pointer;width:100%;
+  transition:background .15s,transform .1s;letter-spacing:.2px;
+}
+.xbtn:active{background:var(--or-dk);transform:scale(.98);}
+.xbtn.dark{background:var(--g900);}
+.xbtn.teal{background:#0d9488;}
+.xnote{font-size:11px;color:var(--g400);text-align:center;}
+
+/* SETTINGS */
+.srow{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--g100);font-size:13px;}
+.srow:last-child{border-bottom:none;}
+.sk{color:var(--g600);}.sv{font-weight:600;color:var(--g900);}
+select{border:1px solid var(--g200);border-radius:8px;padding:5px 8px;font-size:12px;background:var(--g100);color:var(--g900);-webkit-appearance:none;}
+.spin-btn{background:var(--g100);border:none;border-radius:6px;width:28px;height:28px;font-size:18px;cursor:pointer;}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:calc(50vh + 16px);left:50%;transform:translateX(-50%);
+  background:rgba(17,24,39,.92);color:#fff;
+  padding:8px 18px;border-radius:20px;font-size:13px;font-weight:600;
+  z-index:999;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap;
+}
+.toast.show{opacity:1;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>1KeyForge Pro</h1>
+  <div class="badge" id="badge">41325</div>
+</header>
+
+<div class="preview" id="preview">
+  <svg id="key-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+  <div class="kt-badge" id="kt-badge">Schlage SC1</div>
+  <div class="sc-hint" id="sc-hint">1.0×</div>
+  <button class="collapse-btn" id="col-btn" onclick="togglePanel()">▼</button>
+</div>
+
+<div class="bottom" id="bottom">
+  <div class="tabs">
+    <button class="tab active" data-tab="bitting">Bitting</button>
+    <button class="tab" data-tab="keytype">Key Type</button>
+    <button class="tab" data-tab="presets">Presets</button>
+    <button class="tab" data-tab="export">Export</button>
+  </div>
+
+  <div class="panel active" id="panel-bitting">
+    <div>
+      <div class="row2" style="margin-bottom:7px">
+        <span class="lbl">Calibration Scale</span>
+        <span class="val" id="sc-disp">1.0×</span>
+      </div>
+      <input type="range" id="sc-sl" min="0.5" max="3.0" step="0.1" value="1.0"/>
+    </div>
+    <div class="pins-grid" id="pins-grid"></div>
+  </div>
+
+  <div class="panel" id="panel-keytype">
+    <div class="lbl" style="margin-bottom:4px">Select Key Profile</div>
+    <div class="kt-grid" id="kt-grid"></div>
+  </div>
+
+  <div class="panel" id="panel-presets">
+    <div class="lbl">Factory Presets</div>
+    <div class="vscroll" id="preset-list"></div>
+    <div class="lbl" style="margin-top:6px">Saved Cuts</div>
+    <div class="vscroll" id="var-list"></div>
+    <button class="xbtn" onclick="saveVar()" style="margin-top:6px">Save Current Bitting</button>
+    <div id="var-flash" style="display:none;padding:8px;background:var(--or-lt);border-radius:8px;font-size:12px;color:var(--g600);text-align:center;"></div>
+  </div>
+
+  <div class="panel" id="panel-export">
+    <button class="xbtn" onclick="exportSVG()">⬇ Export SVG</button>
+    <button class="xbtn dark" onclick="exportSTL()">⬛ Export STL (3D Print)</button>
+    <button class="xbtn teal" onclick="exportDXF()">📐 Export DXF (CNC)</button>
+    <button class="xbtn" style="background:#6366f1" onclick="copyBitting()">⎘ Copy Bitting Code</button>
+    <div class="xnote" id="xnote"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─────────────────────────────────────────────
+// KEY TYPE DATABASE
+// All dimensions in real mm matching ANSI/BHMA standards
+// Geometry is drawn at 1 SVG unit = 1mm, then scaled via viewBox
+// ─────────────────────────────────────────────
+const KEY_TYPES = {
+  SC1:{
+    name:"Schlage SC1", code:"SC1",
+    // Real Schlage: ~67mm total, bow ~25mm, blade ~42mm
+    bowW:24, bowH:13, bladeL:43, bladeH:6.35,
+    tipStyle:"schlage",   // rounded tip, slight bottom bevel
+    pinCount:5, firstPin:8.5, pinPitch:3.97,
+    cutMin:0, cutMax:9, shoulderH:6.35, cutRange:3.5,
+    thick:2.5, color:"#c8a230",
+    presets:[{l:"House",b:[3,2,5,1,4]},{l:"Office",b:[6,3,1,4,2]},{l:"Deep",b:[8,7,6,7,8]},{l:"Shallow",b:[1,2,1,2,1]}]
+  },
+  SC4:{
+    name:"Schlage SC4", code:"SC4",
+    bowW:24, bowH:13, bladeL:43, bladeH:6.35,
+    tipStyle:"schlage",
+    pinCount:6, firstPin:8.5, pinPitch:3.97,
+    cutMin:0, cutMax:9, shoulderH:6.35, cutRange:3.5,
+    thick:2.5, color:"#c49a35",
+    presets:[{l:"Default",b:[2,5,3,6,3,4]},{l:"Security",b:[7,2,8,1,6,3]}]
+  },
+  KW1:{
+    name:"Kwikset KW1", code:"KW1",
+    bowW:22, bowH:12, bladeL:38, bladeH:5.8,
+    tipStyle:"kwikset",   // flat bottom, angled top at tip
+    pinCount:5, firstPin:7.5, pinPitch:3.81,
+    cutMin:1, cutMax:6, shoulderH:5.8, cutRange:2.5,
+    thick:2.3, color:"#b8902e",
+    presets:[{l:"Standard",b:[3,2,4,1,3]},{l:"Deep",b:[6,5,6,5,6]}]
+  },
+  WR3:{
+    name:"Weiser WR3", code:"WR3",
+    bowW:21, bowH:11, bladeL:36, bladeH:5.5,
+    tipStyle:"flat",
+    pinCount:5, firstPin:7.0, pinPitch:3.81,
+    cutMin:1, cutMax:6, shoulderH:5.5, cutRange:2.3,
+    thick:2.2, color:"#c0a030",
+    presets:[{l:"Default",b:[2,4,1,3,2]}]
+  },
+  Y1:{
+    name:"Yale Y1", code:"Y1",
+    bowW:23, bowH:14, bladeL:40, bladeH:6.5,
+    tipStyle:"yale",      // tapered both edges at tip
+    pinCount:5, firstPin:8.0, pinPitch:4.0,
+    cutMin:0, cutMax:9, shoulderH:6.5, cutRange:3.8,
+    thick:2.4, color:"#c8a540",
+    presets:[{l:"Default",b:[4,1,3,2,5]},{l:"High Sec",b:[8,2,7,1,6]}]
+  },
+  M3:{
+    name:"Master No.3", code:"M3",
+    bowW:20, bowH:11, bladeL:34, bladeH:5.2,
+    tipStyle:"flat",
+    pinCount:4, firstPin:6.5, pinPitch:4.0,
+    cutMin:1, cutMax:7, shoulderH:5.2, cutRange:2.8,
+    thick:2.1, color:"#a8a8a8",
+    presets:[{l:"Default",b:[3,5,2,4]}]
+  },
+  BEST:{
+    name:"Best A", code:"BEST",
+    bowW:26, bowH:14, bladeL:45, bladeH:6.8,
+    tipStyle:"best",
+    pinCount:6, firstPin:9.0, pinPitch:3.97,
+    cutMin:1, cutMax:7, shoulderH:6.8, cutRange:3.2,
+    thick:2.8, color:"#d4a843",
+    presets:[{l:"Default",b:[3,1,4,2,5,1]},{l:"Security",b:[7,2,6,1,5,3]}]
+  },
+  AR1:{
+    name:"Arrow AR1", code:"AR1",
+    bowW:22, bowH:12, bladeL:40, bladeH:6.0,
+    tipStyle:"round",
+    pinCount:5, firstPin:8.0, pinPitch:3.97,
+    cutMin:0, cutMax:9, shoulderH:6.0, cutRange:3.3,
+    thick:2.4, color:"#c8a030",
+    presets:[{l:"Default",b:[2,3,1,4,2]}]
+  }
+};
+
+// ─────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────
+let curKey = "SC1";
+let bitting = [4,1,3,2,5,0]; // up to 6 slots
+let scale = 1.0;
+let panelOpen = true;
+let userVars = [];
+
+function kt(){ return KEY_TYPES[curKey]; }
+
+// ─────────────────────────────────────────────
+// KEY GEOMETRY
+// One closed outline per key. It is described once, as a "design polygon" whose corners carry
+// fillet radii, and the V-cuts are simply vertices of that polygon. The preview, the SVG, the
+// STL and the DXF are all derived from that single outline, so they can never disagree.
+//   Units: mm.  X runs along the key (bow at x < 0, shoulder at x = 0, tip at x = bladeL).
+//   Y points up: blade bottom edge y = 0, uncut blade top ("shoulder line") y = shoulderH.
+// ─────────────────────────────────────────────
+const CUT = {
+  base: 0.45,   // depth of the shallowest cut below the blade top, so every pin position has a seat
+  flat: 0.8,    // width of the flat at the root of each cut
+  flank: 1.0    // flank run per mm of depth (1 = 45°); steepened automatically if a neighbour would be disturbed
+};
+const FLATTEN_TOL = 0.02; // mm — largest allowed gap between an arc and its straight-segment approximation
+
+// Tip shapes. tl/te/tr = top taper: length, end height (× shoulderH), start-corner radius.
+// bl/be/br = same for the bottom edge (bl 0 = flat bottom). nose = tip corner radius (99 = as round as fits).
+const TIPS = {
+  schlage: { tl: 8, te: .40, tr: 5,   bl: 5, be: .16, br: 3, nose: 99 },
+  round:   { tl: 8, te: .40, tr: 5,   bl: 5, be: .16, br: 3, nose: 99 },
+  kwikset: { tl: 7, te: .36, tr: 1.5, bl: 0, be: 0,   br: 0, nose: .6 },
+  yale:    { tl: 9, te: .34, tr: 1.5, bl: 7, be: .14, br: 2, nose: 99 },
+  best:    { tl: 8, te: .40, tr: 1.5, bl: 0, be: 0,   br: 0, nose: .6 },
+  flat:    { tl: 5, te: .50, tr: 1,   bl: 0, be: 0,   br: 0, nose: .5 }
+};
+
+function pinCenters(k, bits){
+  const n = Math.min(bits.length, k.pinCount);
+  const arr = [];
+  for(let i=0;i<n;i++) arr.push(k.firstPin + i*k.pinPitch);
+  return arr;
+}
+
+// Always returns pinCount numbers inside [cutMin, cutMax]; anything missing or invalid becomes the shallowest cut.
+function cleanBits(k, bits){
+  return Array.from({length:k.pinCount}, (_,i)=>{
+    const v = Number(bits && bits[i]);
+    return Number.isFinite(v) ? Math.max(k.cutMin, Math.min(k.cutMax, v)) : k.cutMin;
+  });
+}
+
+// Depth of a cut below the blade top, mm. The span between the shallowest and deepest cut is k.cutRange.
+function cutDepth(k, bit){
+  const n = (bit - k.cutMin) / ((k.cutMax - k.cutMin) || 1);
+  return CUT.base + n * k.cutRange;
+}
+
+// Horizontal run per mm of depth. 45° unless a deep cut's flank would reach into the next pin position.
+function flankRun(k){
+  return Math.min(CUT.flank, 0.98 * (k.pinPitch - CUT.flat/2) / k.cutRange);
+}
+
+// Lower envelope of piecewise-linear functions (each [[x,y],…], undefined outside its x-range), left→right,
+// with a vertex at every kink and every crossing, and no redundant collinear vertices.
+function lowerEnvelope(fns, x0, x1){
+  const EPS = 1e-9;
+  const at = (f, x) => {
+    if(x < f[0][0]-EPS || x > f[f.length-1][0]+EPS) return Infinity;
+    for(let i=1;i<f.length;i++) if(x <= f[i][0]+EPS){
+      const xa=f[i-1][0], ya=f[i-1][1], xb=f[i][0], yb=f[i][1];
+      return xb-xa < EPS ? Math.min(ya,yb) : ya + (yb-ya)*(x-xa)/(xb-xa);
+    }
+    return f[f.length-1][1];
+  };
+  let xs = [x0, x1];
+  fns.forEach(f=>f.forEach(p=>{ if(p[0]>x0+EPS && p[0]<x1-EPS) xs.push(p[0]); }));
+  xs = Array.from(new Set(xs)).sort((a,b)=>a-b);
+  const all = xs.slice();
+  for(let i=1;i<xs.length;i++){            // inside each interval every function is a straight line
+    const a=xs[i-1], b=xs[i];
+    const act = fns.filter(f=>at(f,(a+b)/2) < Infinity);
+    for(let p=0;p<act.length;p++) for(let q=p+1;q<act.length;q++){
+      const da = at(act[p],a)-at(act[q],a), db = at(act[p],b)-at(act[q],b);
+      if(da*db < 0) all.push(a + (b-a)*da/(da-db));
+    }
+  }
+  all.sort((a,b)=>a-b);
+  const pts = [];
+  all.forEach(x=>{
+    if(pts.length && x-pts[pts.length-1][0] < 1e-7) return;
+    pts.push([x, Math.min.apply(null, fns.map(f=>at(f,x)))]);
+  });
+  const out = [pts[0]];
+  for(let i=1;i<pts.length-1;i++){
+    const a=out[out.length-1], b=pts[i], c=pts[i+1];
+    if(Math.abs((b[1]-a[1])/(b[0]-a[0]) - (c[1]-b[1])/(c[0]-b[0])) > 1e-9) out.push(b);
+  }
+  out.push(pts[pts.length-1]);
+  // Two vertices on one horizontal line closer than 0.05 mm are a sliver of flat between neighbouring cuts, not a
+  // feature (nothing can cut or print it): merge them. The end vertices stay put.
+  const res = [out[0]];
+  for(let i=1;i<out.length;i++){
+    const p = out[i], q = res[res.length-1];
+    if(res.length > 1 && i < out.length-1 && Math.abs(p[1]-q[1]) < 1e-9 && p[0]-q[0] < 0.05) q[0] = (q[0]+p[0])/2;
+    else res.push(p);
+  }
+  return res;
+}
+
+// Polygon with a fillet radius per corner → {start, segs}. Segments are ['L',x,y] or ['A',x,y,cx,cy,r,a0,a1]
+// (x,y = end point; a0→a1 in radians, a1>a0 = counter-clockwise). A radius is trimmed when the neighbouring
+// edge is too short to hold it.
+function roundedPolygon(P){
+  const n = P.length;
+  const corner = P.map((p,i)=>{
+    const a = P[(i+n-1)%n], b = P[(i+1)%n];
+    let ux=a.x-p.x, uy=a.y-p.y, vx=b.x-p.x, vy=b.y-p.y;
+    const la=Math.hypot(ux,uy), lb=Math.hypot(vx,vy);
+    ux/=la; uy/=la; vx/=lb; vy/=lb;
+    const th = Math.acos(Math.max(-1, Math.min(1, ux*vx+uy*vy)));
+    if(!(p.r > 0) || th < 1e-4 || Math.PI-th < 1e-4) return null;
+    const room = Math.min(la*(a.r>0 ? .5 : 1), lb*(b.r>0 ? .5 : 1));
+    const t = Math.min(p.r/Math.tan(th/2), room), r = t*Math.tan(th/2);
+    const bx=ux+vx, by=uy+vy, bl=Math.hypot(bx,by), cd=r/Math.sin(th/2);
+    const cx=p.x+bx/bl*cd, cy=p.y+by/bl*cd;
+    const t1=[p.x+ux*t, p.y+uy*t], t2=[p.x+vx*t, p.y+vy*t];
+    const a0 = Math.atan2(t1[1]-cy, t1[0]-cx);
+    const a1 = a0 + (Math.PI-th) * ((-ux*vy + uy*vx) > 0 ? 1 : -1);   // left turn = counter-clockwise
+    return {t1, t2, cx, cy, r, a0, a1};
+  });
+  const start = corner[0] ? corner[0].t2 : [P[0].x, P[0].y];
+  const segs = [];
+  let cur = start;
+  const line = (x,y)=>{ if(Math.hypot(x-cur[0], y-cur[1]) > 1e-9){ segs.push(['L',x,y]); cur=[x,y]; } };
+  for(let j=1;j<=n;j++){
+    const i = j%n, c = corner[i];
+    if(!c) line(P[i].x, P[i].y);
+    else { line(c.t1[0], c.t1[1]); segs.push(['A', c.t2[0], c.t2[1], c.cx, c.cy, c.r, c.a0, c.a1]); cur = c.t2; }
+  }
+  return {start, segs};
+}
+
+// The key outline for a bitting. Closed, counter-clockwise, no self-contact.
+function keyContour(k, bits){
+  bits = cleanBits(k, bits);
+  const h = k.shoulderH, W = k.bowW, H = k.shoulderH + k.bowH, L = k.bladeL;
+  const T = TIPS[k.tipStyle] || TIPS.flat;
+  const topEnd = T.te*h, botEnd = T.be*h, xs = L - T.tl;
+
+  // Top edge = lowest of: the shoulder line, the tip taper, and a V for every cut.
+  const fns = [ [[0,h],[L,h]], [[xs,h],[L,topEnd]] ];
+  const run = flankRun(k);
+  pinCenters(k, bits).forEach((xc,i)=>{
+    const d = cutDepth(k, bits[i]), hw = CUT.flat/2 + run*d;
+    fns.push([[xc-hw,h],[xc-CUT.flat/2,h-d],[xc+CUT.flat/2,h-d],[xc+hw,h]]);
+  });
+  const top = lowerEnvelope(fns, 0, L);
+
+  const R = 0.34*H;                                   // outer corners of the bow
+  const P = [{x:-W, y:0, r:R}];                       // walk counter-clockwise from the bow's bottom-left corner
+  if(T.bl > 0) P.push({x:L-T.bl, y:0, r:T.br});
+  P.push({x:L, y:botEnd, r:T.nose});
+  for(let i=top.length-1;i>=0;i--){
+    const x = top[i][0], y = top[i][1];
+    P.push({x, y, r: Math.abs(x-L)<1e-9 ? T.nose : Math.abs(x-xs)<1e-9 ? T.tr : Math.abs(x)<1e-9 ? 0.8 : 0});
+  }
+  P.push({x:0, y:H, r:2.5});
+  P.push({x:-W, y:H, r:R});
+  return roundedPolygon(P);
+}
+
+// Keyring hole (a circle), placed on the bow's centre line.
+function keyHole(k){
+  const H = k.shoulderH + k.bowH;
+  return { cx: -0.57*k.bowW, cy: 0.54*H, r: Math.min(2.6, Math.max(2.0, 0.125*H)) };
+}
+
+function keyBounds(k){
+  return { minX: -k.bowW, maxX: k.bladeL, minY: 0, maxY: k.shoulderH + k.bowH };
+}
+
+// ── outputs derived from the outline ──
+const num = v => String(+v.toFixed(3));
+
+// SVG path data (Y flipped, optional offset) — true arcs, outline plus keyring hole (use fill-rule evenodd).
+function buildPath(k, bits, dx, dy){
+  dx = dx || 0; dy = dy || 0;
+  const c = keyContour(k, bits), o = keyHole(k);
+  const P = (x,y) => num(x+dx)+','+num(dy-y);
+  let d = 'M'+P(c.start[0], c.start[1]);
+  c.segs.forEach(s=>{
+    d += s[0]==='L' ? 'L'+P(s[1],s[2]) : 'A'+num(s[5])+' '+num(s[5])+' 0 0 '+(s[7]>s[6] ? 0 : 1)+' '+P(s[1],s[2]);
+  });
+  d += 'Z';
+  d += 'M'+P(o.cx-o.r,o.cy)+'A'+num(o.r)+' '+num(o.r)+' 0 1 0 '+P(o.cx+o.r,o.cy)+'A'+num(o.r)+' '+num(o.r)+' 0 1 0 '+P(o.cx-o.r,o.cy)+'Z';
+  return d;
+}
+
+// Outline as a ring of points (counter-clockwise, no repeated end point), arcs flattened to FLATTEN_TOL.
+function flattenContour(c, tol){
+  tol = tol || FLATTEN_TOL;
+  const pts = [c.start.slice()];
+  c.segs.forEach(s=>{
+    if(s[0]==='A'){
+      const r=s[5], a0=s[6], a1=s[7];
+      const step = 2*Math.acos(Math.max(0, 1 - tol/r));
+      const n = Math.max(1, Math.ceil(Math.abs(a1-a0)/step));
+      for(let j=1;j<n;j++){ const a=a0+(a1-a0)*j/n; pts.push([s[3]+r*Math.cos(a), s[4]+r*Math.sin(a)]); }
+    }
+    pts.push([s[1], s[2]]);
+  });
+  const last = pts[pts.length-1];
+  if(Math.hypot(last[0]-pts[0][0], last[1]-pts[0][1]) < 1e-9) pts.pop();
+  return pts;
+}
+
+function holeRing(o, tol){                       // clockwise, as a hole must be
+  const step = 2*Math.acos(Math.max(0, 1 - (tol||FLATTEN_TOL)/o.r));
+  const n = Math.max(16, 4*Math.ceil(2*Math.PI/step/4));
+  return Array.from({length:n}, (_,i)=>{ const a = -2*Math.PI*i/n; return [o.cx+o.r*Math.cos(a), o.cy+o.r*Math.sin(a)]; });
+}
+
+// Triangulate a polygon with one hole (outer counter-clockwise, hole clockwise): the hole is joined to the
+// outline by a bridge, then ears are clipped. Only existing vertices are used, so faces and walls share vertices.
+function triangulate(outer, hole){
+  const pts = outer.concat(hole), no = outer.length, nh = hole.length;
+  const X = i=>pts[i][0], Y = i=>pts[i][1];
+  const cross = (a,b,c)=>(X(b)-X(a))*(Y(c)-Y(a))-(Y(b)-Y(a))*(X(c)-X(a));
+  const crosses = (a,b,c,d)=>{                    // proper intersection of segments ab and cd
+    const d1=cross(a,b,c), d2=cross(a,b,d), d3=cross(c,d,a), d4=cross(c,d,b);
+    return d1*d2 < -1e-12 && d3*d4 < -1e-12;
+  };
+  let ring = Array.from({length:no}, (_,i)=>i);
+  if(nh){
+    let hi = 0; for(let i=1;i<nh;i++) if(hole[i][0] > hole[hi][0]) hi = i;
+    const H = no+hi;
+    const cand = Array.from({length:no}, (_,i)=>i)
+      .sort((a,b)=>Math.hypot(X(a)-X(H),Y(a)-Y(H))-Math.hypot(X(b)-X(H),Y(b)-Y(H)));
+    let oi = cand.find(o=>{
+      for(let i=0;i<no;i++){ const j=(i+1)%no; if(i!==o && j!==o && crosses(o,H,i,j)) return false; }
+      for(let i=0;i<nh;i++){ const a=no+i, b=no+(i+1)%nh; if(a!==H && b!==H && crosses(o,H,a,b)) return false; }
+      return true;
+    });
+    if(oi === undefined) oi = cand[0];
+    ring = [];
+    for(let i=0;i<=oi;i++) ring.push(i);
+    for(let i=0;i<=nh;i++) ring.push(no+(hi+i)%nh);
+    for(let i=oi;i<no;i++) ring.push(i);
+  }
+  const tris = [];
+  const same = (a,b)=>Math.abs(X(a)-X(b))<1e-12 && Math.abs(Y(a)-Y(b))<1e-12;
+  const EPS = 1e-12;
+  let guard = ring.length*ring.length + 10;
+  while(ring.length > 3 && guard-- > 0){
+    const n = ring.length;
+    let done = false;
+    for(let i=0;i<n && !done;i++){
+      const a=ring[(i+n-1)%n], b=ring[i], c=ring[(i+1)%n];
+      if(cross(a,b,c) <= EPS) continue;            // reflex, or three points on one line: never an ear
+      let ear = true;
+      for(let m=0;m<n;m++){
+        const j = ring[m];
+        if(j===a||j===b||j===c||same(j,a)||same(j,b)||same(j,c)) continue;
+        if(cross(a,b,j) >= -EPS && cross(b,c,j) >= -EPS && cross(c,a,j) >= -EPS){ ear = false; break; }
+      }
+      if(ear){ tris.push([a,b,c]); ring.splice(i,1); done = true; }
+    }
+    if(!done){
+      // No proper ear left. Keep every vertex in the mesh (a zero-area facet is harmless; dropping a vertex would
+      // open a crack against the side wall): clip a collinear vertex, otherwise the sharpest convex corner.
+      let bi = -1, best = -Infinity;
+      for(let i=0;i<n;i++){
+        const cr = cross(ring[(i+n-1)%n], ring[i], ring[(i+1)%n]);
+        if(Math.abs(cr) <= EPS){ bi = i; break; }
+        if(cr > best){ best = cr; bi = i; }
+      }
+      tris.push([ring[(bi+n-1)%n], ring[bi], ring[(bi+1)%n]]); ring.splice(bi,1);
+    }
+  }
+  if(ring.length === 3) tris.push(ring.slice());
+  return {pts, tris};
+}
+
+// Binary STL: a watertight extrusion of the outline (with the keyring hole) to k.thick, native mm coordinates.
+function buildSTL(k, bits){
+  bits = cleanBits(k, bits);
+  const outer = flattenContour(keyContour(k, bits)), hole = holeRing(keyHole(k));
+  const {pts, tris} = triangulate(outer, hole);
+  const Z = k.thick, no = outer.length, nh = hole.length;
+  const f = [];                                   // facets: three [x,y,z]
+  const V = (i,z)=>[pts[i][0], pts[i][1], z];
+  tris.forEach(t=>{ f.push([V(t[0],Z),V(t[1],Z),V(t[2],Z)]); f.push([V(t[0],0),V(t[2],0),V(t[1],0)]); });
+  const wall = (a,b)=>{ f.push([V(a,0),V(b,0),V(b,Z)]); f.push([V(a,0),V(b,Z),V(a,Z)]); };
+  for(let i=0;i<no;i++) wall(i,(i+1)%no);
+  for(let i=0;i<nh;i++) wall(no+i, no+(i+1)%nh);
+  const buf = new ArrayBuffer(84+50*f.length), dv = new DataView(buf);
+  const name = ('1KeyForge '+k.code+' '+bits.join('')).slice(0,79);
+  for(let i=0;i<name.length;i++) dv.setUint8(i, name.charCodeAt(i));   // header must not start with "solid"
+  dv.setUint32(80, f.length, true);
+  f.forEach((t,i)=>{
+    const ux=t[1][0]-t[0][0], uy=t[1][1]-t[0][1], uz=t[1][2]-t[0][2];
+    const vx=t[2][0]-t[0][0], vy=t[2][1]-t[0][1], vz=t[2][2]-t[0][2];
+    let nx=uy*vz-uz*vy, ny=uz*vx-ux*vz, nz=ux*vy-uy*vx; const l=Math.hypot(nx,ny,nz)||1;
+    const o = 84+50*i, vals=[nx/l,ny/l,nz/l].concat(t[0],t[1],t[2]);
+    vals.forEach((v,j)=>dv.setFloat32(o+4*j, v, true));
+  });
+  return buf;
+}
+
+// DXF (R12, millimetres): the outline as one closed polyline with arc bulges, the keyring hole as a circle.
+function buildDXF(k, bits){
+  bits = cleanBits(k, bits);
+  const c = keyContour(k, bits), o = keyHole(k), out = [];
+  const g = (code, val)=>out.push(String(code), String(val));
+  g(999,'1KeyForge '+k.code+' '+bits.join('')+' | millimetres | origin = blade shoulder, blade bottom edge');
+  g(0,'SECTION'); g(2,'HEADER'); g(9,'$ACADVER'); g(1,'AC1009'); g(9,'$INSUNITS'); g(70,4); g(9,'$MEASUREMENT'); g(70,1); g(0,'ENDSEC');
+  g(0,'SECTION'); g(2,'TABLES');
+  g(0,'TABLE'); g(2,'LTYPE'); g(70,1); g(0,'LTYPE'); g(2,'CONTINUOUS'); g(70,0); g(3,'Solid line'); g(72,65); g(73,0); g(40,0); g(0,'ENDTAB');
+  g(0,'TABLE'); g(2,'LAYER'); g(70,2);
+  g(0,'LAYER'); g(2,'OUTLINE'); g(70,0); g(62,7); g(6,'CONTINUOUS');
+  g(0,'LAYER'); g(2,'HOLE');    g(70,0); g(62,1); g(6,'CONTINUOUS');
+  g(0,'ENDTAB'); g(0,'ENDSEC');
+  g(0,'SECTION'); g(2,'ENTITIES');
+  g(0,'POLYLINE'); g(8,'OUTLINE'); g(66,1); g(10,0); g(20,0); g(30,0); g(70,1);
+  let p = c.start;
+  c.segs.forEach(s=>{
+    g(0,'VERTEX'); g(8,'OUTLINE'); g(10,p[0].toFixed(4)); g(20,p[1].toFixed(4)); g(30,0);
+    if(s[0]==='A') g(42, Math.tan((s[7]-s[6])/4).toFixed(6));
+    p = [s[1], s[2]];
+  });
+  g(0,'SEQEND'); g(8,'OUTLINE');
+  g(0,'CIRCLE'); g(8,'HOLE'); g(10,o.cx.toFixed(4)); g(20,o.cy.toFixed(4)); g(30,0); g(40,o.r.toFixed(4));
+  g(0,'ENDSEC'); g(0,'EOF');
+  return out.join('\n')+'\n';
+}
+
+// ─────────────────────────────────────────────
+// RENDER KEY SVG
+// The scene (gradients, outline, grooves, pin labels) is built once per key type. Moving a pin slider only
+// updates the outline's path data and the label values, so nothing is torn down while you drag.
+// Every key is drawn at the same px-per-mm: the viewBox is a fixed 76 × 25 mm window centred on the key.
+// ─────────────────────────────────────────────
+const SVGNS = 'http://www.w3.org/2000/svg';
+const VB_W = 76, VB_H = 25;   // mm visible at 1×: the longest key (71 mm) plus a margin
+let sceneKey = null, scene = null;
+
+function mk(tag, attrs, parent){
+  const n = document.createElementNS(SVGNS, tag);
+  for(const a in attrs) n.setAttribute(a, attrs[a]);
+  if(parent) parent.appendChild(n);
+  return n;
+}
+
+function buildScene(k){
+  const svg = document.getElementById('key-svg');
+  const b = keyBounds(k), h = k.shoulderH;
+  svg.innerHTML = '';
+  svg.setAttribute('role', 'img');
+  svg.setAttribute('viewBox', `${(b.minX+b.maxX)/2 - VB_W/2} ${-(b.minY+b.maxY)/2 - VB_H/2} ${VB_W} ${VB_H}`);
+
+  // Defs: metallic gradient, groove shading, drop shadow, and the outline as a clip for the inner details
+  const defs = mk('defs', {}, svg);
+  defs.innerHTML = `
+    <linearGradient id="mg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="${lc(k.color,55)}"/>
+      <stop offset="16%"  stop-color="${lc(k.color,28)}"/>
+      <stop offset="42%"  stop-color="${k.color}"/>
+      <stop offset="62%"  stop-color="${dc(k.color,12)}"/>
+      <stop offset="84%"  stop-color="${dc(k.color,28)}"/>
+      <stop offset="100%" stop-color="${dc(k.color,42)}"/>
+    </linearGradient>
+    <linearGradient id="grooveTop" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="${dc(k.color,45)}" stop-opacity="0.65"/>
+      <stop offset="100%" stop-color="${dc(k.color,45)}" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="grooveBot" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="${lc(k.color,45)}" stop-opacity="0"/>
+      <stop offset="100%" stop-color="${lc(k.color,45)}" stop-opacity="0.5"/>
+    </linearGradient>
+    <filter id="sh" x="-30%" y="-30%" width="160%" height="170%">
+      <feDropShadow dx="0" dy="1.6" stdDeviation="1.4" flood-color="rgba(0,0,0,.3)"/>
+    </filter>
+    <clipPath id="kclip"><path id="kclip-d" clip-rule="evenodd"/></clipPath>`;
+
+  scene = {};
+  scene.clip = svg.querySelector('#kclip-d');
+
+  // Key body: metallic fill, evenodd so the keyring hole stays open
+  scene.body = mk('path', { fill:'url(#mg)', 'fill-rule':'evenodd', stroke: dc(k.color,40), 'stroke-width':'0.5',
+                            'stroke-linejoin':'round', filter:'url(#sh)' }, svg);
+
+  // Everything inside the outline is clipped to it, so no highlight or groove can leak past an edge
+  const inner = mk('g', { 'clip-path':'url(#kclip)' }, svg);
+  // Edge highlight: the outline nudged down 0.4 mm, so it only shows along edges that face up
+  scene.bevel = mk('path', { fill:'none', 'fill-rule':'evenodd', stroke: lc(k.color,50), 'stroke-width':'0.35',
+                             'stroke-opacity':'0.55', transform:'translate(0,0.4)' }, inner);
+  // Milling groove: a shaded pair of lines below the deepest cut any pin can make
+  const rootMin = h - CUT.base - k.cutRange;
+  const gx2 = k.bladeL*0.88;
+  [[-(rootMin*0.64), 'grooveTop'], [-(rootMin*0.38), 'grooveBot']].forEach(([y, grad])=>{
+    mk('line', { x1:1.5, y1:y, x2:gx2, y2:y, stroke:`url(#${grad})`, 'stroke-width':'1.1', 'stroke-linecap':'round' }, inner);
+  });
+
+  // Pin labels — one row above the shoulder: pin number (small, grey) over cut value (larger, orange)
+  const pcs = pinCenters(k, new Array(k.pinCount).fill(0));
+  scene.vals = pcs.map((x, i)=>{
+    mk('text', { x, y:-(h+5.5), 'font-size':'3', fill:'#9ca3af', 'font-weight':'600', 'text-anchor':'middle',
+                 'font-family':'system-ui,sans-serif' }, svg).textContent = i+1;
+    const tv = mk('text', { x, y:-(h+1.5), 'font-size':'3.8', fill:'#f97316', 'font-weight':'800', 'text-anchor':'middle',
+                            'font-family':'Courier New,monospace' }, svg);
+    mk('line', { x1:x, y1:-(h+0.3), x2:x, y2:-(h-1.2), stroke:'#f97316', 'stroke-width':'0.35' }, svg);
+    return tv;
+  });
+}
+
+function updateScene(k, bits){
+  const d = buildPath(k, bits);
+  scene.body.setAttribute('d', d);
+  scene.bevel.setAttribute('d', d);
+  scene.clip.setAttribute('d', d);
+  scene.vals.forEach((t, i)=>{ t.textContent = bits[i]; });
+  document.getElementById('key-svg').setAttribute('aria-label', `${k.name} key, bitting ${bits.join('')}`);
+}
+
+function renderKey(){
+  const k = kt();
+  const bits = cleanBits(k, bitting);
+  if(sceneKey !== curKey){ buildScene(k); sceneKey = curKey; }
+  updateScene(k, bits);
+  applyView();
+
+  // Update UI elements
+  document.getElementById('badge').textContent = bits.join('');
+  document.getElementById('sc-hint').textContent = scale.toFixed(1)+'×';
+  document.getElementById('kt-badge').textContent = k.name;
+  updateXNote();
+}
+
+function lc(hex, amt){ // lighten
+  let n=parseInt(hex.replace('#',''),16);
+  return `rgb(${Math.min(255,((n>>16)&255)+amt*2)},${Math.min(255,((n>>8)&255)+amt*2)},${Math.min(255,(n&255)+amt*2)})`;
+}
+function dc(hex, amt){ // darken
+  let n=parseInt(hex.replace('#',''),16);
+  return `rgb(${Math.max(0,((n>>16)&255)-amt*2)},${Math.max(0,((n>>8)&255)-amt*2)},${Math.max(0,(n&255)-amt*2)})`;
+}
+
+// ─────────────────────────────────────────────
+// PIN SLIDERS
+// ─────────────────────────────────────────────
+function renderPins(){
+  const k = kt();
+  const grid = document.getElementById('pins-grid');
+  grid.innerHTML = '';
+
+  for(let i=0;i<6;i++){
+    const active = i < k.pinCount;
+    const col = document.createElement('div');
+    col.className = 'pin-col';
+    col.style.opacity = active ? '1' : '0.2';
+    col.style.pointerEvents = active ? 'auto' : 'none';
+
+    // Pin number label
+    const nl = document.createElement('div');
+    nl.className = 'pin-num'; nl.textContent = i+1;
+
+    // Vertical slider
+    const wrap = document.createElement('div'); wrap.className='vwrap';
+    const sl = document.createElement('input');
+    sl.type='range'; sl.className='vert';
+    sl.min = k.cutMin; sl.max = k.cutMax; sl.step = 1;
+    if(bitting[i] === undefined) bitting[i] = k.cutMin;
+    sl.value = clamp(bitting[i], k.cutMin, k.cutMax);
+    sl.setAttribute('aria-label', 'Pin '+(i+1));
+    setPct(sl, k.cutMin, k.cutMax);
+
+    const vl = document.createElement('div');
+    vl.className='pin-val'; vl.textContent = bitting[i];
+
+    sl.addEventListener('input', ()=>{
+      bitting[i] = parseInt(sl.value);
+      setPct(sl, k.cutMin, k.cutMax);
+      vl.textContent = bitting[i];
+      renderKey();
+    });
+
+    wrap.appendChild(sl);
+    col.appendChild(nl); col.appendChild(wrap); col.appendChild(vl);
+    grid.appendChild(col);
+  }
+}
+
+function clamp(v,mn,mx){ return Math.max(mn, Math.min(mx, v)); }
+function setPct(el,mn,mx){ el.style.setProperty('--pct', ((el.value-mn)/(mx-mn)*100)+'%'); }
+
+// ─────────────────────────────────────────────
+// SCALE SLIDER
+// ─────────────────────────────────────────────
+const scSl = document.getElementById('sc-sl');
+function updateScalePct(){ setPct(scSl, 0.5, 3.0); }
+scSl.addEventListener('input', ()=>{
+  scale = parseFloat(scSl.value);
+  updateScalePct();
+  document.getElementById('sc-disp').textContent = scale.toFixed(1)+'×';
+  renderKey();
+});
+updateScalePct();
+
+// ─────────────────────────────────────────────
+// KEY TYPE PANEL
+// ─────────────────────────────────────────────
+function renderKTGrid(){
+  const grid = document.getElementById('kt-grid');
+  grid.innerHTML='';
+  Object.entries(KEY_TYPES).forEach(([key,k])=>{
+    const card=document.createElement('div');
+    card.className='kt-card'+(key===curKey?' sel':'');
+    card.innerHTML=`<div class="kt-name">${k.name}</div>
+      <div class="kt-spec">${k.pinCount} pins · ${k.bladeL+k.bowW}mm · ${k.code}</div>
+      <div class="kt-spec">Cuts ${k.cutMin}–${k.cutMax}</div>`;
+    card.onclick=()=>{
+      curKey=key;
+      const nk=KEY_TYPES[key];
+      // Load first preset or reset to mid-range
+      if(nk.presets&&nk.presets[0]){
+        const p=nk.presets[0];
+        bitting=Array.from({length:6},(_,i)=>i<p.b.length?p.b[i]:nk.cutMin);
+      } else {
+        bitting=Array.from({length:6},()=>Math.round((nk.cutMin+nk.cutMax)/2));
+      }
+      renderKTGrid(); renderPins(); renderPresets(); renderKey();
+      toast('Loaded '+nk.name);
+    };
+    grid.appendChild(card);
+  });
+}
+
+// ─────────────────────────────────────────────
+// PRESETS & VARIATIONS
+// ─────────────────────────────────────────────
+function renderPresets(){
+  const k=kt(); const list=document.getElementById('preset-list');
+  list.innerHTML='';
+  (k.presets||[]).forEach(p=>{
+    const c=document.createElement('div'); c.className='vcard';
+    c.innerHTML=`<div class="vcode">${p.b.join('')}</div><div class="vlbl">${p.l}</div>`;
+    c.onclick=()=>{
+      for(let i=0;i<p.b.length;i++) bitting[i]=p.b[i];
+      renderPins(); renderKey(); switchTab('bitting'); toast('Preset: '+p.l);
+    };
+    list.appendChild(c);
+  });
+}
+
+function renderVars(){
+  const list=document.getElementById('var-list');
+  if(userVars.length===0){
+    list.innerHTML='<div style="font-size:12px;color:var(--g400);padding:6px 0">No saved cuts yet</div>';
+    return;
+  }
+  list.innerHTML='';
+  userVars.forEach(v=>{
+    const c=document.createElement('div'); c.className='vcard';
+    c.innerHTML=`<div class="vcode">${v.bits.join('')}</div><div class="vlbl">${v.label} · ${v.type}</div>`;
+    c.onclick=()=>{
+      curKey=v.typeKey; bitting=[...v.bits];
+      renderKTGrid(); renderPins(); renderPresets(); renderKey();
+      switchTab('bitting');
+    };
+    list.appendChild(c);
+  });
+}
+
+function saveVar(){
+  const k=kt(); const label=k.code+'-'+(userVars.length+1).toString().padStart(2,'0');
+  userVars.push({bits:[...bitting.slice(0,k.pinCount)],label,type:k.name,typeKey:curKey});
+  renderVars();
+  const fl=document.getElementById('var-flash');
+  fl.style.display='block'; fl.textContent='✓ Saved "'+label+'"';
+  setTimeout(()=>fl.style.display='none',2000);
+}
+
+// ─────────────────────────────────────────────
+// TABS
+// ─────────────────────────────────────────────
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelector('[data-tab="'+name+'"]').classList.add('active');
+  document.getElementById('panel-'+name).classList.add('active');
+  if(name==='presets') renderVars();
+}
+document.querySelectorAll('.tab').forEach(btn=>{
+  btn.addEventListener('click',()=>switchTab(btn.dataset.tab));
+});
+
+// ─────────────────────────────────────────────
+// COLLAPSE
+// ─────────────────────────────────────────────
+function togglePanel(){
+  panelOpen=!panelOpen;
+  document.getElementById('bottom').classList.toggle('collapsed',!panelOpen);
+  document.getElementById('col-btn').textContent=panelOpen?'▼':'▲';
+}
+
+// ─────────────────────────────────────────────
+// VIEW — zoom and pan
+// Zoom: slider, two-finger pinch, Ctrl/⌘ + wheel. Pan: drag (or two fingers) once zoomed in.
+// Double-tap / double-click resets. Zoom is a CSS transform, so the scene is never re-rendered.
+// ─────────────────────────────────────────────
+let panX = 0, panY = 0, panScale = 1;   // pan in px; panScale = the zoom that pan was last valid for
+const pv = document.getElementById('preview');
+const ptrs = new Map();
+let g0 = null, lastTap = {t:0, x:0, y:0};
+
+function pxPerMm(){
+  const s = document.getElementById('key-svg');
+  return Math.min(s.clientWidth / VB_W, s.clientHeight / VB_H) || 1;
+}
+
+function applyView(){
+  const svg = document.getElementById('key-svg');
+  if(scale !== panScale){ panX *= scale/panScale; panY *= scale/panScale; panScale = scale; }  // slider zooms about the centre
+  if(scale <= 1){ panX = panY = 0; }
+  else {
+    // keep at least 48 px of the key on screen
+    const b = keyBounds(kt()), ppm = pxPerMm();
+    const mx = ((b.maxX-b.minX)*ppm*scale + pv.clientWidth)/2 - 48;
+    const my = ((b.maxY-b.minY)*ppm*scale + pv.clientHeight)/2 - 48;
+    panX = clamp(panX, -mx, mx); panY = clamp(panY, -my, my);
+  }
+  svg.style.transform = `translate(${panX}px,${panY}px) scale(${scale})`;
+  pv.style.cursor = scale > 1 ? 'grab' : '';
+}
+
+function setZoom(s){
+  scale = clamp(s, 0.5, 3.0); panScale = scale;
+  scSl.value = scale; updateScalePct();
+  document.getElementById('sc-disp').textContent = scale.toFixed(1)+'×';
+  document.getElementById('sc-hint').textContent = scale.toFixed(1)+'×';
+  applyView();
+}
+function resetView(){ panX = panY = 0; setZoom(1); }
+
+function centre(){ const r = pv.getBoundingClientRect(); return [r.left + r.width/2, r.top + r.height/2]; }
+function gestureStart(){
+  const p = [...ptrs.values()], [cx, cy] = centre();
+  const two = p.length >= 2;
+  g0 = { n: two ? 2 : 1, s: scale, px: panX, py: panY,
+         mx: (two ? (p[0].x+p[1].x)/2 : p[0].x) - cx, my: (two ? (p[0].y+p[1].y)/2 : p[0].y) - cy,
+         d: two ? Math.hypot(p[0].x-p[1].x, p[0].y-p[1].y) : 0 };
+}
+
+pv.addEventListener('pointerdown', e=>{
+  if(e.target.closest('.collapse-btn')) return;
+  ptrs.set(e.pointerId, {x:e.clientX, y:e.clientY, x0:e.clientX, y0:e.clientY, t0:e.timeStamp});
+  try{ pv.setPointerCapture(e.pointerId); }catch(_){}
+  pv.classList.add('drag');
+  gestureStart();
+});
+pv.addEventListener('pointermove', e=>{
+  const q = ptrs.get(e.pointerId); if(!q) return;
+  q.x = e.clientX; q.y = e.clientY;
+  const p = [...ptrs.values()], [cx, cy] = centre();
+  if(g0.n === 2 && p.length >= 2){
+    const mx = (p[0].x+p[1].x)/2 - cx, my = (p[0].y+p[1].y)/2 - cy;
+    const s1 = clamp(g0.s * Math.hypot(p[0].x-p[1].x, p[0].y-p[1].y) / g0.d, 0.5, 3.0);
+    // the point of the key that started under the fingers stays under the fingers
+    panX = mx - s1*(g0.mx - g0.px)/g0.s;
+    panY = my - s1*(g0.my - g0.py)/g0.s;
+    setZoom(s1);
+  } else if(g0.n === 1 && p.length === 1){
+    panX = g0.px + (p[0].x - cx - g0.mx);
+    panY = g0.py + (p[0].y - cy - g0.my);
+    applyView();
+  }
+});
+function endPointer(e){
+  const q = ptrs.get(e.pointerId); if(!q) return;
+  ptrs.delete(e.pointerId);
+  if(e.type === 'pointerup' && !ptrs.size && Math.hypot(q.x-q.x0, q.y-q.y0) < 8 && e.timeStamp - q.t0 < 300){
+    // two quick taps in the same place reset the view (touch screens do not always send dblclick)
+    if(e.timeStamp - lastTap.t < 350 && Math.hypot(q.x-lastTap.x, q.y-lastTap.y) < 30){ resetView(); lastTap.t = 0; }
+    else lastTap = {t:e.timeStamp, x:q.x, y:q.y};
+  }
+  if(ptrs.size) gestureStart(); else pv.classList.remove('drag');
+}
+pv.addEventListener('pointerup', endPointer);
+pv.addEventListener('pointercancel', endPointer);
+pv.addEventListener('dblclick', e=>{ if(!e.target.closest('.collapse-btn')) resetView(); });
+pv.addEventListener('wheel', e=>{
+  if(!e.ctrlKey && !e.metaKey) return;          // plain scrolling stays with the page
+  e.preventDefault();
+  const [cx, cy] = centre(), mx = e.clientX - cx, my = e.clientY - cy, s0 = scale;
+  const s1 = clamp(s0 * Math.exp(-e.deltaY*0.01), 0.5, 3.0);
+  panX = mx - s1*(mx - panX)/s0; panY = my - s1*(my - panY)/s0;
+  setZoom(s1);
+}, {passive:false});
+
+// ─────────────────────────────────────────────
+// EXPORT — SVG (true size: 1 user unit = 1 mm, width/height in mm)
+// ─────────────────────────────────────────────
+function exportSVG(){
+  const k=kt(); const bits=cleanBits(k, bitting);
+  const b=keyBounds(k), pad=0.5;
+  const W=b.maxX-b.minX+2*pad, H=b.maxY-b.minY+2*pad;
+  const d=buildPath(k, bits, pad-b.minX, b.maxY+pad);
+  const svgStr=`<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="${num(W)}mm" height="${num(H)}mm" viewBox="0 0 ${num(W)} ${num(H)}">
+  <title>1KeyForge - ${k.name} ${bits.join('')}</title>
+  <desc>Key: ${k.name} (${k.code}) | Bitting: ${bits.join('')} | Blade: ${k.bladeL}mm | Pins: ${k.pinCount} | Thickness: ${k.thick}mm | 1 unit = 1 mm</desc>
+  <path d="${d}" fill="${k.color}" fill-rule="evenodd" stroke="${dc(k.color,30)}" stroke-width="0.2" stroke-linejoin="round"/>
+</svg>`;
+  dl(new Blob([svgStr],{type:'image/svg+xml'}),`${k.code}_${bits.join('')}.svg`);
+  toast('SVG exported');
+}
+
+// ─────────────────────────────────────────────
+// EXPORT — STL (watertight extrusion, mm scale, ready for Bambu A1 Mini)
+// ─────────────────────────────────────────────
+function exportSTL(){
+  toast('Building STL…');
+  setTimeout(()=>{
+    try{
+      const k=kt(); const bits=cleanBits(k, bitting);
+      dl(new Blob([buildSTL(k,bits)],{type:'model/stl'}),`${k.code}_${bits.join('')}.stl`);
+      toast('STL ready — Bambu A1 Mini optimized');
+    } catch(e){ toast('STL error: '+e.message); }
+  },60);
+}
+
+// ─────────────────────────────────────────────
+// EXPORT — DXF (millimetres: one closed outline + the keyring hole as a circle)
+// ─────────────────────────────────────────────
+function exportDXF(){
+  const k=kt(); const bits=cleanBits(k, bitting);
+  dl(new Blob([buildDXF(k,bits)],{type:'application/dxf'}),`${k.code}_${bits.join('')}.dxf`);
+  toast('DXF exported');
+}
+
+function copyBitting(){
+  const k=kt(); const code=bitting.slice(0,k.pinCount).join('');
+  if(navigator.clipboard) navigator.clipboard.writeText(code).then(()=>toast('Copied: '+code));
+  else{ const el=document.createElement('textarea');el.value=code;document.body.appendChild(el);el.select();document.execCommand('copy');document.body.removeChild(el);toast('Copied: '+code); }
+}
+
+function updateXNote(){
+  const k=kt(); const bits=bitting.slice(0,k.pinCount);
+  document.getElementById('xnote').textContent=`${k.name} · ${bits.join('')} · ${k.bladeL+k.bowW}mm · ${k.thick}mm thick`;
+}
+function dl(blob,name){ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click(); }
+function toast(msg){ const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2400); }
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+renderKTGrid();
+renderPresets();
+renderVars();
+renderPins();
+renderKey();
+</script>
+</body>
+</html>

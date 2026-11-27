@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Urban Strife — UI Case Study — Alex Stefan</title>
+<meta name="description" content="UI case study: a full interface redesign of Urban Strife, an isometric Jagged Alliance-style tactical survival RPG by White Pond Games, published by MicroProse.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Single dark world: gunmetal page, parchment field-notes, amber LED accent, journal-ink blue for secondary marks.
+     Layout: narrow reading column for text, wide gallery rows for screens. */
+  --bg:#141516;
+  --panel:#1d1e1f;
+  --line:#2f3031;
+  --ink:#ddd7ca;
+  --muted:#958f82;
+  --paper:#e6d9bc;
+  --paper-ink:#2b2620;
+  --led:#ec8b2e;
+  --blue:#7d97d6;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --typed:"Special Elite","Courier New",Courier,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+a{color:var(--led)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--led);outline-offset:3px}
+.wrap{max-width:1240px;margin:0 auto;padding:0 24px}
+.read{max-width:68ch}
+
+/* Header */
+header{padding:56px 0 28px}
+.tag{font-family:var(--typed);font-size:14px;color:var(--muted);letter-spacing:.02em}
+h1{font-family:var(--display);font-weight:700;text-transform:uppercase;font-size:clamp(44px,7vw,88px);line-height:.95;margin:10px 0 14px;letter-spacing:.01em;text-wrap:balance}
+h1 span{color:var(--led)}
+.lede{font-size:19px;max-width:62ch;margin:0 0 22px}
+.steam{display:inline-flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;text-transform:uppercase;letter-spacing:.06em;font-size:17px;text-decoration:none;color:var(--bg);background:var(--led);padding:10px 18px;border-radius:3px}
+.steam:hover{filter:brightness(1.08)}
+
+/* Spec sheet as a typed file card */
+.spec{margin:36px 0 0;background:var(--paper);color:var(--paper-ink);border-radius:2px;padding:22px 26px;display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px 28px;box-shadow:0 1px 0 #00000055}
+.spec div{border-top:1px solid #2b262033;padding-top:8px}
+.spec dt{font-family:var(--typed);font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;color:#6e6455}
+.spec dd{margin:2px 0 0;font-weight:600;font-size:15.5px;line-height:1.4}
+.hero{margin:28px 0 0}
+
+/* Sections */
+section{padding:72px 0 8px;border-top:1px solid var(--line);margin-top:64px}
+.sec-head{display:flex;gap:18px;align-items:baseline;margin-bottom:14px}
+.num{font-family:var(--typed);color:var(--led);font-size:18px;min-width:2.2em}
+h2{font-family:var(--display);font-weight:700;text-transform:uppercase;font-size:clamp(30px,4vw,44px);line-height:1;margin:0;letter-spacing:.01em;text-wrap:balance}
+p{margin:0 0 14px}
+ul.points{list-style:none;padding:0;margin:8px 0 28px;display:grid;gap:12px}
+ul.points li{padding-left:22px;position:relative}
+ul.points li::before{content:"";position:absolute;left:0;top:.62em;width:8px;height:8px;border-radius:50%;background:var(--led);box-shadow:0 0 6px var(--led)}
+ul.points b{color:#fff;font-weight:600}
+
+/* Gallery */
+.g{display:grid;gap:16px;margin:8px 0 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g-wide{grid-template-columns:2fr 1fr}
+figure{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:3px;overflow:hidden;display:flex;flex-direction:column}
+figure button{all:unset;cursor:zoom-in;display:block;flex:1;display:flex;align-items:center;justify-content:center;background:#0e0f10}
+figure img{width:100%;height:100%;object-fit:contain}
+figcaption{font-family:var(--typed);font-size:13px;color:var(--muted);padding:9px 12px;border-top:1px solid var(--line)}
+.challenge{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin-top:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--blue);padding:16px 18px;border-radius:2px}
+.card h3{font-family:var(--display);text-transform:uppercase;font-size:21px;letter-spacing:.03em;margin:0 0 6px;color:#fff}
+.card p{margin:0;font-size:15.5px;color:var(--ink)}
+
+.deliv{columns:2 280px;column-gap:40px;padding:0;margin:10px 0 0;list-style:none}
+.deliv li{break-inside:avoid;padding:9px 0;border-bottom:1px dashed var(--line);font-family:var(--typed);font-size:15px}
+.deliv li::before{content:"✓ ";color:var(--led)}
+
+.takeaways{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:10px}
+.takeaways .card{border-left-color:var(--led)}
+
+footer{padding:64px 0 56px;color:var(--muted);font-size:14px}
+
+/* Lightbox */
+#lb{position:fixed;inset:0;background:#000000e6;display:none;align-items:center;justify-content:center;padding:24px;z-index:10;cursor:zoom-out}
+#lb.on{display:flex}
+#lb img{max-height:100%;max-width:100%;object-fit:contain}
+#lb button{position:absolute;top:14px;right:16px;background:var(--panel);color:var(--ink);border:1px solid var(--line);font:600 15px var(--body);padding:6px 12px;border-radius:3px;cursor:pointer}
+
+@media (max-width:760px){
+  .g2,.g3,.g-wide{grid-template-columns:1fr}
+  header{padding-top:36px}
+  section{padding-top:48px;margin-top:40px}
+}
+@media (prefers-reduced-motion:no-preference){.steam{transition:filter .15s}}
+
+/* Portfolio navigation (added when this page was placed inside the portfolio) */
+.pf-bar{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 24px;background:rgba(20,21,22,.92);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.pf-brand{font-family:var(--display);font-weight:700;font-size:16px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink);text-decoration:none}
+.pf-brand span{color:var(--led)}
+.pf-back{font-family:var(--typed);font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);text-decoration:none;border:1px solid var(--line);padding:8px 14px;border-radius:3px;white-space:nowrap}
+.pf-back:hover{color:var(--ink);border-color:var(--led)}
+.pf-bar + header{padding-top:44px}
+@media (max-width:700px){.pf-bar + header{padding-top:32px}}
+@media (max-width:420px){.pf-bar{padding:12px 16px}.pf-brand{font-size:14px;letter-spacing:.16em}.pf-back{padding:7px 10px;font-size:12px}}
+@media (max-width:360px){.pf-bar{gap:10px;padding:12px 14px}.pf-brand{letter-spacing:.08em;white-space:nowrap}.pf-back{padding:7px 8px;font-size:11px;letter-spacing:0}}
+</style>
+</head>
+<body>
+
+<nav class="pf-bar" aria-label="Portfolio"><a class="pf-brand" href="/work">ALEX <span>STEFAN</span></a><a class="pf-back" href="/case-studies/urbanstrife-detail.html">&larr; Back to Urban Strife</a></nav>
+
+<header class="wrap">
+  <div class="tag">Case study / UI/UX visual overhaul / MicroProse Software &times; White Pond Games</div>
+  <h1>Urban <span>Strife</span></h1>
+  <p class="lede">An isometric, Jagged Alliance-style tactical survival RPG set in a zombie-infested American South. I joined remotely to <b>redesign the game's entire UI</b>, raising the quality of every HUD, menu and widget while keeping the retro, old-school TBS post-apocalyptic identity at the heart of the game.</p>
+  <a class="steam" href="https://store.steampowered.com/app/710230/Urban_Strife/" target="_blank" rel="noopener noreferrer">View on Steam &rarr;</a>
+
+  <dl class="spec">
+    <div><dt>Role</dt><dd>UI/UX Designer &amp; UI Artist (remote)</dd></div>
+    <div><dt>Timeline</dt><dd>Dec 2022 – Feb 2023 · ~3 months</dd></div>
+    <div><dt>Scope</dt><dd>Full UI revision: combat HUD, inventory, shelter, crafting, trade, map, menus, front-end</dd></div>
+    <div><dt>Tools</dt><dd>Photoshop (PSD/PSB), Illustrator, 3D renders for UI props</dd></div>
+    <div><dt>Platform</dt><dd>PC (Windows) · Steam</dd></div>
+  </dl>
+
+  <figure class="hero">
+    <button type="button" data-full="/images/projects/urbanstrife/hero-journal.jpg" aria-label="Enlarge: Shelter development plan"><img src="/images/projects/urbanstrife/hero-journal.jpg" alt="Shelter development plan screen styled as a worn field journal with blueprint upgrade icons, census and stockpile tables" width="2000" height="1125"></button>
+    <figcaption>Shelter development plan: census, stockpile &amp; production, and three upgrade tiers in one field-journal spread</figcaption>
+  </figure>
+</header>
+
+<main class="wrap">
+
+<section aria-labelledby="s-challenge">
+  <div class="sec-head"><span class="num">00</span><h2 id="s-challenge">The challenge</h2></div>
+  <p class="read">The game already had a working UI, but most of it had to be redone. The brief was a balancing act.</p>
+  <div class="challenge">
+    <div class="card"><h3>Keep the soul</h3><p>The audience grew up on classic TBS RPGs. The new UI had to look clearly higher-end while still feeling gritty and old-school.</p></div>
+    <div class="card"><h3>Information density</h3><p>Combat shows AP, stance, fire mode, Overwatch, reload state and inventory at once, over a busy isometric battlefield.</p></div>
+    <div class="card"><h3>Breadth</h3><p>Combat, inventory, stashes, trader, shelter industry, crafting, recycling, map and front-end all needed one shared visual language.</p></div>
+  </div>
+</section>
+
+<section aria-labelledby="s-art">
+  <div class="sec-head"><span class="num">01</span><h2 id="s-art">Retro-modern art direction</h2></div>
+  <ul class="points read">
+    <li><b>Defined</b> a diegetic, hardware-inspired visual language: worn metal casings, LED indicators, CRT readouts, clipboards, ledgers and field journals. It kept the old-school spirit while raising texture, lighting and material quality.</li>
+    <li><b>Unified</b> HUDs, menus and widgets under one consistent system, so the game reads as a single cohesive product.</li>
+  </ul>
+  <div class="g g-wide">
+    <figure><button type="button" data-full="/images/projects/urbanstrife/base-supplies.jpg" aria-label="Enlarge: Base Supplies widget"><img src="/images/projects/urbanstrife/base-supplies.jpg" alt="Base Supplies widget: CRT screen with food, medical, morale and fuel counters beside a red End Turn button" loading="lazy" width="1400" height="698"></button><figcaption>Base Supplies widget: CRT readout + End Turn switch</figcaption></figure>
+    <figure><button type="button" data-full="/images/projects/urbanstrife/clipboard.jpg" aria-label="Enlarge: CDC clipboard"><img src="/images/projects/urbanstrife/clipboard.jpg" alt="CDC top-secret clipboard used for character setup" loading="lazy" width="700" height="943"></button><figcaption>Character setup clipboard</figcaption></figure>
+  </div>
+  <div class="g" style="margin-top:16px">
+    <figure><button type="button" data-full="/images/projects/urbanstrife/icon-sheet.jpg" aria-label="Enlarge: UI icon sheet"><img src="/images/projects/urbanstrife/icon-sheet.jpg" alt="Icon sheet with menu buttons, take-all buttons, scavenge icons, cursor hands, trader accept/deny hands, stash filters and inventory icons" loading="lazy" width="1800" height="1034"></button><figcaption>Component sheet: buttons, cursor hands, scavenge, stash-filter and inventory icons</figcaption></figure>
+  </div>
+</section>
+
+<section aria-labelledby="s-hud">
+  <div class="sec-head"><span class="num">02</span><h2 id="s-hud">Tactical combat HUD</h2></div>
+  <ul class="points read">
+    <li><b>Redesigned</b> the combat control panel: stance (crouch/run), reload, inventory, fire-mode selector (single/ranged/melee) and Overwatch/radar toggles, housed in a "ballistic calculator" device.</li>
+    <li><b>Engineered</b> full state sets for every control (default, hover, active, disabled) and a color-coded LED system (green/yellow/red/off) for at-a-glance feedback.</li>
+    <li><b>Designed</b> turn and objective readouts, cursors and targeting assets, including the sniper aim cursor and stealth icons.</li>
+  </ul>
+  <div class="g">
+    <figure><button type="button" data-full="/images/projects/urbanstrife/combat-hud.jpg" aria-label="Enlarge: In-game combat HUD"><img src="/images/projects/urbanstrife/combat-hud.jpg" alt="In-game screenshot with the weapon control panel, squad portraits, objective notes and tutorial pop-up over an isometric highway scene" loading="lazy" width="2000" height="1125"></button><figcaption>The HUD in context: weapon panel, squad cards, objectives and tutorial notes</figcaption></figure>
+  </div>
+  <div class="g g2" style="margin-top:16px">
+    <figure><button type="button" data-full="/images/projects/urbanstrife/ballistic-shell.jpg" aria-label="Enlarge: Control panel housing"><img src="/images/projects/urbanstrife/ballistic-shell.jpg" alt="Empty metal control panel housing labeled W&amp;P Electronics Ballistic Calculator" loading="lazy" width="1100" height="491"></button><figcaption>"W&amp;P Ballistic Calculator" control-panel housing</figcaption></figure>
+    <figure><button type="button" data-full="/images/projects/urbanstrife/turn-widgets.jpg" aria-label="Enlarge: Turn and objective widgets"><img src="/images/projects/urbanstrife/turn-widgets.jpg" alt="Stack of CRT widgets showing Your Turn, New Objective, Enemy Turn and Base Supplies states" loading="lazy" width="2000" height="1083"></button><figcaption>Turn / objective / enemy-turn CRT states</figcaption></figure>
+  </div>
+  <div class="g" style="margin-top:16px">
+    <figure><button type="button" data-full="/images/projects/urbanstrife/tutorial-controls.jpg" aria-label="Enlarge: Controls reference journal"><img src="/images/projects/urbanstrife/tutorial-controls.jpg" alt="Journal spread documenting camera controls, combat controls, aimed shot mechanics and warning overlays" loading="lazy" width="1883" height="1125"></button><figcaption>Controls &amp; mechanics reference: stances, fire modes, Overwatch, warning overlays</figcaption></figure>
+  </div>
+</section>
+
+<section aria-labelledby="s-inv">
+  <div class="sec-head"><span class="num">03</span><h2 id="s-inv">Inventory, stash &amp; trade</h2></div>
+  <ul class="points read">
+    <li><b>Rebuilt</b> the inventory UI and produced a standardized item-icon library (weapons, ammo, consumables, crafting materials) on a shared template for consistent scale, angle and lighting.</li>
+    <li><b>Designed</b> the container screens (personal inventory, Normal Stash, Sheriff Stash, Trader), each with its own material identity, plus tactile hand-cursor states for grab, take-all and trade.</li>
+  </ul>
+  <div class="g">
+    <figure><button type="button" data-full="/images/projects/urbanstrife/container-loot.jpg" aria-label="Enlarge: Loot container and character inventory"><img src="/images/projects/urbanstrife/container-loot.jpg" alt="Leather loot container grid beside character backpack and paper-doll equipment sheet" loading="lazy" width="1800" height="894"></button><figcaption>Loot container + backpack + paper-doll equipment sheet</figcaption></figure>
+  </div>
+  <div class="g g3" style="margin-top:16px">
+    <figure><button type="button" data-full="/images/projects/urbanstrife/weapon-attachments.jpg" aria-label="Enlarge: Weapon attachments"><img src="/images/projects/urbanstrife/weapon-attachments.jpg" alt="AK weapon card with attachment slots and stats such as ammo, range, spread and AP cost" loading="lazy" width="1200" height="1141"></button><figcaption>Weapon attachments &amp; stats card</figcaption></figure>
+    <figure><button type="button" data-full="/images/projects/urbanstrife/trader.jpg" aria-label="Enlarge: Trader screen"><img src="/images/projects/urbanstrife/trader.jpg" alt="Trader screen with portrait header, accept/deny hand icons and split inventory columns" loading="lazy" width="1000" height="967"></button><figcaption>Trader</figcaption></figure>
+    <figure><button type="button" data-full="/images/projects/urbanstrife/recycling-order.jpg" aria-label="Enlarge: Recycling order"><img src="/images/projects/urbanstrife/recycling-order.jpg" alt="Recycling order form on a clipboard with foreman, accepted goods and balance table" loading="lazy" width="1000" height="1011"></button><figcaption>Recycling order</figcaption></figure>
+  </div>
+  <div class="g" style="margin-top:16px">
+    <figure><button type="button" data-full="/images/projects/urbanstrife/sheriff-stash.jpg" aria-label="Enlarge: Sheriff stash"><img src="/images/projects/urbanstrife/sheriff-stash.jpg" alt="Steel Sheriff stash grid next to character inventory" loading="lazy" width="1800" height="894"></button><figcaption>Sheriff Stash: steel locker material vs. leather backpack</figcaption></figure>
+  </div>
+</section>
+
+<section aria-labelledby="s-shelter">
+  <div class="sec-head"><span class="num">04</span><h2 id="s-shelter">Shelter, crafting &amp; base management</h2></div>
+  <ul class="points read">
+    <li><b>Spearheaded</b> the shelter HUD as a field journal with tabs (Shelter, Team, Map, Diplomacy, To-Do, Notes): census, stockpile &amp; production tables, and a blueprint-style upgrade plan with locked states.</li>
+    <li><b>Designed</b> the Industry build orders, Warehouse ledger, Shelter Dump and crafting assembly/disassembly screens, so the scavenge &rarr; craft &rarr; upgrade loop reads like real shelter paperwork.</li>
+  </ul>
+  <div class="g">
+    <figure><button type="button" data-full="/images/projects/urbanstrife/shelter-plan.jpg" aria-label="Enlarge: Shelter plan with survival bars"><img src="/images/projects/urbanstrife/shelter-plan.jpg" alt="Shelter journal with survival rating and horde progress bars above the upgrade plan" loading="lazy" width="2000" height="1125"></button><figcaption>Shelter journal with survival-rating and horde-progress bars</figcaption></figure>
+  </div>
+  <div class="g g-wide" style="margin-top:16px">
+    <figure><button type="button" data-full="/images/projects/urbanstrife/shelter-dump.jpg" aria-label="Enlarge: Warehouse inventory ledger"><img src="/images/projects/urbanstrife/shelter-dump.jpg" alt="Warehouse inventory ledger form with production, consumption and donation balances beside character inventory" loading="lazy" width="1800" height="931"></button><figcaption>Warehouse ledger: donations, reserves, security advisory</figcaption></figure>
+    <figure><button type="button" data-full="/images/projects/urbanstrife/industry-order.jpg" aria-label="Enlarge: Industry build order"><img src="/images/projects/urbanstrife/industry-order.jpg" alt="Industry build order clipboard for a vegetable garden with available upgrades list" loading="lazy" width="1200" height="1127"></button><figcaption>Industry build order</figcaption></figure>
+  </div>
+  <div class="g" style="margin-top:16px">
+    <figure><button type="button" data-full="/images/projects/urbanstrife/craft-disassembly.jpg" aria-label="Enlarge: Crafting disassembly"><img src="/images/projects/urbanstrife/craft-disassembly.jpg" alt="Crafting screen with tool, input and output columns on blueprint paper, beside the backpack" loading="lazy" width="1800" height="894"></button><figcaption>Crafting: tool / input / output on blueprint paper</figcaption></figure>
+  </div>
+</section>
+
+<section aria-labelledby="s-map">
+  <div class="sec-head"><span class="num">05</span><h2 id="s-map">World map</h2></div>
+  <ul class="points read">
+    <li><b>Designed</b> the Urban County map as a vintage transportation map, with location markers, travel and scavenge modes, locked areas and random-encounter notes clipped to the side.</li>
+  </ul>
+  <div class="g">
+    <figure><button type="button" data-full="/images/projects/urbanstrife/map-notebook.jpg" aria-label="Enlarge: Map in field journal"><img src="/images/projects/urbanstrife/map-notebook.jpg" alt="Urban County transportation map inside the field journal with an Adams Villa location note and travel controls" loading="lazy" width="2000" height="1125"></button><figcaption>Map tab: location notes with travel method, ETA and confirm/cancel</figcaption></figure>
+  </div>
+  <div class="g g2" style="margin-top:16px">
+    <figure><button type="button" data-full="/images/projects/urbanstrife/map-county.jpg" aria-label="Enlarge: Urban County map"><img src="/images/projects/urbanstrife/map-county.jpg" alt="Urban County map with green location labels for shelter, motel, gas station, courthouse and more" loading="lazy" width="1800" height="1303"></button><figcaption>Location labels &amp; exit ramps</figcaption></figure>
+    <figure><button type="button" data-full="/images/projects/urbanstrife/map-encounter.jpg" aria-label="Enlarge: Random encounter note"><img src="/images/projects/urbanstrife/map-encounter.jpg" alt="Map with a random encounter notepad warning that fast travel has been cancelled" loading="lazy" width="1800" height="1146"></button><figcaption>Random-encounter interrupt</figcaption></figure>
+  </div>
+</section>
+
+<section aria-labelledby="s-front">
+  <div class="sec-head"><span class="num">06</span><h2 id="s-front">Front-end, intro &amp; loading</h2></div>
+  <ul class="points read">
+    <li><b>Designed</b> the main-menu buttons, comic-panel intro screens and loading screens built around photographs and 3D-rendered props (notebook, M1911, ammunition).</li>
+    <li><b>Created</b> the tutorial pop-up widget used to walk new players through movement and combat.</li>
+  </ul>
+  <div class="g g2">
+    <figure><button type="button" data-full="/images/projects/urbanstrife/main-menu.jpg" aria-label="Enlarge: Main menu"><img src="/images/projects/urbanstrife/main-menu.jpg" alt="Main menu with Urban Strife logo and green New Game, Load Game, Options and Quit buttons over a night firefight" loading="lazy" width="1800" height="1012"></button><figcaption>Main menu</figcaption></figure>
+    <figure><button type="button" data-full="/images/projects/urbanstrife/intro-comic.jpg" aria-label="Enlarge: Comic intro"><img src="/images/projects/urbanstrife/intro-comic.jpg" alt="Comic-panel intro screen with captions over a highway at night" loading="lazy" width="1800" height="1012"></button><figcaption>Comic-panel intro</figcaption></figure>
+    <figure><button type="button" data-full="/images/projects/urbanstrife/loading-adams-villa.jpg" aria-label="Enlarge: Adams Villa loading screen"><img src="/images/projects/urbanstrife/loading-adams-villa.jpg" alt="Loading screen with stacked Polaroid photos of Adams Villa over a desaturated level view" loading="lazy" width="1800" height="1012"></button><figcaption>Loading screen: Adams Villa</figcaption></figure>
+    <figure><button type="button" data-full="/images/projects/urbanstrife/loading-california-motel.jpg" aria-label="Enlarge: California Motel loading screen"><img src="/images/projects/urbanstrife/loading-california-motel.jpg" alt="Loading screen with a California Motel photo on a desk beside a pistol and newspaper" loading="lazy" width="1800" height="1012"></button><figcaption>Loading screen: California Motel</figcaption></figure>
+  </div>
+  <div class="g" style="margin-top:16px">
+    <figure><button type="button" data-full="/images/projects/urbanstrife/tutorial-popup.jpg" aria-label="Enlarge: Tutorial pop-up"><img src="/images/projects/urbanstrife/tutorial-popup.jpg" alt="Tutorial pop-up titled Moving Around with a gameplay preview and Next button" loading="lazy" width="1800" height="1012"></button><figcaption>Tutorial pop-up widget</figcaption></figure>
+  </div>
+</section>
+
+<section aria-labelledby="s-deliv">
+  <div class="sec-head"><span class="num">07</span><h2 id="s-deliv">Deliverables</h2></div>
+  <ul class="deliv">
+    <li>Combat HUD &amp; control panel, full button/LED state sheets</li>
+    <li>Inventory system &amp; item-icon library</li>
+    <li>Normal Stash, Sheriff Stash &amp; Trader screens</li>
+    <li>Shelter HUD, Industry, Recycling Order &amp; Shelter Dump</li>
+    <li>Shelter-upgrade icon set</li>
+    <li>Crafting interface</li>
+    <li>World map UI</li>
+    <li>Character portraits &amp; recruit cards</li>
+    <li>Intro screens, loading screens &amp; main-menu buttons</li>
+    <li>Tutorial video assets</li>
+  </ul>
+</section>
+
+<section aria-labelledby="s-take">
+  <div class="sec-head"><span class="num">08</span><h2 id="s-take">Key takeaways</h2></div>
+  <div class="takeaways">
+    <div class="card"><h3>Retro is a design problem</h3><p>Modernizing a retro identity isn't a polish pass. The hard part was deciding what not to change, so the game stayed true to its old-school TBS roots.</p></div>
+    <div class="card"><h3>State design is half the UI</h3><p>In a tactical game, hover, disabled and active states carry as much information as the layout itself.</p></div>
+    <div class="card"><h3>Diegetic needs a system</h3><p>A gritty, physical look only scales across dozens of screens when it sits on consistent templates and grids.</p></div>
+  </div>
+</section>
+
+</main>
+
+<footer class="wrap">Alexandru Stefan · Senior UI/UX Designer · Urban Strife © White Pond Games / MicroProse Software. Images shown for portfolio purposes.</footer>
+
+<div id="lb" role="dialog" aria-modal="true" aria-label="Enlarged image"><button type="button" id="lbx">Close</button><img alt=""></div>
+<script>
+(function(){
+  var lb=document.getElementById('lb'),im=lb.querySelector('img'),last=null;
+  function close(){lb.classList.remove('on');im.removeAttribute('src');if(last)last.focus();}
+  document.querySelectorAll('figure button[data-full]').forEach(function(b){
+    b.addEventListener('click',function(){last=b;im.src=b.dataset.full;im.alt=b.querySelector('img').alt;lb.classList.add('on');document.getElementById('lbx').focus();});
+  });
+  lb.addEventListener('click',close);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&lb.classList.contains('on'))close();});
+})();
+</script>
+</body>
+</html>

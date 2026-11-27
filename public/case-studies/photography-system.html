@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Photography System — Alex Stefan</title>
+<meta name="description" content="UI/UX for Watch Dogs: Legion's photography tools: one shared toolkit of filters, adjustments, depth of field and stickers, used across three modes.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0b0a0c; --panel:#171215; --panel-hi:#211a1e; --line:#332a2d; --line-soft:#231c1f;
+  --paper:#f3efe9; --mute:#a49a9d; --mute-dim:#6e6467; --red:#e8232f; --red-dim:#5c1116; --pink:#ff2f78;
+  --mono:'IBM Plex Mono',monospace; --disp:'Chakra Petch',sans-serif; --body:'Inter',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--ink);scroll-behavior:smooth}
+body{background:var(--ink);color:var(--paper);font-family:var(--body);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%;height:auto}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--red);color:#fff}
+:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:20px 40px;background:rgba(11,10,12,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line-soft)}
+.topbar-brand{font-family:var(--disp);font-weight:700;font-size:14px;letter-spacing:3px;text-transform:uppercase;color:var(--paper)}
+.topbar-brand span{color:var(--red)}
+.back-link{font-family:var(--mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mute);border:1px solid var(--line);padding:9px 16px;border-radius:3px;transition:all .2s}
+.back-link:hover{color:var(--paper);border-color:var(--red)}
+
+/* ---- HUB ---- */
+.hub-wrap{min-height:calc(100vh - 69px);padding:80px 40px 100px;display:flex;flex-direction:column;align-items:center}
+.hub-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--red);margin-bottom:18px}
+.hub-title{font-family:var(--disp);font-weight:700;font-size:clamp(24px,3.2vw,38px);letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:14px;min-height:1.2em}
+.hub-sub{font-family:var(--body);font-size:14px;color:var(--mute);text-align:center;max-width:640px;line-height:1.7;margin-bottom:64px}
+.tile-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;max-width:980px;width:100%}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:6px;aspect-ratio:16/10;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;cursor:pointer;transition:border-color .25s}
+.tile:hover{border-color:var(--red)}
+.tile-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.32;transition:all .5s}
+.tile:hover .tile-bg{opacity:.5;transform:scale(1.06)}
+.tile::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,10,12,.1),rgba(11,10,12,.75))}
+.tile-label{position:relative;z-index:2;font-family:var(--disp);font-weight:700;font-size:clamp(14px,1.6vw,17px);letter-spacing:3px;text-transform:uppercase;color:var(--paper);text-align:center;padding:0 20px}
+.tile-tag{position:absolute;top:16px;left:16px;z-index:2;font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--red)}
+@media(max-width:720px){.tile-grid{grid-template-columns:1fr}.hub-wrap{padding:56px 20px 80px}}
+
+/* ---- DETAIL PAGE ---- */
+.detail-hero{width:100%;aspect-ratio:21/9;position:relative;overflow:hidden;background:var(--panel)}
+.detail-hero img,.detail-hero iframe{width:100%;height:100%;object-fit:cover;border:none}
+.detail-hero::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,var(--ink) 100%);pointer-events:none}
+.detail-kicker{position:absolute;bottom:24px;left:40px;z-index:2;font-family:var(--mono);font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--red)}
+.detail-h1{position:absolute;bottom:44px;left:40px;z-index:2;font-family:var(--disp);font-weight:700;font-size:clamp(28px,4vw,46px);letter-spacing:1px;text-transform:uppercase;color:var(--paper);min-height:1.2em}
+.section{max-width:900px;margin:0 auto;padding:72px 24px 0}
+.section-label{font-family:var(--mono);font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--red);text-align:center;margin-bottom:20px}
+.section-body{font-family:var(--body);font-size:15px;line-height:1.85;color:var(--mute);text-align:center;max-width:700px;margin:0 auto}
+.trailers-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:900px;margin:28px auto 0;padding:0 24px}
+.trailer-frame{aspect-ratio:16/9;background:#000;border-radius:5px;overflow:hidden;border:1px solid var(--line)}
+.trailer-frame iframe{width:100%;height:100%;border:none}
+.study-card{max-width:900px;margin:0 auto;padding:0 24px}
+.study-card-inner{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden;display:grid;grid-template-columns:280px 1fr}
+.study-card-img{position:relative;overflow:hidden}
+.study-card-img img{width:100%;height:100%;object-fit:cover}
+.study-card-body{padding:32px;display:flex;flex-direction:column;justify-content:center}
+.study-card-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--red);margin-bottom:10px}
+.study-card-title{font-family:var(--disp);font-weight:700;font-size:22px;letter-spacing:.5px;text-transform:uppercase;margin-bottom:12px}
+.study-card-desc{font-family:var(--body);font-size:13px;color:var(--mute);line-height:1.7;margin-bottom:20px}
+.study-card-btn{display:inline-flex;align-items:center;gap:8px;background:var(--red);color:#fff;font-family:var(--mono);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;padding:12px 22px;border-radius:4px;width:fit-content;transition:background .2s}
+.study-card-btn:hover{background:var(--pink)}
+@media(max-width:640px){.study-card-inner{grid-template-columns:1fr}.study-card-img{aspect-ratio:16/9}.trailers-grid{grid-template-columns:1fr}}
+
+.carousel-wrap{max-width:900px;margin:28px auto 0;padding:0 24px}
+.carousel-track{display:flex;overflow-x:auto;gap:12px;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:4px}
+.carousel-track::-webkit-scrollbar{display:none}
+.carousel-item{flex:0 0 62%;aspect-ratio:4/3;scroll-snap-align:start;border-radius:5px;overflow:hidden;background:var(--panel);border:1px solid var(--line)}
+.carousel-item img{width:100%;height:100%;object-fit:cover}
+.carousel-nav{display:flex;justify-content:center;gap:12px;margin-top:18px}
+.carousel-btn{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--paper);cursor:pointer;font-size:16px;transition:all .2s}
+.carousel-btn:hover{border-color:var(--red);color:var(--red)}
+@media(min-width:640px){.carousel-item{flex-basis:31%}}
+
+.conclusion{max-width:680px;margin:64px auto 0;padding:32px 24px 110px;text-align:center;border-top:1px solid var(--line-soft)}
+.conclusion-label{font-family:var(--mono);font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--mute-dim);margin:32px 0 16px}
+.conclusion-body{font-family:var(--body);font-size:15px;line-height:1.85;color:var(--mute)}
+.small-tag-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:20px}
+.small-tag{font-family:var(--mono);font-size:11px;color:var(--mute);border:1px solid var(--line);border-radius:3px;padding:6px 12px}
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="/work" class="topbar-brand">ALEX <span>STEFAN</span></a>
+  <a href="watch-dogs-legion-hub.html" class="back-link">&larr; Back to Watch Dogs: Legion</a>
+</nav>
+<div class="detail-hero">
+  <img src="/images/projects/watch-dogs-legion/photography/booth-main.jpg" alt="Photography System">
+  <div class="detail-kicker">Ubisoft Bucharest</div>
+  <h1 class="detail-h1" data-scramble="PHOTOGRAPHY SYSTEM">Photography System</h1>
+</div>
+<div class="section">
+  <div class="section-label">Description of the Feature & Its Modes</div>
+  <p class="section-body">Watch Dogs: Legion's photography tools share one underlying toolkit — colour filters, contrast/saturation/exposure adjustments, depth of field, and stickers — deployed across three contexts. Photo Mode is a full pause-menu mode with a free camera (orbit, tilt, pan, focus) for framing shots of the open world. The Photo Camera is a real-time camera opened with a quick DPAD shortcut, switchable between street photography and a selfie mode that detects nearby landmarks. The Photo Booth is a group-photo cabin hidden inside a Hackerspace location, with its own pan/tilt/randomize controls so a full squad can pose together, masks on or off.</p>
+  <div class="small-tag-row"><span class="small-tag">Photo Mode</span><span class="small-tag">Photo Camera</span><span class="small-tag">Photo Booth</span><span class="small-tag">UI/UX Design</span></div>
+</div>
+
+
+
+<div class="section-label" style="margin-top:72px">Screenshots &middot; 4</div>
+<div class="carousel-wrap">
+  <div class="carousel-track"><div class="carousel-item"><img src="/images/projects/watch-dogs-legion/photography/camera-access.jpg" alt="" loading="lazy"></div><div class="carousel-item"><img src="/images/projects/watch-dogs-legion/photography/booth-hackerspace.jpg" alt="" loading="lazy"></div><div class="carousel-item"><img src="/images/projects/watch-dogs-legion/photography/booth-main.jpg" alt="" loading="lazy"></div><div class="carousel-item"><img src="/images/projects/watch-dogs-legion/photography/mode-access.jpg" alt="" loading="lazy"></div></div>
+  <div class="carousel-nav">
+    <button class="carousel-btn" data-dir="prev">&larr;</button>
+    <button class="carousel-btn" data-dir="next">&rarr;</button>
+  </div>
+</div>
+<div class="conclusion">
+  <div class="conclusion-label">Closing Notes</div>
+  <p class="conclusion-body">More wireframes and a dedicated case study for this system are on the way — this page will grow as that work gets added.</p>
+</div>
+
+<script>
+var GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890!<>-_\\/[]{}—=+*^?#";
+var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function scrambleStr(len){ var s=''; for (var i=0;i<len;i++){ s += GLYPHS[Math.floor(Math.random()*GLYPHS.length)]; } return s; }
+function typeScramble(el, text, scrambleMs, steps){
+  return new Promise(function(resolve){
+    if (reduced || !el){ if(el) el.textContent = text; resolve(); return; }
+    var i = 0; var stepTime = scrambleMs / steps;
+    var iv = setInterval(function(){
+      i++; el.textContent = scrambleStr(Math.max(text.length,4));
+      if (i >= steps){ clearInterval(iv); el.textContent = text; resolve(); }
+    }, stepTime);
+  });
+}
+document.addEventListener('DOMContentLoaded', function(){
+  document.querySelectorAll('[data-scramble]').forEach(function(el, idx){
+    var text = el.getAttribute('data-scramble') || el.textContent;
+    setTimeout(function(){ typeScramble(el, text, 500, 10); }, 120 * idx);
+  });
+});
+var track = document.querySelector('.carousel-track');
+if (track){
+  document.querySelectorAll('.carousel-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var dir = btn.getAttribute('data-dir') === 'prev' ? -1 : 1;
+      track.scrollBy({left: dir * track.clientWidth * 0.62, behavior:'smooth'});
+    });
+  });
+}
+
+</script>
+</body>
+</html>

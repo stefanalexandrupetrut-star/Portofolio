@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1KeyForge Pro — Alex Stefan</title>
+<meta name="description" content="1KeyForge Pro: a single-file mobile web app that turns a bitting code into a true-scale key and exports it as SVG, STL and DXF. Browse the screens and read the case study. The app itself is private to its developer.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0b0a0c;--panel:#171215;--line:#332a2d;--line-soft:#231c1f;--paper:#f3efe9;--mute:#a49a9d;--mute-dim:#857b7e;--red:#e8232f;--red-dim:#5c1116;--mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;--disp:'Space Grotesk',system-ui,sans-serif;--body:'DM Sans',system-ui,sans-serif}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--ink);scroll-behavior:smooth}
+body{background:var(--ink);color:var(--paper);font-family:var(--body);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%;height:auto}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit}
+::selection{background:var(--red);color:#fff}
+[data-scramble]{overflow-wrap:anywhere}
+:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+
+/* ---- shared chrome (same as the other project pages) ---- */
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 40px;background:rgba(11,10,12,.88);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line-soft)}
+.topbar-brand{font-family:var(--disp);font-weight:700;font-size:14px;letter-spacing:3px;text-transform:uppercase;white-space:nowrap}
+.topbar-brand span{color:var(--red)}
+.back-link{font-family:var(--mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mute);border:1px solid var(--line);padding:9px 16px;border-radius:3px;transition:all .2s;white-space:nowrap}
+.back-link:hover{color:var(--paper);border-color:var(--red)}
+@media(max-width:560px){.topbar{padding:14px 16px}}
+
+.detail-hero{width:100%;aspect-ratio:21/9;position:relative;overflow:hidden;background:var(--panel)}
+.detail-hero img{width:100%;height:100%;object-fit:cover}
+.detail-hero::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,var(--ink) 100%);pointer-events:none}
+.detail-kicker{position:absolute;bottom:24px;left:40px;z-index:2;font-family:var(--mono);font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--red)}
+.detail-h1{position:absolute;bottom:44px;left:40px;z-index:2;font-family:var(--disp);font-weight:700;font-size:clamp(32px,5vw,58px);letter-spacing:1px;text-transform:uppercase;min-height:1.2em}
+
+.section{max-width:1000px;margin:0 auto;padding:72px 24px 0}
+.section-label{font-family:var(--mono);font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--red);text-align:center;margin-bottom:20px}
+.section-body{font-size:15px;line-height:1.85;color:var(--mute);text-align:center;max-width:720px;margin:0 auto}
+.small-tag-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:20px}
+.small-tag{font-family:var(--mono);font-size:11px;color:var(--mute);border:1px solid var(--line);border-radius:3px;padding:6px 12px}
+
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;padding:12px 20px;border-radius:4px;border:1px solid var(--line);background:transparent;color:var(--paper);cursor:pointer;transition:all .2s;line-height:1.2}
+.btn:hover{border-color:var(--red);color:var(--red)}
+.btn.primary{background:var(--red);border-color:var(--red);color:#fff}
+.btn.primary:hover{background:#ff3541;border-color:#ff3541;color:#fff}
+.btn svg{width:14px;height:14px;flex:none}
+.section .actions{justify-content:center;margin-top:26px}
+
+/* ---- live demo: phone frame around the real app ---- */
+.demo{display:flex;align-items:center;justify-content:center;gap:64px;max-width:1000px;margin:28px auto 0;padding:0 24px;overflow-x:clip}
+.device-box{--s:1;width:calc(414px*var(--s));height:calc(824px*var(--s));flex:none;position:relative}
+.device-box::before{content:'';position:absolute;inset:-12% -22%;background:radial-gradient(closest-side,rgba(232,35,47,.16),transparent 72%);pointer-events:none}
+.device{position:absolute;left:0;top:0;width:414px;height:824px;transform:scale(var(--s));transform-origin:0 0;background:#050405;border-radius:52px;padding:34px 12px 22px;border:1px solid #3a3034;box-shadow:0 0 0 2px #120d10,0 40px 90px rgba(0,0,0,.65)}
+.device::before{content:'';position:absolute;top:15px;left:50%;width:64px;height:6px;margin-left:-32px;border-radius:3px;background:#1d1619}
+.device::after{content:'';position:absolute;bottom:8px;left:50%;width:120px;height:5px;margin-left:-60px;border-radius:3px;background:#2a2024}
+.screen{position:relative;width:100%;height:100%;border-radius:30px;overflow:hidden;background:#fff}
+.screen iframe{width:100%;height:100%;border:0;display:block;background:#fff}
+.lock{position:absolute;inset:0;z-index:2;border:0;padding:0 0 44px;cursor:pointer;display:flex;align-items:flex-end;justify-content:center;background:linear-gradient(180deg,rgba(11,10,12,0) 58%,rgba(11,10,12,.55))}
+.lock[hidden]{display:none}
+.lock-chip{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;background:var(--red);color:#fff;padding:12px 20px;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.45);transition:transform .2s}
+.lock:hover .lock-chip{transform:translateY(-2px)}
+.lock-chip .t-touch{display:none}
+@media(hover:none){.lock-chip .t-hover{display:none}.lock-chip .t-touch{display:inline}}
+.demo-copy{max-width:380px}
+.demo-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--red);margin-bottom:14px}
+.demo-h{font-family:var(--disp);font-weight:700;font-size:clamp(26px,3.4vw,36px);line-height:1.1;margin-bottom:22px}
+.try{list-style:none;counter-reset:t;display:grid;gap:16px;margin-bottom:28px}
+.try li{counter-increment:t;position:relative;padding-left:40px;font-size:14.5px;line-height:1.7;color:var(--mute)}
+.try li::before{content:counter(t);position:absolute;left:0;top:1px;width:26px;height:26px;border-radius:50%;border:1px solid var(--red-dim);background:rgba(232,35,47,.1);color:var(--paper);font-family:var(--mono);font-size:12px;display:grid;place-items:center}
+.try li b{color:var(--paper);font-weight:600}
+.demo-hint{font-family:var(--mono);font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mute-dim);margin-top:18px;line-height:1.7}
+/* public view: screenshots in the phone frame (the live app is only loaded for the developer) */
+.demo-left{display:flex;flex-direction:column;align-items:center;gap:18px}
+.screen img{width:100%;height:100%;object-fit:cover;object-position:top;display:block;background:#fff;-webkit-user-drag:none;user-select:none}
+.shot-note{font-family:var(--mono);font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mute-dim);text-align:center;max-width:340px;line-height:1.7}
+.shot-note.dev{color:var(--red)}
+.shots{list-style:none;display:grid;gap:10px;margin-bottom:26px}
+.shots button{display:block;width:100%;text-align:left;background:transparent;border:1px solid var(--line);border-radius:6px;padding:12px 16px;cursor:pointer;color:var(--mute);font-size:14px;line-height:1.6;transition:border-color .2s,background .2s}
+.shots button b{display:block;color:var(--paper);font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px}
+.shots button:hover{border-color:var(--red-dim)}
+.shots button[aria-pressed="true"]{border-color:var(--red);background:rgba(232,35,47,.08)}
+.private-note{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-left:3px solid var(--red);border-radius:4px;background:var(--panel);padding:14px 16px;margin-bottom:24px;font-size:13.5px;line-height:1.65;color:var(--mute)}
+.private-note svg{width:18px;height:18px;flex:none;margin-top:2px;color:var(--red)}
+.private-note b{color:var(--paper);font-weight:600}
+@media(max-width:820px){.demo{flex-direction:column;gap:36px}.demo-copy{max-width:520px}}
+
+/* ---- case-study card ---- */
+.study-card{max-width:1000px;margin:0 auto;padding:0 24px}
+.study-card-inner{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden;display:grid;grid-template-columns:320px 1fr;transition:border-color .2s}
+.study-card-inner:hover{border-color:var(--red)}
+.study-card-img img{width:100%;height:100%;object-fit:cover}
+.study-card-body{padding:36px;display:flex;flex-direction:column;justify-content:center}
+.study-card-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--red);margin-bottom:10px}
+.study-card-title{font-family:var(--disp);font-weight:700;font-size:24px;text-transform:uppercase;margin-bottom:12px}
+.study-card-desc{font-size:13.5px;color:var(--mute);line-height:1.7;margin-bottom:22px}
+.study-card-btn{display:inline-flex;background:var(--red);color:#fff;font-family:var(--mono);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;padding:12px 22px;border-radius:4px;width:fit-content}
+
+/* ---- screens carousel (16:9 items, so no figure is ever cropped) ---- */
+.carousel-wrap{max-width:1000px;margin:28px auto 0;padding:0 24px}
+.carousel-track{display:flex;overflow-x:auto;gap:12px;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:2px}
+.carousel-track::-webkit-scrollbar{display:none}
+.carousel-item{flex:0 0 78%;aspect-ratio:16/9;scroll-snap-align:start;border-radius:5px;overflow:hidden;background:var(--panel);border:1px solid var(--line);cursor:zoom-in;padding:0;display:block;transition:border-color .2s}
+.carousel-item:hover{border-color:var(--red)}
+.carousel-item img{width:100%;height:100%;object-fit:cover}
+.carousel-nav{display:flex;justify-content:center;gap:12px;margin-top:18px}
+.carousel-btn{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--paper);cursor:pointer;font-size:16px;transition:all .2s}
+.carousel-btn:hover{border-color:var(--red);color:var(--red)}
+@media(min-width:640px){.carousel-item{flex-basis:48%}}
+
+.conclusion{max-width:680px;margin:64px auto 0;padding:32px 24px 110px;text-align:center;border-top:1px solid var(--line-soft)}
+.conclusion-label{font-family:var(--mono);font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--mute-dim);margin:32px 0 16px}
+.conclusion-body{font-size:15px;line-height:1.85;color:var(--mute)}
+.conclusion-body+.conclusion-body{margin-top:14px}
+
+/* ---- lightbox: fixed 16:9 frame, scales to any device ---- */
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:999;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px}
+.lightbox.open{display:flex}
+.lb-frame{position:relative;width:min(92vw,150vh);aspect-ratio:16/9;background:#000;border-radius:6px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.lb-frame img{width:100%;height:100%;object-fit:contain;background:#000;-webkit-user-drag:none;user-select:none}
+.lb-cap{font-family:var(--mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mute);text-align:center;max-width:92vw;line-height:1.6}
+.lb-btn{position:absolute;background:rgba(11,10,12,.7);border:1px solid var(--line);color:#fff;cursor:pointer;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:20px;line-height:1;transition:all .2s;z-index:2}
+.lb-btn:hover{border-color:var(--red);color:var(--red)}
+.lb-close{top:18px;right:20px;font-size:26px}
+.lb-prev{left:16px;top:50%;margin-top:-22px}
+.lb-next{right:16px;top:50%;margin-top:-22px}
+@media(max-width:700px){.lb-prev,.lb-next{top:auto;bottom:18px;margin:0}.lb-prev{left:20px}.lb-next{right:20px}}
+
+@media(max-width:700px){.study-card-inner{grid-template-columns:1fr}.study-card-img{aspect-ratio:16/9}.study-card-body{padding:26px 22px}.detail-h1,.detail-kicker{left:20px}.detail-kicker{font-size:10px;letter-spacing:2px;bottom:16px}.detail-h1{bottom:34px}.section{padding-top:56px}}
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="/work" class="topbar-brand">ALEX <span>STEFAN</span></a>
+  <a href="/work?tab=personal" class="back-link">&larr; Back to Work</a>
+</nav>
+
+<header class="detail-hero">
+  <img src="/images/projects/1keyforge-pro/hero.jpg" width="2400" height="1029" alt="A gold Schlage SC1 key with bitting 32514, drawn at true scale, with its 3.97 mm pin pitch and 67 mm length dimensioned.">
+  <div class="detail-kicker">Personal Project &middot; Independent Tool</div>
+  <h1 class="detail-h1" data-scramble="1KEYFORGE PRO">1KEYFORGE PRO</h1>
+</header>
+
+<main>
+
+<section class="section">
+  <div class="section-label">Overview</div>
+  <p class="section-body">A single-file mobile web app for designing a key from its bitting code. Choose one of eight profiles, move a slider for each pin and the key redraws at true scale with a milled V-cut at every position. The same outline exports as an SVG for drawing, an STL for 3D printing or a DXF for CNC and laser. The case study covers the build and the geometry audit behind it.</p>
+  <div class="small-tag-row"><span class="small-tag">Web App</span><span class="small-tag">Single File</span><span class="small-tag">SVG</span><span class="small-tag">Geometry</span><span class="small-tag">3D Print &amp; CNC Export</span><span class="small-tag">Product Design</span></div>
+  <div class="actions">
+    <button class="btn" type="button" data-copy="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg><span>Copy page link</span></button>
+  </div>
+</section>
+
+<div class="section-label" id="app-label" style="margin-top:72px">The App</div>
+<div class="demo" id="demo-wrap">
+  <div class="demo-left">
+    <div class="device-box" id="devbox">
+      <div class="device" id="device">
+        <div class="screen" id="screen">
+          <img id="shot" src="/images/projects/1keyforge-pro/preview-bitting.webp" width="780" height="1536" alt="The Bitting tab of 1KeyForge Pro: a gold Schlage SC1 key with bitting 41325, a calibration slider and one vertical slider per pin.">
+        </div>
+      </div>
+    </div>
+    <p class="shot-note" id="shot-note">Screenshots &mdash; the app itself is private</p>
+  </div>
+  <div class="demo-copy" id="demo-copy">
+    <div class="demo-eyebrow">The app</div>
+    <h2 class="demo-h">Four tabs, one key.</h2>
+    <ul class="shots" aria-label="Choose a tab to preview">
+      <li><button type="button" data-shot="bitting" aria-pressed="true"><b>Bitting</b>One slider per pin. The key redraws at true scale with a V-cut at each position.</button></li>
+      <li><button type="button" data-shot="keytype" aria-pressed="false"><b>Key Type</b>Eight profiles, each with its own pin count, length and cut range.</button></li>
+      <li><button type="button" data-shot="presets" aria-pressed="false"><b>Presets</b>Factory presets, plus your own saved cuts.</button></li>
+      <li><button type="button" data-shot="export" aria-pressed="false"><b>Export</b>One outline becomes an SVG, an STL for 3D printing or a DXF for CNC.</button></li>
+    </ul>
+    <p class="private-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg><span><b>The live app is private.</b> Only its developer can launch it or export files from it. These are screenshots of the real app; the case study explains how it works.</span></p>
+    <div class="actions">
+      <a class="btn primary" href="/case-studies/1keyforge-pro.html">Read the case study <span aria-hidden="true">&rarr;</span></a>
+    </div>
+  </div>
+</div>
+
+<!-- Developer view. Nothing below is used for visitors: it is only copied into the page after the server
+     (GET /api/dev/session) confirms the visitor is the developer, so a visitor never gets the live app here. -->
+<!-- ?preview=1 asks the server for the app with its Export buttons grayed out and switched off (see src/app/apps/1keyforge-pro/route.js).
+     "Launch app" below opens the full app, where the exports work. -->
+<template id="live-screen">
+  <iframe id="demo" src="/apps/1keyforge-pro?preview=1" title="1KeyForge Pro (developer view, exports switched off)"></iframe>
+  <button class="lock" id="lock" type="button" aria-label="Activate the live app"><span class="lock-chip"><span class="t-hover">Click to try it</span><span class="t-touch">Tap to try it</span></span></button>
+</template>
+<template id="live-copy">
+  <div class="demo-eyebrow">The real app &middot; developer view</div>
+  <h2 class="demo-h">Try it here, or full screen.</h2>
+  <ol class="try">
+    <li><b>Drag a pin slider.</b> The key redraws with a V-cut at that pin.</li>
+    <li><b>Open Key Type</b> and pick another profile.</li>
+    <li><b>Pinch, Ctrl/&#8984; + wheel or drag</b> the key to inspect a cut. Double-tap to reset.</li>
+    <li><b>Open Export.</b> Its buttons are grayed out in this preview; use <b>Launch app</b> to download an SVG, STL or DXF.</li>
+  </ol>
+  <div class="actions">
+    <a class="btn primary" href="/apps/1keyforge-pro" target="_blank" rel="noopener">Launch app <span aria-hidden="true">&#8599;</span></a>
+    <button class="btn" type="button" data-copy="/apps/1keyforge-pro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg><span>Copy app link</span></button>
+  </div>
+  <p class="demo-hint">Only you see this: visitors get screenshots. The app is inactive until you click it, so it never traps the page scroll. Click outside it to lock it again.</p>
+</template>
+
+<div class="section-label" style="margin-top:72px">Full Case Study</div>
+<div class="study-card"><a class="study-card-inner" href="/case-studies/1keyforge-pro.html">
+  <div class="study-card-img"><img src="/images/projects/1keyforge-pro/cover.jpg" width="1600" height="900" alt="" loading="lazy"></div>
+  <div class="study-card-body"><div class="study-card-eyebrow">Deep Dive</div><div class="study-card-title">1KeyForge Pro &mdash; Full Case Study</div>
+  <p class="study-card-desc">Goals, tech stack and architecture, the four tabs, the six defects the geometry audit found and how one closed outline fixed them, the measured results, and the roadmap.</p>
+  <span class="study-card-btn">Read Full Case Study &rarr;</span></div></a></div>
+
+<div class="section-label" style="margin-top:72px">Screens &middot; 10</div>
+<div class="carousel-wrap">
+  <div class="carousel-track" aria-label="Screens and figures">
+    <button class="carousel-item" type="button" data-lb="/images/projects/1keyforge-pro/screen-bitting.jpg" data-cap="Bitting tab"><img src="/images/projects/1keyforge-pro/screen-bitting.jpg" width="1600" height="900" alt="The Bitting tab on a phone: a gold SC1 key with bitting 32514, a calibration scale slider and one vertical slider per pin." loading="lazy" decoding="async"></button>
+    <button class="carousel-item" type="button" data-lb="/images/projects/1keyforge-pro/screen-keytype.jpg" data-cap="Key Type tab"><img src="/images/projects/1keyforge-pro/screen-keytype.jpg" width="1600" height="900" alt="The Key Type tab on a phone: a grid of eight key profiles with Best A selected." loading="lazy" decoding="async"></button>
+    <button class="carousel-item" type="button" data-lb="/images/projects/1keyforge-pro/screen-presets.jpg" data-cap="Presets tab"><img src="/images/projects/1keyforge-pro/screen-presets.jpg" width="1600" height="900" alt="The Presets tab on a phone: factory presets, saved cuts KW1-01 and KW1-02, and a Save Current Bitting button." loading="lazy" decoding="async"></button>
+    <button class="carousel-item" type="button" data-lb="/images/projects/1keyforge-pro/screen-export.jpg" data-cap="Export tab"><img src="/images/projects/1keyforge-pro/screen-export.jpg" width="1600" height="900" alt="The Export tab on a phone: buttons for SVG, STL, DXF and Copy Bitting Code." loading="lazy" decoding="async"></button>
+    <button class="carousel-item" type="button" data-lb="/images/projects/1keyforge-pro/key-profiles.jpg" data-cap="Eight profiles at one true scale"><img src="/images/projects/1keyforge-pro/key-profiles.jpg" width="1600" height="900" alt="All eight key profiles drawn at one scale, each with its pin count, length and cut range." loading="lazy" decoding="async"></button>
+    <button class="carousel-item" type="button" data-lb="/images/projects/1keyforge-pro/export-3d-dxf.jpg" data-cap="Three exports from one outline"><img src="/images/projects/1keyforge-pro/export-3d-dxf.jpg" width="1600" height="900" alt="A 3D preview of the printed STL next to the DXF drawing of the same key, dimensioned in millimetres." loading="lazy" decoding="async"></button>
+    <button class="carousel-item" type="button" data-lb="/images/projects/1keyforge-pro/before-after.jpg" data-cap="Before and after the geometry audit"><img src="/images/projects/1keyforge-pro/before-after.jpg" width="1600" height="900" alt="The original v4 key with six numbered defects marked, above the v5 key with the same six spots fixed." loading="lazy" decoding="async"></button>
+    <button class="carousel-item" type="button" data-lb="/images/projects/1keyforge-pro/detail-crops.jpg" data-cap="Tip, collar and cuts: v4 against v5"><img src="/images/projects/1keyforge-pro/detail-crops.jpg" width="1600" height="900" alt="Three zoomed crops, each for v4 and v5: the tip, the collar and the cuts." loading="lazy" decoding="async"></button>
+    <button class="carousel-item" type="button" data-lb="/images/projects/1keyforge-pro/stl-triangulation.jpg" data-cap="STL face: fan against ear-clipped outline"><img src="/images/projects/1keyforge-pro/stl-triangulation.jpg" width="1600" height="900" alt="The STL front face of the same key, triangulated by v4 as a fan with red areas of disagreement, and by v5 as an ear-clipped outline with a hole." loading="lazy" decoding="async"></button>
+    <button class="carousel-item" type="button" data-lb="/images/projects/1keyforge-pro/metrics.jpg" data-cap="Measured on all eight profiles"><img src="/images/projects/1keyforge-pro/metrics.jpg" width="1600" height="900" alt="Three dot plots comparing v4 and v5 on all eight profiles: pixels per millimetre, SVG path length and STL file size." loading="lazy" decoding="async"></button>
+  </div>
+  <div class="carousel-nav"><button class="carousel-btn" type="button" data-dir="prev" aria-label="Previous screen">&larr;</button><button class="carousel-btn" type="button" data-dir="next" aria-label="Next screen">&rarr;</button></div>
+</div>
+
+<div class="conclusion">
+  <div class="conclusion-label">Closing Notes</div>
+  <p class="conclusion-body">A small tool with a hard core: the interface is a handful of sliders, and the work is in making one outline that the preview, the STL and the DXF all share.</p>
+  <p class="conclusion-body">The key dimensions are working approximations of common profiles. The app is for visualising, learning and prototyping, not for copying a key you are not authorised to duplicate.</p>
+</div>
+
+</main>
+
+<div class="lightbox" id="lb" role="dialog" aria-modal="true" aria-label="Image viewer" aria-hidden="true">
+  <button class="lb-btn lb-close" type="button" aria-label="Close">&times;</button>
+  <button class="lb-btn lb-prev" type="button" aria-label="Previous image">&larr;</button>
+  <button class="lb-btn lb-next" type="button" aria-label="Next image">&rarr;</button>
+  <div class="lb-frame"><img id="lbimg" alt="" draggable="false"></div>
+  <div class="lb-cap" id="lbcap"></div>
+</div>
+
+<script>
+(function(){
+  // ---- scramble-text on the title (same effect as the other project pages) ----
+  var GLYPHS="ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890!<>-_/[]{}=+*^?#";
+  var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Spaces are kept, so the scrambled frames wrap where the real title wraps and can never run wider than the screen.
+  function scrambleStr(t){var s='';for(var i=0;i<t.length;i++){var c=t.charAt(i);s+=/\s/.test(c)?c:GLYPHS[Math.floor(Math.random()*GLYPHS.length)];}return s;}
+  function typeScramble(el,text,ms,steps){if(reduced||!el){if(el)el.textContent=text;return;}var i=0,st=ms/steps;var iv=setInterval(function(){i++;el.textContent=scrambleStr(text);if(i>=steps){clearInterval(iv);el.textContent=text;}},st);}
+  document.addEventListener('DOMContentLoaded',function(){
+    var els=document.querySelectorAll('[data-scramble]');
+    if(!('IntersectionObserver' in window)){return;}
+    var io=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){typeScramble(e.target,e.target.getAttribute('data-scramble'),500,10);io.unobserve(e.target);}});},{threshold:0.5});
+    els.forEach(function(el){io.observe(el);});
+  });
+
+  // ---- copy-link buttons ----
+  function copyText(text){
+    function fallback(){try{var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();var ok=document.execCommand('copy');document.body.removeChild(ta);return ok;}catch(e){return false;}}
+    if(navigator.clipboard&&navigator.clipboard.writeText){return navigator.clipboard.writeText(text).then(function(){return true;},function(){return fallback();});}
+    return Promise.resolve(fallback());
+  }
+  function wireCopy(root){
+    root.querySelectorAll('[data-copy]').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        var t=btn.getAttribute('data-copy');
+        if(t==='page'){t=location.href;}else if(t.charAt(0)==='/'){t=location.origin+t;}
+        var label=btn.querySelector('span'),old=label.textContent;
+        copyText(t).then(function(ok){label.textContent=ok?'Copied!':'Copy failed';setTimeout(function(){label.textContent=old;},1400);});
+      });
+    });
+  }
+  wireCopy(document);
+
+  // ---- the phone frame: always laid out as a 414 px phone, scaled down to fit narrow screens ----
+  var box=document.getElementById('devbox'),device=document.getElementById('device'),demoWrap=document.getElementById('demo-wrap');
+  function fit(){
+    var cs=getComputedStyle(demoWrap);
+    var avail=demoWrap.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight);
+    box.style.setProperty('--s',Math.min(1,avail/414).toFixed(4));
+  }
+  fit();
+  window.addEventListener('resize',fit);
+  window.addEventListener('orientationchange',fit);
+
+  // ---- visitors: four screenshots of the app (nothing in them can be clicked, so nothing can be exported) ----
+  var SHOTS={
+    bitting:['/images/projects/1keyforge-pro/preview-bitting.webp','The Bitting tab of 1KeyForge Pro: a gold Schlage SC1 key with bitting 41325, a calibration slider and one vertical slider per pin.'],
+    keytype:['/images/projects/1keyforge-pro/preview-keytype.webp','The Key Type tab: a grid of eight key profiles with Schlage SC1 selected.'],
+    presets:['/images/projects/1keyforge-pro/preview-presets.webp','The Presets tab: four factory presets, an empty saved-cuts list and a Save Current Bitting button.'],
+    export:['/images/projects/1keyforge-pro/preview-export.webp','The Export tab: the SVG, STL, DXF and Copy Bitting Code buttons are grayed out, with a note that exports are switched off in this preview.']
+  };
+  var shot=document.getElementById('shot');
+  var picks=[].slice.call(document.querySelectorAll('[data-shot]'));
+  picks.forEach(function(b){
+    b.addEventListener('click',function(){
+      var k=b.getAttribute('data-shot');
+      shot.src=SHOTS[k][0];shot.alt=SHOTS[k][1];
+      picks.forEach(function(o){o.setAttribute('aria-pressed',o===b?'true':'false');});
+    });
+  });
+
+  // ---- the developer: the real app, in the same frame ----
+  // The server decides. Anything that goes wrong (no server, a blocked request, a slow network) leaves the screenshots.
+  function goLive(){
+    var screen=document.getElementById('screen'),copy=document.getElementById('demo-copy');
+    screen.textContent='';
+    screen.appendChild(document.getElementById('live-screen').content.cloneNode(true));
+    copy.textContent='';
+    copy.appendChild(document.getElementById('live-copy').content.cloneNode(true));
+    wireCopy(copy);
+    document.getElementById('app-label').textContent='The App \u00b7 Developer View';
+    var note=document.getElementById('shot-note');note.textContent='Developer view \u2014 the live app. Visitors only see screenshots.';note.className='shot-note dev';
+    var lock=document.getElementById('lock'),demo=document.getElementById('demo');
+    // The iframe ignores pointer events until it is activated, so wheel and touch scrolling pass through to the page.
+    lock.addEventListener('click',function(){device.classList.add('live');lock.hidden=true;try{demo.focus();}catch(e){}});
+    document.addEventListener('pointerdown',function(e){
+      // Pointer events inside the iframe never reach this document, so this only fires for clicks outside it.
+      if(device.classList.contains('live')&&!(e.target.closest&&e.target.closest('.screen'))){device.classList.remove('live');lock.hidden=false;}
+    });
+  }
+  if(window.fetch){
+    fetch('/api/dev/session',{credentials:'same-origin',cache:'no-store'})
+      .then(function(r){return r.ok?r.json():null;})
+      .then(function(j){if(j&&j.developer===true){goLive();}})
+      .catch(function(){});
+  }
+
+  // ---- screens carousel ----
+  var track=document.querySelector('.carousel-track');
+  document.querySelectorAll('.carousel-btn').forEach(function(b){
+    b.addEventListener('click',function(){
+      var it=track.querySelector('.carousel-item'),step=it.getBoundingClientRect().width+12;
+      track.scrollBy({left:(b.getAttribute('data-dir')==='prev'?-1:1)*step,behavior:reduced?'auto':'smooth'});
+    });
+  });
+
+  // ---- lightbox: fixed 16:9 frame, arrows / swipe / keyboard ----
+  var items=[].slice.call(document.querySelectorAll('[data-lb]'));
+  var lb=document.getElementById('lb'),img=document.getElementById('lbimg'),cap=document.getElementById('lbcap');
+  var bClose=lb.querySelector('.lb-close'),bPrev=lb.querySelector('.lb-prev'),bNext=lb.querySelector('.lb-next');
+  var idx=0,lastFocus=null,sx=null,sy=null,swiped=false;
+  function show(i){
+    idx=(i+items.length)%items.length;
+    var it=items[idx],pic=it.querySelector('img');
+    img.src=it.getAttribute('data-lb');
+    img.alt=pic?pic.getAttribute('alt'):'';
+    cap.textContent=(idx+1)+' / '+items.length+' — '+(it.getAttribute('data-cap')||'');
+  }
+  function open(i){lastFocus=document.activeElement;show(i);lb.classList.add('open');lb.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';bClose.focus();}
+  function close(){lb.classList.remove('open');lb.setAttribute('aria-hidden','true');img.removeAttribute('src');document.body.style.overflow='';if(lastFocus&&lastFocus.focus){lastFocus.focus();}}
+  items.forEach(function(el,i){el.addEventListener('click',function(){open(i);});});
+  bClose.addEventListener('click',close);
+  bPrev.addEventListener('click',function(e){e.stopPropagation();show(idx-1);});
+  bNext.addEventListener('click',function(e){e.stopPropagation();show(idx+1);});
+  lb.addEventListener('click',function(e){if(e.target===lb&&!swiped)close();swiped=false;});
+  // Swipe: touch uses touch events (they keep firing while the browser pans or pinch-zooms, pointer events do not);
+  // mouse and pen use pointer events. A swipe is ignored while the page is pinch-zoomed, so zoomed-in panning is left alone.
+  function zoomed(){return !!(window.visualViewport&&window.visualViewport.scale>1.05);}
+  function endSwipe(x,y){
+    if(sx===null)return;
+    var dx=x-sx,dy=y-sy;sx=null;
+    swiped=Math.abs(dx)>6||Math.abs(dy)>6;
+    if(!zoomed()&&Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.3){show(idx+(dx<0?1:-1));}
+  }
+  lb.addEventListener('touchstart',function(e){swiped=false;if(e.touches.length===1){sx=e.touches[0].clientX;sy=e.touches[0].clientY;}else{sx=null;}},{passive:true});
+  lb.addEventListener('touchend',function(e){var t=e.changedTouches[0];if(t&&e.touches.length===0){endSwipe(t.clientX,t.clientY);}},{passive:true});
+  lb.addEventListener('touchcancel',function(){sx=null;},{passive:true});
+  lb.addEventListener('pointerdown',function(e){if(e.pointerType==='touch')return;sx=e.clientX;sy=e.clientY;swiped=false;});
+  lb.addEventListener('pointerup',function(e){if(e.pointerType==='touch')return;endSwipe(e.clientX,e.clientY);});
+  document.addEventListener('keydown',function(e){
+    if(!lb.classList.contains('open'))return;
+    if(e.key==='Escape'){close();}
+    else if(e.key==='ArrowLeft'){show(idx-1);}
+    else if(e.key==='ArrowRight'){show(idx+1);}
+    else if(e.key==='Tab'){var f=[bClose,bPrev,bNext],i=f.indexOf(document.activeElement);e.preventDefault();f[(i+(e.shiftKey?-1:1)+f.length)%f.length].focus();}
+  });
+})();
+</script>
+</body>
+</html>
